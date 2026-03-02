@@ -88,7 +88,7 @@ function readCarIdFromQuery() {
 
 function Navigation({ activePage }) {
     const items = [
-        { key: "home", label: "Domov", href: "main.html" },
+        { key: "home", label: "Domov", href: "index.html" },
         { key: "about", label: "O nás", href: "o-nas.html" },
         { key: "services", label: "Služby", href: "sluzby.html" },
         { key: "cars", label: "Vozidlá", href: "auta.html" },
