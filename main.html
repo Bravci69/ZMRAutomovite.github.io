@@ -1,11 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ZMR Automovité</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
-    dasdasdasdsad
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const services = [
+            {
+                title: "Kontrola stavu vozidiel",
+                text: "Dôkladná vizuálna aj technická kontrola vozidla pred kúpou."
+            },
+            {
+                title: "Kontrola po celej ČR a susedných štátoch",
+                text: "Výjazd za vozidlom po celej ČR a v susedných štátoch vrátane prípadného dovozu."
+            },
+            {
+                title: "Dovoz vozidiel na objednávku",
+                text: "Individuálny dovoz vozidiel z USA a Japonska podľa požiadaviek klienta."
+            },
+            {
+                title: "Základný servis a STK",
+                text: "Príprava vozidla, základný servis a zabezpečenie STK pred odovzdaním."
+            },
+            {
+                title: "Vlastná ponuka vozidiel",
+                text: "Postupne budeme zverejňovať aj našu vlastnú ponuku overených vozidiel."
+            }
+        ];
+
+        function App() {
+            return (
+                <>
+                    <header className="hero">
+                        <div className="logo-wrap">
+                            <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automovité logo" className="logo" />
+                        </div>
+                        <h1>ZMR Automovité</h1>
+                        <p>
+                            Profesionálna kontrola a dovoz vozidiel pre bezpečný nákup bez rizika.
+                        </p>
+                    </header>
+
+                    <main className="container">
+                        <section className="card" id="o-nas">
+                            <h2>O nás</h2>
+                            <p>
+                                Pomáhame klientom vybrať správne vozidlo, preveriť jeho technický stav
+                                a zabezpečiť celý proces od kontroly až po dovoz a prípravu na premávku.
+                            </p>
+                        </section>
+
+                        <section className="card" id="sluzby">
+                            <h2>Služby</h2>
+                            <div className="grid">
+                                {services.map((service) => (
+                                    <article key={service.title} className="service-item">
+                                        <h3>{service.title}</h3>
+                                        <p>{service.text}</p>
+                                    </article>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="card" id="kontakt">
+                            <h2>Kontakt</h2>
+                            <p>
+                                Telefón: <a href="tel:+420000000000">+420 000 000 000</a>
+                            </p>
+                            <p>
+                                E-mail: <a href="mailto:info@zmrautomovite.cz">info@zmrautomovite.cz</a>
+                            </p>
+                        </section>
+                    </main>
+                </>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
 </body>
 </html>
