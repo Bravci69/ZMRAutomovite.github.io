@@ -16,6 +16,14 @@
 </head>
 <body>
     <div id="root" data-page="home"></div>
+    <script>
+        window.ZMR_TRANSLATE_PROXY_URL = 'https://YOUR-WORKER.your-subdomain.workers.dev/api/translate';
+        window.ZMR_RESERVATION_PROXY_URL = 'https://YOUR-WORKER.your-subdomain.workers.dev/api/reservation';
+        window.ZMR_CARS_API_URL = 'https://YOUR-WORKER.your-subdomain.workers.dev/api/cars';
+        window.ZMR_FIREBASE_DB_URL = 'https://YOUR-PROJECT-ID-default-rtdb.europe-west1.firebasedatabase.app';
+        window.ZMR_FIREBASE_CARS_PATH = 'zmrCars';
+        window.ZMR_FIREBASE_AUTH_TOKEN = '';
+    </script>
     <script type="text/babel" src="app.js"></script>
 </body>
 </html>

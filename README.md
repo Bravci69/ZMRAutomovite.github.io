@@ -131,3 +131,67 @@ Use a server-side proxy (Cloudflare Worker) and keep the key in Worker secrets.
 		- `window.ZMR_TRANSLATE_PROXY_URL = "https://.../api/translate"`
 		- `window.ZMR_RESERVATION_PROXY_URL = "https://.../api/reservation"`
 		- `window.ZMR_CARS_API_URL = "https://.../api/cars"`
+
+## Firebase Database pre autá
+
+Projekt je pripravený ukladať a čítať vozidlá priamo z Firebase Realtime Database.
+
+### 1) Nastav Realtime Database
+
+V Firebase Console:
+
+- vytvor Realtime Database,
+- skopíruj database URL (napr. `https://your-project-default-rtdb.europe-west1.firebasedatabase.app`).
+
+### 2) Nastav runtime premenné v HTML (pred `app.js`)
+
+Na všetkých stránkach je už pripravený blok s premennými. Doplň svoje hodnoty:
+
+- `window.ZMR_FIREBASE_DB_URL`
+- `window.ZMR_FIREBASE_CARS_PATH` (predvolené `zmrCars`)
+- `window.ZMR_FIREBASE_AUTH_TOKEN` (voliteľné, môže byť prázdne)
+
+Ak je Firebase dostupný, aplikácia použije Firebase ako primárny sync pre autá.
+Ak nie je dostupný, použije existujúci fallback cez `window.ZMR_CARS_API_URL`.
+
+### 3) Bezpečné pravidlá pre scenár „verejné čítanie + CMS zápis“
+
+V repozitári je pripravený súbor:
+
+- `firebase.database.rules.json`
+
+Použité pravidlá:
+
+- čítanie kolekcie `zmrCars` je verejné,
+- zápis je povolený iba pre prihláseného používateľa s custom claim `cms: true` alebo `admin: true`,
+- validácia kontroluje základné minimum (`id`, `updatedAt`) pre každý záznam vozidla.
+
+### 4) Nasadenie pravidiel do Firebase
+
+1. Nainštaluj Firebase CLI:
+
+- `npm install -g firebase-tools`
+
+2. Prihlás sa:
+
+- `firebase login`
+
+3. Inicializuj Firebase v projekte (ak ešte nemáš `firebase.json`):
+
+- `firebase init database`
+
+4. Nastav v `firebase.json` položku `database.rules` na `firebase.database.rules.json`.
+
+5. Nasaď pravidlá:
+
+- `firebase deploy --only database`
+
+### 5) Dôležité k aplikácii
+
+Aktuálna aplikácia číta/zapisuje cez REST endpoint Firebase a nepoužíva Firebase Auth SDK.
+To znamená, že pre produkčné bezpečné zapisovanie odporúčam:
+
+- zapisovať autá cez backend (napr. tvoj Worker `/api/cars`) alebo
+- doplniť Firebase Auth (napr. anonymné/prihlásenie) a zapisovať s ID tokenom používateľa, ktorý má claim `cms`.
+
+Kým nie je doplnený Auth tok, nechaj `window.ZMR_FIREBASE_AUTH_TOKEN` prázdne a používaj zápis cez fallback API.

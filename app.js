@@ -9,6 +9,9 @@ const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
 const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || "/api/reservation";
 const CARS_API_URL = window.ZMR_CARS_API_URL || "/api/cars";
+const FIREBASE_DB_URL = window.ZMR_FIREBASE_DB_URL || "";
+const FIREBASE_CARS_PATH = window.ZMR_FIREBASE_CARS_PATH || "zmrCars";
+const FIREBASE_AUTH_TOKEN = window.ZMR_FIREBASE_AUTH_TOKEN || "";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
@@ -1451,6 +1454,10 @@ function saveCars(cars) {
 }
 
 async function fetchCarsFromCloud() {
+    const firebaseCars = await fetchCarsFromFirebase();
+    if (firebaseCars) {
+        return firebaseCars;
+    }
     if (!CARS_API_URL) {
         return null;
     }
@@ -1468,6 +1475,10 @@ async function fetchCarsFromCloud() {
 }
 
 async function saveCarsToCloud(cars) {
+    const firebaseSaved = await saveCarsToFirebase(cars);
+    if (firebaseSaved) {
+        return true;
+    }
     if (!CARS_API_URL || !Array.isArray(cars)) {
         return false;
     }
@@ -1481,6 +1492,71 @@ async function saveCarsToCloud(cars) {
                 campaign: "website-cars-sync",
                 cars
             })
+        });
+        return response.ok;
+    } catch {
+        return false;
+    }
+}
+
+function buildFirebaseCarsUrl() {
+    if (!FIREBASE_DB_URL) {
+        return "";
+    }
+    const baseUrl = String(FIREBASE_DB_URL).replace(/\/+$/, "");
+    const path = String(FIREBASE_CARS_PATH || "zmrCars").replace(/^\/+/, "").replace(/\/+$/, "");
+    const authQuery = FIREBASE_AUTH_TOKEN ? `?auth=${encodeURIComponent(FIREBASE_AUTH_TOKEN)}` : "";
+    return `${baseUrl}/${path}.json${authQuery}`;
+}
+
+function mapFirebaseCarsPayloadToList(payload) {
+    if (Array.isArray(payload)) {
+        return payload.filter((car) => car && typeof car === "object");
+    }
+    if (!payload || typeof payload !== "object") {
+        return [];
+    }
+    return Object.values(payload).filter((car) => car && typeof car === "object");
+}
+
+async function fetchCarsFromFirebase() {
+    const url = buildFirebaseCarsUrl();
+    if (!url) {
+        return null;
+    }
+    try {
+        const response = await fetch(url, { method: "GET" });
+        if (!response.ok) {
+            return null;
+        }
+        const payload = await response.json();
+        const list = mapFirebaseCarsPayloadToList(payload);
+        return list.length > 0 ? list : null;
+    } catch {
+        return null;
+    }
+}
+
+async function saveCarsToFirebase(cars) {
+    if (!Array.isArray(cars)) {
+        return false;
+    }
+    const url = buildFirebaseCarsUrl();
+    if (!url) {
+        return false;
+    }
+    const carMap = cars.reduce((accumulator, car) => {
+        if (car && car.id) {
+            accumulator[car.id] = car;
+        }
+        return accumulator;
+    }, {});
+
+    try {
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(carMap)
         });
         return response.ok;
     } catch {
