@@ -23,10 +23,10 @@ const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug-in hybrid", "Plyn"]
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
 const LANGUAGE_OPTIONS = [
-    { code: "cs", flagSrc: "sources/flags/cz.svg", label: "Čeština" },
-    { code: "sk", flagSrc: "sources/flags/sk.svg", label: "Slovenčina" },
-    { code: "de", flagSrc: "sources/flags/de.svg", label: "Deutsch" },
-    { code: "en", flagSrc: "sources/flags/gb.svg", label: "English" }
+    { code: "cs", flag: "🇨🇿", label: "Čeština" },
+    { code: "sk", flag: "🇸🇰", label: "Slovenčina" },
+    { code: "de", flag: "🇩🇪", label: "Deutsch" },
+    { code: "en", flag: "🇬🇧", label: "English" }
 ];
 const RESET_LABELS = {
     cs: "Vymazat filtry",
@@ -2162,7 +2162,7 @@ function LanguageSwitcher({ language, onChange, texts }) {
                     aria-label={item.label}
                     title={item.label}
                 >
-                    <img src={item.flagSrc} alt="" className="flag-icon" loading="lazy" decoding="async" aria-hidden="true" />
+                    <span aria-hidden="true">{item.flag}</span>
                 </button>
             ))}
         </div>
@@ -3843,6 +3843,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
 
 
 
