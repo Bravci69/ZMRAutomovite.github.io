@@ -2,37 +2,234 @@ const { useEffect, useMemo, useState } = React;
 
 const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
+const LANGUAGE_STORAGE_KEY = "zmrLanguage";
+const CZK_TO_EUR_RATE = 25;
 
-const services = [
-    {
-        title: "Kontrola stavu vozidiel",
-        text: "Každé vozidlo preverujeme vizuálne aj technicky, vrátane merania laku, diagnostiky a overenia servisnej histórie, aby ste mali jasný obraz o reálnom stave auta."
+const I18N = {
+    cs: {
+        nav: { home: "Domů", about: "O nás", services: "Služby", cars: "Vozidla", contact: "Kontakt", cms: "CMS" },
+        common: {
+            language: "Jazyk",
+            statusAvailable: "Dostupné",
+            statusUnavailable: "Momentálně nedostupné",
+            price: "Cena",
+            horsepowerUnit: "k",
+            doorsUnit: "dveří"
+        },
+        pages: {
+            home: { title: "ZMR Automovité", subtitle: "Reprezentativní služby pro kontrolu a dovoz vozidel bez kompromisů." },
+            about: { title: "O nás", subtitle: "Zkušenosti, transparentnost a důraz na bezpečný nákup vozidla." },
+            services: { title: "Služby", subtitle: "Komplexní řešení kontroly, dovozu a přípravy vozidla na provoz." },
+            cars: { title: "Nabídka vozidel", subtitle: "Přehled aktuálně dostupných vozidel s detailním popisem stavu, výbavy a legislativních informací." },
+            carDetail: { title: "Detail vozidla", subtitle: "Kompletní informace o vybraném vozidle včetně legislativy a výbavy." },
+            contact: { title: "Kontakt", subtitle: "Jsme připraveni pomoci s kontrolou, dovozem i výběrem vhodného vozidla." },
+            cms: { title: "CMS vozidel", subtitle: "Interní zóna pro správu nabídky vozidel." }
+        },
+        home: {
+            whyTitle: "Proč si vybrat ZMR Automovité",
+            whyP1: "Naším cílem je, aby klient přesně věděl, co kupuje. Nejde jen o rychlý pohled na vozidlo, ale o detailní proces prověření technického stavu, historie, výbavy a legislativní připravenosti.",
+            whyP2: "Spolupráce je transparentní od prvního kontaktu: domluvíme rozsah kontroly, připravíme výstupní zprávu, vysvětlíme rizika a navrhneme další postup.",
+            approachTitle: "Komplexní přístup",
+            approachText: "Pokrýváme celý proces od výběru modelu přes obhlídku až po dovoz a základní servis.",
+            outputTitle: "Jasné výstupy",
+            outputText: "Dostanete srozumitelné informace o stavu, legislativě, výbavě i možných investicích po koupi."
+        },
+        about: {
+            title: "O naší společnosti",
+            p1: "ZMR Automovité je tým zaměřený na odbornou kontrolu vozidel a podporu při koupi nebo dovozu auta ze zahraničí.",
+            p2: "Klademe důraz na transparentní komunikaci, technickou přesnost a srozumitelný proces i pro klienty bez hlubších zkušeností.",
+            locationTitle: "Naše lokalita – Praha",
+            locationText: "Základnu máme v Praze a služby poskytujeme klientům z celé ČR i okolních států."
+        },
+        services: {
+            title: "Rozsah služeb",
+            intro: "Služby jsou navržené tak, aby pokryly celý životní cyklus nákupu vozidla.",
+            items: [
+                { title: "Kontrola stavu vozidla", text: "Každé vozidlo prověřujeme vizuálně i technicky včetně diagnostiky a ověření historie." },
+                { title: "Kontrola po celé ČR", text: "Za vozidlem vyjíždíme po celé České republice i do sousedních států." },
+                { title: "Dovoz z USA a Japonska", text: "Zajistíme výběr, prověření, přepravu i administrativu dovozu." },
+                { title: "Základní servis a STK", text: "Před předáním připravíme vozidlo po technické stránce i na STK." },
+                { title: "Vlastní nabídka vozidel", text: "Pravidelně doplňujeme nabídku ověřených vozidel s transparentním stavem." }
+            ]
+        },
+        contact: {
+            title: "Kontakt",
+            p1: "Pokud řešíte koupi, kontrolu nebo dovoz vozidla, rádi navrhneme vhodný postup.",
+            processTitle: "Průběh spolupráce",
+            processText: "Po přijetí poptávky připravíme plán, realizujeme kontrolu nebo dovoz a předáme doporučení pro další postup."
+        },
+        cars: {
+            filterTitle: "Vyhledávání a filtry",
+            search: "Vyhledávání",
+            searchPlaceholder: "Model, značka, náhon...",
+            fuel: "Palivo",
+            fuelAll: "Všechna paliva",
+            brand: "Značka",
+            brandAll: "Všechny značky",
+            drive: "Náhon",
+            driveAll: "Všechny náhony",
+            hpFrom: "Výkon od (k)",
+            hpTo: "Výkon do (k)",
+            doors: "Dveře",
+            doorsAll: "Všechny",
+            detailButton: "Detail vozidla",
+            noResults: "Pro zadané filtry nebyla nalezena žádná vozidla."
+        },
+        carDetail: {
+            notFoundTitle: "Vozidlo nebylo nalezeno",
+            notFoundText: "Momentálně není dostupné žádné vozidlo. Zkuste to prosím později.",
+            legalTitle: "Legislativní informace",
+            equipmentTitle: "Výbava"
+        },
+        cms: {
+            loginTitle: "CMS přihlášení",
+            loginInfo: "Přístup pro zaměstnance. Testovací údaje: admin / admin.",
+            username: "Uživatelské jméno",
+            password: "Heslo",
+            loginButton: "Přihlásit se",
+            loginError: "Nesprávné přihlašovací údaje.",
+            manageTitle: "Správa vozidel",
+            logoutButton: "Odhlásit se",
+            intro: "Můžete přidávat nová vozidla, nahrát fotku, vyplnit popis, legislativní informace i výbavu.",
+            fields: {
+                name: "Model vozidla",
+                brand: "Značka",
+                year: "Rok výroby",
+                priceCzk: "Cena (v Kč)",
+                mileage: "Nájezd",
+                horsepower: "Výkon (k)",
+                doors: "Počet dveří",
+                drive: "Náhon",
+                fuel: "Palivo",
+                transmission: "Převodovka",
+                image: "Fotka vozidla",
+                description: "Základní popis",
+                legal: "Legislativní informace",
+                equipment: "Výbava",
+                available: "Vozidlo je dostupné"
+            },
+            addButton: "Přidat vozidlo",
+            currentCars: "Aktuální vozidla",
+            toggleAvailability: "Změnit dostupnost",
+            remove: "Odstranit"
+        }
     },
-    {
-        title: "Kontrola technického stavu po celej ČR a v susedných štátoch",
-        text: "Za vozidlom vieme vycestovať po celej Českej republike aj do susedných krajín. V prípade potreby zabezpečíme aj následný dovoz vozidla."
+    sk: {
+        nav: { home: "Domov", about: "O nás", services: "Služby", cars: "Vozidlá", contact: "Kontakt", cms: "CMS" },
+        common: { language: "Jazyk", statusAvailable: "Dostupné", statusUnavailable: "Momentálne nedostupné", price: "Cena", horsepowerUnit: "k", doorsUnit: "dverí" },
+        pages: {
+            home: { title: "ZMR Automovité", subtitle: "Reprezentatívne služby pre kontrolu a dovoz vozidiel bez kompromisov." },
+            about: { title: "O nás", subtitle: "Skúsenosti, transparentnosť a dôraz na bezpečný nákup vozidla." },
+            services: { title: "Služby", subtitle: "Komplexné riešenia kontroly, dovozu a prípravy vozidla na prevádzku." },
+            cars: { title: "Ponuka vozidiel", subtitle: "Prehľad aktuálne dostupných vozidiel s detailným popisom stavu, výbavy a legislatívnych informácií." },
+            carDetail: { title: "Detail vozidla", subtitle: "Kompletné informácie o vybranom vozidle vrátane legislatívy a výbavy." },
+            contact: { title: "Kontakt", subtitle: "Sme pripravení pomôcť s kontrolou, dovozom aj výberom vhodného vozidla." },
+            cms: { title: "CMS vozidiel", subtitle: "Interná zóna pre správu ponuky vozidiel." }
+        },
+        home: {
+            whyTitle: "Prečo si vybrať ZMR Automovité",
+            whyP1: "Naším cieľom je, aby klient presne vedel, čo kupuje. Neponúkame len rýchly pohľad na vozidlo, ale detailné preverenie stavu, histórie aj legislatívy.",
+            whyP2: "Spoluprácu vedieme transparentne od prvého kontaktu až po odovzdanie odporúčaní.",
+            approachTitle: "Komplexný prístup",
+            approachText: "Pokrývame výber, obhliadku, kontrolu, dovoz aj základný servis.",
+            outputTitle: "Jasné výstupy",
+            outputText: "Dostanete zrozumiteľné informácie o stave, legislatíve, výbave aj ďalších nákladoch."
+        },
+        about: {
+            title: "O našej spoločnosti",
+            p1: "ZMR Automovité je tím zameraný na odbornú kontrolu vozidiel a podporu pri kúpe alebo dovoze auta zo zahraničia.",
+            p2: "Dôraz kladieme na transparentnú komunikáciu, technickú presnosť a zrozumiteľný proces.",
+            locationTitle: "Naša lokalita – Praha",
+            locationText: "Základňu máme v Prahe a služby poskytujeme klientom z celej ČR aj okolitých štátov."
+        },
+        services: {
+            title: "Rozsah služieb",
+            intro: "Služby sú navrhnuté tak, aby pokryli celý životný cyklus nákupu vozidla.",
+            items: [
+                { title: "Kontrola stavu vozidla", text: "Každé vozidlo preverujeme vizuálne aj technicky vrátane diagnostiky a histórie." },
+                { title: "Kontrola po celej ČR", text: "Za vozidlom vycestujeme po celej Českej republike aj do susedných štátov." },
+                { title: "Dovoz z USA a Japonska", text: "Zabezpečíme výber, preverenie, prepravu aj administratívu dovozu." },
+                { title: "Základný servis a STK", text: "Pred odovzdaním pripravíme vozidlo po technickej stránke aj na STK." },
+                { title: "Vlastná ponuka vozidiel", text: "Priebežne dopĺňame ponuku overených vozidiel s transparentným stavom." }
+            ]
+        },
+        contact: {
+            title: "Kontakt",
+            p1: "Ak riešite kúpu, kontrolu alebo dovoz vozidla, radi navrhneme vhodný postup.",
+            processTitle: "Priebeh spolupráce",
+            processText: "Po prijatí dopytu pripravíme plán, realizujeme kontrolu alebo dovoz a odovzdáme odporúčania."
+        },
+        cars: {
+            filterTitle: "Vyhľadávanie a filtre", search: "Vyhľadávanie", searchPlaceholder: "Model, značka, náhon...", fuel: "Palivo", fuelAll: "Všetky palivá", brand: "Značka", brandAll: "Všetky značky", drive: "Náhon", driveAll: "Všetky náhony", hpFrom: "Výkon od (k)", hpTo: "Výkon do (k)", doors: "Dvere", doorsAll: "Všetky", detailButton: "Detail vozidla", noResults: "Pre zadané filtre sa nenašli žiadne vozidlá."
+        },
+        carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava" },
+        cms: {
+            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.",
+            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
+            addButton: "Pridať vozidlo", currentCars: "Aktuálne vozidlá", toggleAvailability: "Zmeniť dostupnosť", remove: "Odstrániť"
+        }
     },
-    {
-        title: "Dovoz vozidiel na objednávku z USA a Japonska",
-        text: "Zabezpečíme výber, preverenie, prepravu a administratívny proces pri dovoze vozidiel z USA a Japonska podľa vášho zadania."
+    de: {
+        nav: { home: "Start", about: "Über uns", services: "Leistungen", cars: "Fahrzeuge", contact: "Kontakt", cms: "CMS" },
+        common: { language: "Sprache", statusAvailable: "Verfügbar", statusUnavailable: "Derzeit nicht verfügbar", price: "Preis", horsepowerUnit: "PS", doorsUnit: "Türen" },
+        pages: {
+            home: { title: "ZMR Automovité", subtitle: "Professionelle Services für Fahrzeugprüfung und Import ohne Kompromisse." },
+            about: { title: "Über uns", subtitle: "Erfahrung, Transparenz und Fokus auf sicheren Fahrzeugkauf." },
+            services: { title: "Leistungen", subtitle: "Komplette Lösungen für Prüfung, Import und Fahrzeugvorbereitung." },
+            cars: { title: "Fahrzeugangebot", subtitle: "Übersicht der verfügbaren Fahrzeuge mit detaillierten Informationen." },
+            carDetail: { title: "Fahrzeugdetails", subtitle: "Vollständige Informationen zu Fahrzeug, Ausstattung und Rechtlichem." },
+            contact: { title: "Kontakt", subtitle: "Wir unterstützen Sie bei Prüfung, Import und Auswahl des passenden Fahrzeugs." },
+            cms: { title: "Fahrzeug-CMS", subtitle: "Interner Bereich zur Verwaltung des Fahrzeugangebots." }
+        },
+        home: { whyTitle: "Warum ZMR Automovité", whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.", whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.", approachTitle: "Ganzheitlicher Ansatz", approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.", outputTitle: "Klare Ergebnisse", outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung." },
+        about: { title: "Über unser Unternehmen", p1: "ZMR Automovité ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
+        services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
+        contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
+        cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
+        carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung" },
+        cms: {
+            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
+            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
+            addButton: "Fahrzeug hinzufügen", currentCars: "Aktuelle Fahrzeuge", toggleAvailability: "Verfügbarkeit ändern", remove: "Entfernen"
+        }
     },
-    {
-        title: "Základný servis a príprava STK",
-        text: "Pred odovzdaním vozidla vieme vykonať základný servis, kontrolu prevádzkových kvapalín a pripraviť vozidlo na absolvovanie STK."
-    },
-    {
-        title: "Vlastná ponuka vozidiel",
-        text: "Postupne dopĺňame vlastnú ponuku overených vozidiel s transparentným stavom, výbavou a základnými legislatívnymi informáciami."
+    en: {
+        nav: { home: "Home", about: "About", services: "Services", cars: "Cars", contact: "Contact", cms: "CMS" },
+        common: { language: "Language", statusAvailable: "Available", statusUnavailable: "Currently unavailable", price: "Price", horsepowerUnit: "hp", doorsUnit: "doors" },
+        pages: {
+            home: { title: "ZMR Automovité", subtitle: "Premium vehicle inspection and import services without compromise." },
+            about: { title: "About Us", subtitle: "Experience, transparency and focus on safe vehicle purchase." },
+            services: { title: "Services", subtitle: "Complete solutions for inspection, import and vehicle preparation." },
+            cars: { title: "Vehicle Offer", subtitle: "Overview of currently available vehicles with detailed information." },
+            carDetail: { title: "Vehicle Detail", subtitle: "Complete vehicle details including legal info and equipment." },
+            contact: { title: "Contact", subtitle: "We are ready to help with inspection, import and vehicle selection." },
+            cms: { title: "Vehicle CMS", subtitle: "Internal area for managing vehicle inventory." }
+        },
+        home: { whyTitle: "Why choose ZMR Automovité", whyP1: "We provide in-depth vehicle checks, not just a quick glance.", whyP2: "Transparent cooperation from first contact to final recommendation.", approachTitle: "Comprehensive approach", approachText: "Selection, inspection, import and basic service in one place.", outputTitle: "Clear outputs", outputText: "You get clear information about condition, legal requirements and expected costs." },
+        about: { title: "About our company", p1: "ZMR Automovité specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
+        services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
+        contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
+        cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
+        carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", legalTitle: "Legal information", equipmentTitle: "Equipment" },
+        cms: {
+            loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
+            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", drive: "Drive", fuel: "Fuel", transmission: "Transmission", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
+            addButton: "Add vehicle", currentCars: "Current vehicles", toggleAvailability: "Toggle availability", remove: "Remove"
+        }
     }
-];
+};
 
 const defaultCars = [
     {
         id: "zmr-001",
         name: "BMW 330i Touring M Sport",
+        brand: "BMW",
         year: "2020",
-        price: "729 000 Kč",
+        priceCzk: 729000,
         mileage: "89 400 km",
+        horsepower: 258,
+        doors: 5,
+        drive: "Zadní",
         fuel: "Benzín",
         transmission: "Automat",
         image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
@@ -44,9 +241,13 @@ const defaultCars = [
     {
         id: "zmr-002",
         name: "BMW 330i Touring M Sport",
+        brand: "BMW",
         year: "2020",
-        price: "729 000 Kč",
+        priceCzk: 729000,
         mileage: "89 400 km",
+        horsepower: 258,
+        doors: 5,
+        drive: "xDrive",
         fuel: "Benzín",
         transmission: "Automat",
         image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1200&q=80",
@@ -57,23 +258,90 @@ const defaultCars = [
     }
 ];
 
+function normalizeLanguage(language) {
+    if (["cs", "sk", "de", "en"].includes(language)) {
+        return language;
+    }
+    return "cs";
+}
+
+function getLanguagePreference() {
+    return normalizeLanguage(localStorage.getItem(LANGUAGE_STORAGE_KEY) || "cs");
+}
+
+function saveLanguagePreference(language) {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, normalizeLanguage(language));
+}
+
+function getBrandFromName(name) {
+    if (!name) {
+        return "Neznámá";
+    }
+    return String(name).trim().split(" ")[0] || "Neznámá";
+}
+
+function parseNumber(value) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+        return value;
+    }
+    if (typeof value !== "string") {
+        return NaN;
+    }
+    const cleaned = value.replace(/\s/g, "").replace(",", ".").replace(/[^\d.]/g, "");
+    const parsed = Number(cleaned);
+    return Number.isFinite(parsed) ? parsed : NaN;
+}
+
+function parsePriceCzk(car) {
+    if (Number.isFinite(car.priceCzk) && car.priceCzk > 0) {
+        return Math.round(car.priceCzk);
+    }
+
+    const legacyPrice = parseNumber(car.price);
+    if (!Number.isFinite(legacyPrice) || legacyPrice <= 0) {
+        return 0;
+    }
+
+    if (typeof car.price === "string" && /€|eur/i.test(car.price)) {
+        return Math.round(legacyPrice * CZK_TO_EUR_RATE);
+    }
+
+    return Math.round(legacyPrice);
+}
+
+function normalizeCar(car, index) {
+    return {
+        ...car,
+        id: car.id || `zmr-${Date.now()}-${index}`,
+        brand: car.brand || getBrandFromName(car.name),
+        horsepower: Number.isFinite(Number(car.horsepower)) ? Number(car.horsepower) : 0,
+        doors: Number.isFinite(Number(car.doors)) ? Number(car.doors) : 0,
+        drive: car.drive || "Neuvedeno",
+        priceCzk: parsePriceCzk(car),
+        available: Boolean(car.available)
+    };
+}
+
 function getCars() {
+    const fallbackCars = defaultCars.map((car, index) => normalizeCar(car, index));
     const raw = localStorage.getItem(CARS_STORAGE_KEY);
     if (!raw) {
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(defaultCars));
-        return defaultCars;
+        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(fallbackCars));
+        return fallbackCars;
     }
 
     try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed;
+            const normalized = parsed.map((car, index) => normalizeCar(car, index));
+            localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(normalized));
+            return normalized;
         }
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(defaultCars));
-        return defaultCars;
+        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(fallbackCars));
+        return fallbackCars;
     } catch {
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(defaultCars));
-        return defaultCars;
+        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(fallbackCars));
+        return fallbackCars;
     }
 }
 
@@ -90,13 +358,29 @@ function readCarIdFromQuery() {
     return params.get("id");
 }
 
-function Navigation({ activePage }) {
+function getCurrencyForLanguage(language) {
+    return language === "cs" ? "CZK" : "EUR";
+}
+
+function formatPrice(priceCzk, language) {
+    const currency = getCurrencyForLanguage(language);
+    const locale = language === "cs" ? "cs-CZ" : language === "sk" ? "sk-SK" : language === "de" ? "de-DE" : "en-US";
+    const amount = currency === "CZK" ? priceCzk : priceCzk / CZK_TO_EUR_RATE;
+
+    return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+function Navigation({ activePage, texts }) {
     const items = [
-        { key: "home", label: "Domov", href: "index.html" },
-        { key: "about", label: "O nás", href: "o-nas.html" },
-        { key: "services", label: "Služby", href: "sluzby.html" },
-        { key: "cars", label: "Vozidlá", href: "auta.html" },
-        { key: "contact", label: "Kontakt", href: "kontakt.html" },
+        { key: "home", label: texts.nav.home, href: "index.html" },
+        { key: "about", label: texts.nav.about, href: "o-nas.html" },
+        { key: "services", label: texts.nav.services, href: "sluzby.html" },
+        { key: "cars", label: texts.nav.cars, href: "auta.html" },
+        { key: "contact", label: texts.nav.contact, href: "kontakt.html" },
         { key: "cms", label: "CMS", href: "cms.html" }
     ];
 
@@ -115,7 +399,21 @@ function Navigation({ activePage }) {
     );
 }
 
-function PageShell({ page, title, subtitle, children }) {
+function LanguageSwitcher({ language, onChange, texts }) {
+    return (
+        <label className="language-switcher">
+            {texts.common.language}
+            <select className="language-select" value={language} onChange={(event) => onChange(event.target.value)}>
+                <option value="cs">Čeština</option>
+                <option value="sk">Slovenčina</option>
+                <option value="de">Deutsch</option>
+                <option value="en">English</option>
+            </select>
+        </label>
+    );
+}
+
+function PageShell({ page, title, subtitle, language, onLanguageChange, texts, children }) {
     return (
         <>
             <header className="top-header">
@@ -123,7 +421,10 @@ function PageShell({ page, title, subtitle, children }) {
                     <a className="brand" href="main.html">
                         <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automovité logo" className="logo" />
                     </a>
-                    <Navigation activePage={page} />
+                    <div className="header-tools">
+                        <Navigation activePage={page} texts={texts} />
+                        <LanguageSwitcher language={language} onChange={onLanguageChange} texts={texts} />
+                    </div>
                 </div>
             </header>
 
@@ -139,70 +440,41 @@ function PageShell({ page, title, subtitle, children }) {
     );
 }
 
-function HomePage() {
+function HomePage({ texts }) {
     return (
         <>
             <section className="card">
-                <h2>Prečo si vybrať ZMR Automovité</h2>
-                <p>
-                    Naším cieľom je, aby klient presne vedel, čo kupuje. Neponúkame len rýchly
-                    pohľad na vozidlo, ale detailný proces preverenia technického stavu, histórie,
-                    výbavy a legislatívnej pripravenosti vozidla pre bezproblémovú registráciu.
-                </p>
-                <p>
-                    Spoluprácu vedieme transparentne od prvého kontaktu: dohodneme rozsah kontroly,
-                    pripravíme výstupnú správu, vysvetlíme riziká a navrhneme ďalší postup vrátane
-                    dovozu, servisu a prípravy STK. Výsledkom je bezpečnejšie rozhodnutie a menej
-                    nečakaných nákladov po kúpe vozidla.
-                </p>
+                <h2>{texts.home.whyTitle}</h2>
+                <p>{texts.home.whyP1}</p>
+                <p>{texts.home.whyP2}</p>
             </section>
 
             <section className="card split-card">
                 <div>
-                    <h2>Komplexný prístup</h2>
-                    <p>
-                        Pokrývame celý proces: od výberu vhodného modelu, cez obhliadku a technickú
-                        kontrolu, až po logistiku dovozu a základný servis. Všetko na jednom mieste,
-                        bez potreby riešiť viac dodávateľov.
-                    </p>
+                    <h2>{texts.home.approachTitle}</h2>
+                    <p>{texts.home.approachText}</p>
                 </div>
                 <div>
-                    <h2>Jasné výstupy</h2>
-                    <p>
-                        Každé odporúčanie je podložené reálnym stavom vozidla. Klient dostáva jasné
-                        informácie o stave, legislatíve, výbave a prípadných investíciách, ktoré môžu
-                        byť potrebné po kúpe.
-                    </p>
+                    <h2>{texts.home.outputTitle}</h2>
+                    <p>{texts.home.outputText}</p>
                 </div>
             </section>
         </>
     );
 }
 
-function AboutPage() {
+function AboutPage({ texts }) {
     return (
         <>
             <section className="card">
-                <h2>O našej spoločnosti</h2>
-                <p>
-                    ZMR Automovité je tím zameraný na odbornú kontrolu vozidiel a podporu pri kúpe
-                    alebo dovoze auta zo zahraničia. Dlhodobo sa sústreďujeme na praktické riešenia,
-                    ktoré klientovi šetria čas, znižujú riziko a pomáhajú vyhnúť sa skrytým problémom.
-                </p>
-                <p>
-                    Dôraz kladieme na transparentnú komunikáciu, technickú presnosť a proces, ktorý
-                    je zrozumiteľný aj pre klientov bez hlbších skúseností s automotive trhom.
-                    Pri každom vozidle sledujeme nielen aktuálny stav, ale aj budúce servisné náklady
-                    a legislatívne náležitosti potrebné pre registráciu.
-                </p>
+                <h2>{texts.about.title}</h2>
+                <p>{texts.about.p1}</p>
+                <p>{texts.about.p2}</p>
             </section>
 
             <section className="card">
-                <h2>Naša lokalita – Praha</h2>
-                <p>
-                    Základňu máme v Prahe a služby poskytujeme klientom z celej ČR aj okolitých
-                    štátov. Nižšie je orientačná mapa lokality Praha cez Google Maps.
-                </p>
+                <h2>{texts.about.locationTitle}</h2>
+                <p>{texts.about.locationText}</p>
                 <div className="map-wrap">
                     <iframe
                         title="Google mapa Praha"
@@ -216,20 +488,16 @@ function AboutPage() {
     );
 }
 
-function ServicesPage() {
+function ServicesPage({ texts }) {
     return (
         <>
             <section className="card">
-                <h2>Rozsah služieb</h2>
-                <p>
-                    Služby sú navrhnuté tak, aby pokryli celý životný cyklus nákupu vozidla: výber,
-                    preverenie, dovoz, servisnú prípravu aj administratívne kroky. Každý klient môže
-                    využiť kompletný balík alebo len konkrétnu časť procesu podľa potreby.
-                </p>
+                <h2>{texts.services.title}</h2>
+                <p>{texts.services.intro}</p>
             </section>
 
             <section className="grid wide-grid">
-                {services.map((service) => (
+                {texts.services.items.map((service) => (
                     <article key={service.title} className="service-item">
                         <h3>{service.title}</h3>
                         <p>{service.text}</p>
@@ -240,15 +508,12 @@ function ServicesPage() {
     );
 }
 
-function ContactPage() {
+function ContactPage({ texts }) {
     return (
         <>
             <section className="card">
-                <h2>Kontakt</h2>
-                <p>
-                    Ak riešite kúpu, kontrolu alebo dovoz vozidla, radi navrhneme vhodný postup.
-                    Pri prvom kontakte odporúčame uviesť model vozidla, lokalitu a časový plán.
-                </p>
+                <h2>{texts.contact.title}</h2>
+                <p>{texts.contact.p1}</p>
                 <p>
                     Telefón: <a href="tel:+420000000000">+420 000 000 000</a>
                     <br />
@@ -257,52 +522,152 @@ function ContactPage() {
             </section>
 
             <section className="card">
-                <h2>Priebeh spolupráce</h2>
-                <p>
-                    Po prijatí dopytu pripravíme stručný plán s odhadom termínu a rozsahu služieb.
-                    Následne realizujeme kontrolu alebo dovoz, vyhodnotíme stav vozidla a pripravíme
-                    odporúčania pre ďalší postup vrátane servisných a legislatívnych krokov.
-                </p>
+                <h2>{texts.contact.processTitle}</h2>
+                <p>{texts.contact.processText}</p>
             </section>
         </>
     );
 }
 
-function CarsPage({ cars }) {
+function CarsPage({ cars, language, texts }) {
+    const [search, setSearch] = useState("");
+    const [fuel, setFuel] = useState("");
+    const [horsepowerFrom, setHorsepowerFrom] = useState("");
+    const [horsepowerTo, setHorsepowerTo] = useState("");
+    const [doors, setDoors] = useState("");
+    const [brand, setBrand] = useState("");
+    const [drive, setDrive] = useState("");
+
+    const fuelOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.fuel).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
+    const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
+    const driveOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.drive).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
+    const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
+
+    const filteredCars = useMemo(() => {
+        const query = search.trim().toLowerCase();
+        const hpFromValue = parseNumber(horsepowerFrom);
+        const hpToValue = parseNumber(horsepowerTo);
+
+        return cars
+            .filter((car) => {
+                const matchesQuery = !query || [car.name, car.brand, car.fuel, car.transmission, car.drive].join(" ").toLowerCase().includes(query);
+                const matchesFuel = !fuel || car.fuel === fuel;
+                const matchesBrand = !brand || car.brand === brand;
+                const matchesDrive = !drive || car.drive === drive;
+                const matchesDoors = !doors || String(car.doors) === String(doors);
+                const carHorsepower = Number(car.horsepower);
+                const matchesMinHorsepower = !Number.isFinite(hpFromValue) || carHorsepower >= hpFromValue;
+                const matchesMaxHorsepower = !Number.isFinite(hpToValue) || carHorsepower <= hpToValue;
+
+                return matchesQuery && matchesFuel && matchesBrand && matchesDrive && matchesDoors && matchesMinHorsepower && matchesMaxHorsepower;
+            })
+            .sort((a, b) => {
+                if (a.available === b.available) {
+                    return 0;
+                }
+                return a.available ? -1 : 1;
+            });
+    }, [cars, search, fuel, brand, drive, doors, horsepowerFrom, horsepowerTo]);
+
     return (
-        <section className="grid wide-grid">
-            {cars.map((car) => (
-                <article key={car.id} className="car-card">
-                    <img src={car.image} alt={car.name} className="car-image" />
-                    <div className="car-content">
-                        <h2>{car.name}</h2>
-                        <p className="car-meta">
-                            {car.year} • {car.mileage} • {car.fuel} • {car.transmission}
-                        </p>
-                        <p>{car.description}</p>
-                        <p className={car.available ? "status available" : "status unavailable"}>
-                            {car.available ? "Dostupné" : "Momentálne nedostupné"}
-                        </p>
-                        <div className="car-footer">
-                            <strong>{car.price}</strong>
-                            <a href={`vozidlo.html?id=${encodeURIComponent(car.id)}`} className="button-link">Detail vozidla</a>
+        <>
+            <section className="card">
+                <h2>{texts.cars.filterTitle}</h2>
+                <div className="filters-grid">
+                    <label>
+                        {texts.cars.search}
+                        <input type="text" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
+                    </label>
+                    <label>
+                        {texts.cars.fuel}
+                        <select value={fuel} onChange={(event) => setFuel(event.target.value)}>
+                            <option value="">{texts.cars.fuelAll}</option>
+                            {fuelOptions.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label>
+                        {texts.cars.brand}
+                        <select value={brand} onChange={(event) => setBrand(event.target.value)}>
+                            <option value="">{texts.cars.brandAll}</option>
+                            {brandOptions.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label>
+                        {texts.cars.drive}
+                        <select value={drive} onChange={(event) => setDrive(event.target.value)}>
+                            <option value="">{texts.cars.driveAll}</option>
+                            {driveOptions.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label>
+                        {texts.cars.hpFrom}
+                        <input type="number" min="0" value={horsepowerFrom} onChange={(event) => setHorsepowerFrom(event.target.value)} />
+                    </label>
+                    <label>
+                        {texts.cars.hpTo}
+                        <input type="number" min="0" value={horsepowerTo} onChange={(event) => setHorsepowerTo(event.target.value)} />
+                    </label>
+                    <label>
+                        {texts.cars.doors}
+                        <select value={doors} onChange={(event) => setDoors(event.target.value)}>
+                            <option value="">{texts.cars.doorsAll}</option>
+                            {doorOptions.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+            </section>
+
+            <section className="grid wide-grid">
+                {filteredCars.map((car) => (
+                    <article key={car.id} className="car-card">
+                        <img src={car.image} alt={car.name} className="car-image" />
+                        <div className="car-content">
+                            <h2>{car.name}</h2>
+                            <p className="car-meta">
+                                {car.year} • {car.mileage} • {car.fuel} • {car.transmission}
+                            </p>
+                            <p className="car-meta">
+                                {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.drive}
+                            </p>
+                            <p>{car.description}</p>
+                            <p className={car.available ? "status available" : "status unavailable"}>
+                                {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
+                            </p>
+                            <div className="car-footer">
+                                <strong>{formatPrice(car.priceCzk, language)}</strong>
+                                <a href={`vozidlo.html?id=${encodeURIComponent(car.id)}`} className="button-link">{texts.cars.detailButton}</a>
+                            </div>
                         </div>
-                    </div>
-                </article>
-            ))}
-        </section>
+                    </article>
+                ))}
+            </section>
+
+            {filteredCars.length === 0 && (
+                <section className="card">
+                    <p>{texts.cars.noResults}</p>
+                </section>
+            )}
+        </>
     );
 }
 
-function CarDetailPage({ cars }) {
+function CarDetailPage({ cars, language, texts }) {
     const carId = readCarIdFromQuery();
     const car = cars.find((item) => item.id === carId) || cars[0];
 
     if (!car) {
         return (
             <section className="card">
-                <h2>Vozidlo sa nenašlo</h2>
-                <p>Momentálne nie je dostupné žiadne vozidlo. Skúste neskôr alebo kontaktujte nás.</p>
+                <h2>{texts.carDetail.notFoundTitle}</h2>
+                <p>{texts.carDetail.notFoundText}</p>
             </section>
         );
     }
@@ -315,29 +680,36 @@ function CarDetailPage({ cars }) {
                 <p className="car-meta">
                     {car.year} • {car.mileage} • {car.fuel} • {car.transmission}
                 </p>
-                <p>{car.description}</p>
-                <p><strong>Cena:</strong> {car.price}</p>
-                <p className={car.available ? "status available" : "status unavailable"}>
-                    {car.available ? "Dostupné" : "Momentálne nedostupné"}
+                <p className="car-meta">
+                    {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.drive}
                 </p>
-                <h3>Legislatívne informácie</h3>
+                <p>{car.description}</p>
+                <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
+                <p className={car.available ? "status available" : "status unavailable"}>
+                    {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
+                </p>
+                <h3>{texts.carDetail.legalTitle}</h3>
                 <p>{car.legal}</p>
-                <h3>Výbava</h3>
+                <h3>{texts.carDetail.equipmentTitle}</h3>
                 <p>{car.equipment}</p>
             </div>
         </section>
     );
 }
 
-function CmsPage({ cars, setCars }) {
+function CmsPage({ cars, setCars, language, texts }) {
     const [isLogged, setIsLogged] = useState(localStorage.getItem(CMS_AUTH_KEY) === "1");
     const [credentials, setCredentials] = useState({ username: "", password: "" });
     const [error, setError] = useState("");
     const [form, setForm] = useState({
         name: "",
+        brand: "",
         year: "",
-        price: "",
+        priceCzk: "",
         mileage: "",
+        horsepower: "",
+        doors: "",
+        drive: "",
         fuel: "",
         transmission: "",
         image: "",
@@ -355,7 +727,7 @@ function CmsPage({ cars, setCars }) {
             setError("");
             return;
         }
-        setError("Nesprávne prihlasovacie údaje.");
+        setError(texts.cms.loginError);
     };
 
     const handleLogout = () => {
@@ -380,9 +752,13 @@ function CmsPage({ cars, setCars }) {
         const newCar = {
             id: `zmr-${Date.now()}`,
             name: form.name,
+            brand: form.brand,
             year: form.year,
-            price: form.price,
+            priceCzk: Math.round(parseNumber(form.priceCzk) || 0),
             mileage: form.mileage,
+            horsepower: Math.round(parseNumber(form.horsepower) || 0),
+            doors: Math.round(parseNumber(form.doors) || 0),
+            drive: form.drive,
             fuel: form.fuel,
             transmission: form.transmission,
             image: form.image || "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80",
@@ -398,9 +774,13 @@ function CmsPage({ cars, setCars }) {
 
         setForm({
             name: "",
+            brand: "",
             year: "",
-            price: "",
+            priceCzk: "",
             mileage: "",
+            horsepower: "",
+            doors: "",
+            drive: "",
             fuel: "",
             transmission: "",
             image: "",
@@ -426,11 +806,11 @@ function CmsPage({ cars, setCars }) {
     if (!isLogged) {
         return (
             <section className="card cms-card">
-                <h2>CMS prihlásenie</h2>
-                <p>Prístup pre zamestnancov. Testovacie údaje: admin / admin.</p>
+                <h2>{texts.cms.loginTitle}</h2>
+                <p>{texts.cms.loginInfo}</p>
                 <form className="form-grid" onSubmit={handleLogin}>
                     <label>
-                        Prihlasovacie meno
+                        {texts.cms.username}
                         <input
                             type="text"
                             value={credentials.username}
@@ -439,7 +819,7 @@ function CmsPage({ cars, setCars }) {
                         />
                     </label>
                     <label>
-                        Heslo
+                        {texts.cms.password}
                         <input
                             type="password"
                             value={credentials.password}
@@ -448,7 +828,7 @@ function CmsPage({ cars, setCars }) {
                         />
                     </label>
                     {error && <p className="error-text">{error}</p>}
-                    <button type="submit" className="button-link">Prihlásiť sa</button>
+                    <button type="submit" className="button-link">{texts.cms.loginButton}</button>
                 </form>
             </section>
         );
@@ -458,55 +838,56 @@ function CmsPage({ cars, setCars }) {
         <>
             <section className="card cms-card">
                 <div className="cms-head">
-                    <h2>Správa vozidiel</h2>
-                    <button className="button-link button-secondary" onClick={handleLogout}>Odhlásiť sa</button>
+                    <h2>{texts.cms.manageTitle}</h2>
+                    <button className="button-link button-secondary" onClick={handleLogout}>{texts.cms.logoutButton}</button>
                 </div>
-                <p>
-                    Tu môžete pridávať nové autá, nahrávať fotku, vyplniť základný popis,
-                    legislatívne informácie a výbavu. Vozidlo je možné odstrániť alebo
-                    prepnúť do stavu momentálne nedostupné.
-                </p>
+                <p>{texts.cms.intro}</p>
                 <form className="form-grid" onSubmit={addCar}>
-                    <label>Model vozidla<input type="text" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
-                    <label>Rok výroby<input type="text" value={form.year} onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))} required /></label>
-                    <label>Cena<input type="text" value={form.price} onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))} required /></label>
-                    <label>Nájazd<input type="text" value={form.mileage} onChange={(e) => setForm((prev) => ({ ...prev, mileage: e.target.value }))} required /></label>
-                    <label>Palivo<input type="text" value={form.fuel} onChange={(e) => setForm((prev) => ({ ...prev, fuel: e.target.value }))} required /></label>
-                    <label>Prevodovka<input type="text" value={form.transmission} onChange={(e) => setForm((prev) => ({ ...prev, transmission: e.target.value }))} required /></label>
-                    <label className="full-width">Fotka vozidla<input type="file" accept="image/*" onChange={handleImageUpload} /></label>
-                    <label className="full-width">Základný popis<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
-                    <label className="full-width">Legislatívne informácie<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
-                    <label className="full-width">Výbava<textarea value={form.equipment} onChange={(e) => setForm((prev) => ({ ...prev, equipment: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.name}<input type="text" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.brand}<input type="text" value={form.brand} onChange={(e) => setForm((prev) => ({ ...prev, brand: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.year}<input type="text" value={form.year} onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.priceCzk}<input type="number" min="0" value={form.priceCzk} onChange={(e) => setForm((prev) => ({ ...prev, priceCzk: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.mileage}<input type="text" value={form.mileage} onChange={(e) => setForm((prev) => ({ ...prev, mileage: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.horsepower}<input type="number" min="0" value={form.horsepower} onChange={(e) => setForm((prev) => ({ ...prev, horsepower: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.doors}<input type="number" min="2" max="6" value={form.doors} onChange={(e) => setForm((prev) => ({ ...prev, doors: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.drive}<input type="text" value={form.drive} onChange={(e) => setForm((prev) => ({ ...prev, drive: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.fuel}<input type="text" value={form.fuel} onChange={(e) => setForm((prev) => ({ ...prev, fuel: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.transmission}<input type="text" value={form.transmission} onChange={(e) => setForm((prev) => ({ ...prev, transmission: e.target.value }))} required /></label>
+                    <label className="full-width">{texts.cms.fields.image}<input type="file" accept="image/*" onChange={handleImageUpload} /></label>
+                    <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
+                    <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
+                    <label className="full-width">{texts.cms.fields.equipment}<textarea value={form.equipment} onChange={(e) => setForm((prev) => ({ ...prev, equipment: e.target.value }))} required /></label>
                     <label className="checkbox-row full-width">
                         <input
                             type="checkbox"
                             checked={form.available}
                             onChange={(e) => setForm((prev) => ({ ...prev, available: e.target.checked }))}
                         />
-                        Vozidlo je dostupné
+                        {texts.cms.fields.available}
                     </label>
-                    <button type="submit" className="button-link">Pridať vozidlo</button>
+                    <button type="submit" className="button-link">{texts.cms.addButton}</button>
                 </form>
             </section>
 
             <section className="card cms-card">
-                <h2>Aktuálne vozidlá</h2>
+                <h2>{texts.cms.currentCars}</h2>
                 <div className="cms-list">
                     {cars.map((car) => (
                         <article key={car.id} className="cms-item">
                             <div>
                                 <h3>{car.name}</h3>
-                                <p>{car.year} • {car.price} • {car.mileage}</p>
+                                <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
+                                <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.drive}</p>
                                 <p className={car.available ? "status available" : "status unavailable"}>
-                                    {car.available ? "Dostupné" : "Momentálne nedostupné"}
+                                    {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
                                 </p>
                             </div>
                             <div className="cms-actions">
                                 <button className="button-link button-secondary" onClick={() => toggleAvailability(car.id)}>
-                                    Zmeniť dostupnosť
+                                    {texts.cms.toggleAvailability}
                                 </button>
                                 <button className="button-link danger" onClick={() => removeCar(car.id)}>
-                                    Odstrániť
+                                    {texts.cms.remove}
                                 </button>
                             </div>
                         </article>
@@ -521,61 +902,68 @@ function App() {
     const rootElement = document.getElementById("root");
     const page = rootElement?.dataset?.page || "home";
     const [cars, setCars] = useState(getCars);
+    const [language, setLanguage] = useState(getLanguagePreference);
+    const texts = useMemo(() => I18N[language] || I18N.cs, [language]);
 
     useEffect(() => {
         saveCars(cars);
     }, [cars]);
 
+    useEffect(() => {
+        saveLanguagePreference(language);
+        document.documentElement.lang = language;
+    }, [language]);
+
     const pageConfig = useMemo(() => {
         switch (page) {
             case "about":
                 return {
-                    title: "O nás",
-                    subtitle: "Skúsenosti, transparentnosť a dôraz na bezpečný nákup vozidla.",
-                    content: <AboutPage />
+                    title: texts.pages.about.title,
+                    subtitle: texts.pages.about.subtitle,
+                    content: <AboutPage texts={texts} />
                 };
             case "services":
                 return {
-                    title: "Služby",
-                    subtitle: "Komplexné riešenia kontroly, dovozu a prípravy vozidla na prevádzku.",
-                    content: <ServicesPage />
+                    title: texts.pages.services.title,
+                    subtitle: texts.pages.services.subtitle,
+                    content: <ServicesPage texts={texts} />
                 };
             case "cars":
                 return {
-                    title: "Ponuka vozidiel",
-                    subtitle: "Prehľad aktuálne dostupných vozidiel s detailným popisom stavu, výbavy a legislatívnych informácií.",
-                    content: <CarsPage cars={cars} />
+                    title: texts.pages.cars.title,
+                    subtitle: texts.pages.cars.subtitle,
+                    content: <CarsPage cars={cars} language={language} texts={texts} />
                 };
             case "car-detail":
                 return {
-                    title: "Detail vozidla",
-                    subtitle: "Kompletné informácie o vybranom vozidle vrátane legislatívy a výbavy.",
-                    content: <CarDetailPage cars={cars} />
+                    title: texts.pages.carDetail.title,
+                    subtitle: texts.pages.carDetail.subtitle,
+                    content: <CarDetailPage cars={cars} language={language} texts={texts} />
                 };
             case "contact":
                 return {
-                    title: "Kontakt",
-                    subtitle: "Sme pripravení pomôcť s kontrolou, dovozom aj výberom vhodného vozidla.",
-                    content: <ContactPage />
+                    title: texts.pages.contact.title,
+                    subtitle: texts.pages.contact.subtitle,
+                    content: <ContactPage texts={texts} />
                 };
             case "cms":
                 return {
-                    title: "CMS vozidiel",
-                    subtitle: "Interná zóna pre správu ponuky vozidiel.",
-                    content: <CmsPage cars={cars} setCars={setCars} />
+                    title: texts.pages.cms.title,
+                    subtitle: texts.pages.cms.subtitle,
+                    content: <CmsPage cars={cars} setCars={setCars} language={language} texts={texts} />
                 };
             case "home":
             default:
                 return {
-                    title: "ZMR Automovité",
-                    subtitle: "Reprezentatívne služby pre kontrolu a dovoz vozidiel bez kompromisov.",
-                    content: <HomePage />
+                    title: texts.pages.home.title,
+                    subtitle: texts.pages.home.subtitle,
+                    content: <HomePage texts={texts} />
                 };
         }
-    }, [page, cars]);
+    }, [page, cars, language, texts]);
 
     return (
-        <PageShell page={page} title={pageConfig.title} subtitle={pageConfig.subtitle}>
+        <PageShell page={page} title={pageConfig.title} subtitle={pageConfig.subtitle} language={language} onLanguageChange={setLanguage} texts={texts}>
             {pageConfig.content}
         </PageShell>
     );
