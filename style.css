@@ -64,8 +64,8 @@ img {
 }
 
 .logo {
-	width: min(170px, 17vw);
-	min-width: 110px;
+	width: min(240px, 24vw);
+	min-width: 150px;
 	height: auto;
 	display: block;
 }
@@ -1500,7 +1500,7 @@ a:hover {
 	}
 
 	.logo {
-		width: min(150px, 26vw);
+		width: min(210px, 32vw);
 	}
 
 	.split-card,
@@ -1603,8 +1603,8 @@ a:hover {
 	}
 
 	.logo {
-		width: min(140px, 40vw);
-		min-width: 95px;
+		width: min(180px, 44vw);
+		min-width: 120px;
 	}
 
 	.language-switcher {
@@ -1742,8 +1742,8 @@ a:hover {
 	}
 
 	.logo {
-		width: min(120px, 44vw);
-		min-width: 84px;
+		width: min(160px, 50vw);
+		min-width: 108px;
 	}
 
 	.nav {
