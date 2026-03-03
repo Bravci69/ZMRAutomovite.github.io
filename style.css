@@ -44,7 +44,7 @@ body {
 	margin: 0 auto;
 	padding: 14px 24px;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	gap: 20px;
 }
@@ -67,14 +67,17 @@ body {
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	gap: 10px;
+	max-width: 560px;
 }
 
 .header-tools {
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
+	flex-direction: column;
 	gap: 12px;
 	flex-wrap: wrap;
 	justify-content: flex-end;
+	width: min(620px, 100%);
 }
 
 .language-switcher {
@@ -118,6 +121,8 @@ body {
 	color: var(--text);
 	text-decoration: none;
 	transition: all 0.2s ease;
+	white-space: nowrap;
+	text-align: center;
 }
 
 .nav-link:hover {
@@ -926,6 +931,15 @@ a:hover {
 	height: 18px;
 	box-shadow: none;
 	background: transparent;
+	pointer-events: none;
+}
+
+.hp-range-sliders input[type="range"].range-input-from {
+	z-index: 3;
+}
+
+.hp-range-sliders input[type="range"].range-input-to {
+	z-index: 4;
 }
 
 .hp-range-sliders input[type="range"]::-webkit-slider-runnable-track {
@@ -944,6 +958,7 @@ a:hover {
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 	margin-top: -5px;
 	cursor: pointer;
+	pointer-events: auto;
 }
 
 .hp-range-sliders input[type="range"]::-moz-range-track {
@@ -1195,10 +1210,13 @@ a:hover {
 
 	.nav {
 		justify-content: flex-start;
+		max-width: 100%;
 	}
 
 	.header-tools {
 		justify-content: flex-start;
+		width: 100%;
+		align-items: flex-start;
 	}
 
 	.logo {

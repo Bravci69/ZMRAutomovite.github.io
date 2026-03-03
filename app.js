@@ -7,7 +7,9 @@ const CZK_TO_EUR_RATE = 25;
 const HORSEPOWER_MIN_FILTER = 256;
 const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
+const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || "";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
+const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
@@ -660,6 +662,87 @@ function getCarThumbnail(car) {
     return images[index] || images[0];
 }
 
+function createLocalizedMap(rawMap, fallbackValue = "") {
+    const seed = String(fallbackValue || "");
+    const localized = {};
+    SUPPORTED_LANG_CODES.forEach((languageCode) => {
+        const nextValue = rawMap && typeof rawMap[languageCode] === "string" ? rawMap[languageCode] : seed;
+        localized[languageCode] = String(nextValue || "");
+    });
+    return localized;
+}
+
+function getLocalizedCarText(car, field, language) {
+    const mapKey = `${field}I18n`;
+    const localized = car?.[mapKey];
+    if (localized && typeof localized === "object") {
+        return localized[language] || localized.en || localized.sk || localized.cs || localized.de || car?.[field] || "";
+    }
+    return car?.[field] || "";
+}
+
+async function translateTextsForLanguage(texts, targetLanguage) {
+    if (!TRANSLATE_PROXY_URL || !Array.isArray(texts) || texts.length === 0) {
+        return {};
+    }
+    try {
+        const response = await fetch(TRANSLATE_PROXY_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texts, target: targetLanguage })
+        });
+        if (!response.ok) {
+            return {};
+        }
+        const data = await response.json();
+        return data?.translations && typeof data.translations === "object" ? data.translations : {};
+    } catch {
+        return {};
+    }
+}
+
+async function buildLocalizedCmsFields(baseFields, sourceLanguage) {
+    const source = SUPPORTED_LANG_CODES.includes(sourceLanguage) ? sourceLanguage : "sk";
+    const normalizedBase = {
+        name: String(baseFields?.name || ""),
+        description: String(baseFields?.description || ""),
+        legal: String(baseFields?.legal || "")
+    };
+
+    const localized = {
+        nameI18n: createLocalizedMap(null, normalizedBase.name),
+        descriptionI18n: createLocalizedMap(null, normalizedBase.description),
+        legalI18n: createLocalizedMap(null, normalizedBase.legal)
+    };
+
+    localized.nameI18n[source] = normalizedBase.name;
+    localized.descriptionI18n[source] = normalizedBase.description;
+    localized.legalI18n[source] = normalizedBase.legal;
+
+    if (!TRANSLATE_PROXY_URL) {
+        return localized;
+    }
+
+    const fieldOrder = ["name", "description", "legal"];
+    const sourceTexts = fieldOrder.map((fieldName) => normalizedBase[fieldName]);
+
+    for (const targetLanguage of SUPPORTED_LANG_CODES) {
+        if (targetLanguage === source) {
+            continue;
+        }
+
+        const translations = await translateTextsForLanguage(sourceTexts, targetLanguage);
+        fieldOrder.forEach((fieldName, index) => {
+            const sourceText = sourceTexts[index];
+            const translatedText = translations[sourceText];
+            const mapKey = `${fieldName}I18n`;
+            localized[mapKey][targetLanguage] = translatedText ? String(translatedText) : sourceText;
+        });
+    }
+
+    return localized;
+}
+
 function getCanonicalTechnicalLabel(label) {
     const key = String(label || "").trim().toLowerCase();
     return TECHNICAL_LABEL_CANONICAL_BY_KEY[key] || label;
@@ -698,11 +781,23 @@ function normalizeCar(car, index) {
     const images = getCarImages(car);
     const rawThumbnailIndex = Number(car.thumbnailIndex);
     const thumbnailIndex = Number.isInteger(rawThumbnailIndex) && rawThumbnailIndex >= 0 && rawThumbnailIndex < images.length ? rawThumbnailIndex : 0;
+    const nameI18n = createLocalizedMap(car.nameI18n, car.name || "");
+    const descriptionI18n = createLocalizedMap(car.descriptionI18n, car.description || "");
+    const legalI18n = createLocalizedMap(car.legalI18n, car.legal || "");
+    const primaryName = nameI18n.sk || nameI18n.cs || nameI18n.en || car.name || "";
+    const primaryDescription = descriptionI18n.sk || descriptionI18n.cs || descriptionI18n.en || car.description || "";
+    const primaryLegal = legalI18n.sk || legalI18n.cs || legalI18n.en || car.legal || "";
 
     return {
         ...car,
         id: car.id || `zmr-${Date.now()}-${index}`,
-        brand: car.brand || getBrandFromName(car.name),
+        name: primaryName,
+        description: primaryDescription,
+        legal: primaryLegal,
+        nameI18n,
+        descriptionI18n,
+        legalI18n,
+        brand: car.brand || getBrandFromName(primaryName),
         horsepower: Number.isFinite(Number(car.horsepower)) ? Number(car.horsepower) : 0,
         doors,
         seats,
@@ -1571,6 +1666,32 @@ function CarsPage({ cars, language, texts }) {
     }, []);
 
     useEffect(() => {
+        setSearch("");
+        setDebouncedSearch("");
+        setFuel("");
+        setBrand("");
+        setDrive("");
+        setTransmission("");
+        setDoors("");
+        setSeatsFrom("");
+        setSeatsTo("");
+        setHorsepowerFrom("");
+        setHorsepowerTo("");
+        syncCarFiltersToQuery({
+            search: "",
+            fuel: "",
+            brand: "",
+            drive: "",
+            transmission: "",
+            doors: "",
+            seatsFrom: "",
+            seatsTo: "",
+            horsepowerFrom: "",
+            horsepowerTo: ""
+        });
+    }, []);
+
+    useEffect(() => {
         syncCarFiltersToQuery({
             search: debouncedSearch,
             fuel,
@@ -1722,6 +1843,7 @@ function CarsPage({ cars, language, texts }) {
                         ></div>
                         <div className="hp-range-sliders">
                             <input
+                                className="range-input-from"
                                 type="range"
                                 min={horsepowerMinBound}
                                 max={horsepowerMaxBound}
@@ -1732,6 +1854,7 @@ function CarsPage({ cars, language, texts }) {
                                 }}
                             />
                             <input
+                                className="range-input-to"
                                 type="range"
                                 min={horsepowerMinBound}
                                 max={horsepowerMaxBound}
@@ -1777,6 +1900,7 @@ function CarsPage({ cars, language, texts }) {
                         ></div>
                         <div className="hp-range-sliders">
                             <input
+                                className="range-input-from"
                                 type="range"
                                 min={seatsMinBound}
                                 max={seatsMaxBound}
@@ -1787,6 +1911,7 @@ function CarsPage({ cars, language, texts }) {
                                 }}
                             />
                             <input
+                                className="range-input-to"
                                 type="range"
                                 min={seatsMinBound}
                                 max={seatsMaxBound}
