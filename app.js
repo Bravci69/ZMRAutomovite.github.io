@@ -1373,17 +1373,17 @@ function ContactPage({ texts }) {
 }
 
 function CarsPage({ cars, language, texts }) {
-    const [search, setSearch] = useState(() => readCarFiltersFromQuery().search);
-    const [debouncedSearch, setDebouncedSearch] = useState(() => readCarFiltersFromQuery().search);
-    const [fuel, setFuel] = useState(() => readCarFiltersFromQuery().fuel);
-    const [horsepowerFrom, setHorsepowerFrom] = useState(() => readCarFiltersFromQuery().horsepowerFrom);
-    const [horsepowerTo, setHorsepowerTo] = useState(() => readCarFiltersFromQuery().horsepowerTo);
-    const [doors, setDoors] = useState(() => readCarFiltersFromQuery().doors);
-    const [seatsFrom, setSeatsFrom] = useState(() => readCarFiltersFromQuery().seatsFrom);
-    const [seatsTo, setSeatsTo] = useState(() => readCarFiltersFromQuery().seatsTo);
-    const [brand, setBrand] = useState(() => readCarFiltersFromQuery().brand);
-    const [drive, setDrive] = useState(() => readCarFiltersFromQuery().drive);
-    const [transmission, setTransmission] = useState(() => readCarFiltersFromQuery().transmission);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [fuel, setFuel] = useState("");
+    const [horsepowerFrom, setHorsepowerFrom] = useState("");
+    const [horsepowerTo, setHorsepowerTo] = useState("");
+    const [doors, setDoors] = useState("");
+    const [seatsFrom, setSeatsFrom] = useState("");
+    const [seatsTo, setSeatsTo] = useState("");
+    const [brand, setBrand] = useState("");
+    const [drive, setDrive] = useState("");
+    const [transmission, setTransmission] = useState("");
     const resetFiltersLabel = RESET_LABELS[language] || RESET_LABELS.cs;
     const resultsLabel = RESULTS_LABELS[language] || RESULTS_LABELS.cs;
 
@@ -1410,6 +1410,9 @@ function CarsPage({ cars, language, texts }) {
     const seatsRangeEndPercent = seatsMaxBound > seatsMinBound ? ((seatsRangeTo - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 100;
     const horsepowerRangeStartPercent = horsepowerMaxBound > horsepowerMinBound ? ((horsepowerRangeFrom - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 0;
     const horsepowerRangeEndPercent = horsepowerMaxBound > horsepowerMinBound ? ((horsepowerRangeTo - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 100;
+    const bubbleOverlapThreshold = window.innerWidth <= 640 ? 18 : 14;
+    const seatsBubbleTooClose = Math.abs(seatsRangeEndPercent - seatsRangeStartPercent) < bubbleOverlapThreshold;
+    const horsepowerBubbleTooClose = Math.abs(horsepowerRangeEndPercent - horsepowerRangeStartPercent) < bubbleOverlapThreshold;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
     const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
     const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
@@ -1626,6 +1629,17 @@ function CarsPage({ cars, language, texts }) {
                             <strong>{horsepowerToCurrent} {texts.common.horsepowerUnit}</strong>
                         </div>
                         <div
+                            className="range-thumb-bubbles"
+                            style={{
+                                "--from-pos": `${horsepowerRangeStartPercent}%`,
+                                "--to-pos": `${horsepowerRangeEndPercent}%`
+                            }}
+                            aria-hidden="true"
+                        >
+                            <span className={horsepowerBubbleTooClose ? "range-bubble from shift-left" : "range-bubble from"}>{horsepowerFromCurrent}</span>
+                            <span className={horsepowerBubbleTooClose ? "range-bubble to shift-right" : "range-bubble to"}>{horsepowerToCurrent}</span>
+                        </div>
+                        <div
                             className="range-fill-track"
                             style={{
                                 "--range-start": `${horsepowerRangeStartPercent}%`,
@@ -1654,6 +1668,10 @@ function CarsPage({ cars, language, texts }) {
                                 }}
                             />
                         </div>
+                        <div className="range-bounds" aria-hidden="true">
+                            <span>{horsepowerMinBound} {texts.common.horsepowerUnit}</span>
+                            <span>{horsepowerMaxBound} {texts.common.horsepowerUnit}</span>
+                        </div>
                     </div>
                     <label>
                         {texts.cars.doors}
@@ -1664,6 +1682,17 @@ function CarsPage({ cars, language, texts }) {
                         <div className="hp-range-values">
                             <strong>{seatsFromCurrent} {texts.cars.seatsUnit}</strong>
                             <strong>{seatsToCurrent} {texts.cars.seatsUnit}</strong>
+                        </div>
+                        <div
+                            className="range-thumb-bubbles"
+                            style={{
+                                "--from-pos": `${seatsRangeStartPercent}%`,
+                                "--to-pos": `${seatsRangeEndPercent}%`
+                            }}
+                            aria-hidden="true"
+                        >
+                            <span className={seatsBubbleTooClose ? "range-bubble from shift-left" : "range-bubble from"}>{seatsFromCurrent}</span>
+                            <span className={seatsBubbleTooClose ? "range-bubble to shift-right" : "range-bubble to"}>{seatsToCurrent}</span>
                         </div>
                         <div
                             className="range-fill-track"
@@ -1693,6 +1722,10 @@ function CarsPage({ cars, language, texts }) {
                                     setSeatsTo(String(next));
                                 }}
                             />
+                        </div>
+                        <div className="range-bounds" aria-hidden="true">
+                            <span>{seatsMinBound} {texts.cars.seatsUnit}</span>
+                            <span>{seatsMaxBound} {texts.cars.seatsUnit}</span>
                         </div>
                     </div>
                 </div>

@@ -825,9 +825,46 @@ a:hover {
 	border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+.range-thumb-bubbles {
+	position: relative;
+	height: 22px;
+	margin-bottom: 2px;
+}
+
+.range-bubble {
+	position: absolute;
+	top: 0;
+	transform: translateX(-50%);
+	padding: 2px 7px;
+	border-radius: 999px;
+	font-size: 0.74rem;
+	font-weight: 800;
+	color: #fff;
+	background: rgba(222, 59, 59, 0.92);
+	border: 1px solid rgba(255, 255, 255, 0.32);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+	line-height: 1.2;
+}
+
+.range-bubble.from {
+	left: var(--from-pos, 0%);
+}
+
+.range-bubble.to {
+	left: var(--to-pos, 100%);
+}
+
+.range-bubble.shift-left {
+	transform: translateX(calc(-50% - 24px));
+}
+
+.range-bubble.shift-right {
+	transform: translateX(calc(-50% + 24px));
+}
+
 .hp-range-sliders {
-	display: grid;
-	gap: 8px;
+	position: relative;
+	height: 20px;
 	padding: 10px 12px;
 	border-radius: 12px;
 	border: 1px solid rgba(255, 255, 255, 0.2);
@@ -835,11 +872,27 @@ a:hover {
 }
 
 .hp-range-sliders input[type="range"] {
+	position: absolute;
+	left: 12px;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
 	width: 100%;
 	accent-color: var(--accent);
 	padding: 0;
 	height: auto;
 	box-shadow: none;
+	background: transparent;
+}
+
+.range-bounds {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: rgba(238, 244, 255, 0.62);
+	padding: 0 2px;
 }
 
 .form-grid textarea {
