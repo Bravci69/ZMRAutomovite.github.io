@@ -1,4 +1,4 @@
-const { useMemo, useState } = React;
+const { useEffect, useMemo, useState } = React;
 
 const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
@@ -78,7 +78,11 @@ function getCars() {
 }
 
 function saveCars(cars) {
-    localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(cars));
+    try {
+        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(cars));
+    } catch (error) {
+        console.error("Nepodarilo sa uložiť vozidlá do localStorage.", error);
+    }
 }
 
 function readCarIdFromQuery() {
@@ -517,6 +521,10 @@ function App() {
     const rootElement = document.getElementById("root");
     const page = rootElement?.dataset?.page || "home";
     const [cars, setCars] = useState(getCars);
+
+    useEffect(() => {
+        saveCars(cars);
+    }, [cars]);
 
     const pageConfig = useMemo(() => {
         switch (page) {
