@@ -66,6 +66,33 @@ const EQUIPMENT_CHECKLIST_ITEMS = [
     "Towbar"
 ];
 
+const EQUIPMENT_ITEM_TRANSLATIONS = {
+    "ABS": { cs: "ABS", sk: "ABS", de: "ABS", en: "ABS" },
+    "ESP": { cs: "ESP", sk: "ESP", de: "ESP", en: "ESP" },
+    "ASR": { cs: "ASR", sk: "ASR", de: "ASR", en: "ASR" },
+    "Airbags": { cs: "Airbagy", sk: "Airbagy", de: "Airbags", en: "Airbags" },
+    "Isofix": { cs: "Isofix", sk: "Isofix", de: "Isofix", en: "Isofix" },
+    "Navigation system": { cs: "Navigační systém", sk: "Navigačný systém", de: "Navigationssystem", en: "Navigation system" },
+    "Bluetooth": { cs: "Bluetooth", sk: "Bluetooth", de: "Bluetooth", en: "Bluetooth" },
+    "Apple CarPlay": { cs: "Apple CarPlay", sk: "Apple CarPlay", de: "Apple CarPlay", en: "Apple CarPlay" },
+    "Android Auto": { cs: "Android Auto", sk: "Android Auto", de: "Android Auto", en: "Android Auto" },
+    "Cruise control": { cs: "Tempomat", sk: "Tempomat", de: "Tempomat", en: "Cruise control" },
+    "Parking sensors": { cs: "Parkovací senzory", sk: "Parkovacie senzory", de: "Parksensoren", en: "Parking sensors" },
+    "Rear camera": { cs: "Zadní kamera", sk: "Zadná kamera", de: "Rückfahrkamera", en: "Rear camera" },
+    "LED headlights": { cs: "LED světlomety", sk: "LED svetlomety", de: "LED-Scheinwerfer", en: "LED headlights" },
+    "Automatic climate control": { cs: "Automatická klimatizace", sk: "Automatická klimatizácia", de: "Klimaautomatik", en: "Automatic climate control" },
+    "Heated seats": { cs: "Vyhřívaná sedadla", sk: "Vyhrievané sedadlá", de: "Sitzheizung", en: "Heated seats" },
+    "Leather seats": { cs: "Kožená sedadla", sk: "Kožené sedadlá", de: "Ledersitze", en: "Leather seats" },
+    "Electric windows": { cs: "Elektrická okna", sk: "Elektrické okná", de: "Elektrische Fensterheber", en: "Electric windows" },
+    "Keyless entry": { cs: "Bezklíčový přístup", sk: "Bezkľúčový prístup", de: "Keyless Entry", en: "Keyless entry" },
+    "Sunroof": { cs: "Střešní okno", sk: "Strešné okno", de: "Schiebedach", en: "Sunroof" },
+    "Towbar": { cs: "Tažné zařízení", sk: "Ťažné zariadenie", de: "Anhängerkupplung", en: "Towbar" }
+};
+
+const EQUIPMENT_ITEM_TRANSLATIONS_BY_KEY = Object.fromEntries(
+    Object.entries(EQUIPMENT_ITEM_TRANSLATIONS).map(([key, translation]) => [String(key).trim().toLowerCase(), translation])
+);
+
 const TECHNICAL_LABEL_TRANSLATIONS = {
     "Vehicle condition": { cs: "Stav vozidla", sk: "Stav vozidla", de: "Fahrzeugzustand", en: "Vehicle condition" },
     "Category": { cs: "Kategorie", sk: "Kategória", de: "Kategorie", en: "Category" },
@@ -650,6 +677,18 @@ function translateTechnicalValue(value, language) {
         return value;
     }
     return translation[language] || translation.en || value;
+}
+
+function translateEquipmentItem(item, language) {
+    if (typeof item !== "string") {
+        return item;
+    }
+    const normalized = item.trim().replace(/\s+/g, " ").toLowerCase();
+    const translation = EQUIPMENT_ITEM_TRANSLATIONS[item] || EQUIPMENT_ITEM_TRANSLATIONS_BY_KEY[normalized];
+    if (!translation) {
+        return item;
+    }
+    return translation[language] || translation.en || item;
 }
 
 function normalizeTranslationValueKey(value) {
@@ -1594,7 +1633,7 @@ function CarDetailPage({ cars, language, texts }) {
                         {equipmentRows.map((item, index) => (
                             <div key={`${item}-${index}`} className="equipment-item">
                                 <span aria-hidden="true">✔</span>
-                                <span>{item}</span>
+                                <span>{translateEquipmentItem(item, language)}</span>
                             </div>
                         ))}
                     </div>
@@ -1861,7 +1900,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                                         checked={Boolean(equipmentChecklist[item])}
                                         onChange={(e) => setEquipmentChecklist((prev) => ({ ...prev, [item]: e.target.checked }))}
                                     />
-                                    {item}
+                                    {translateEquipmentItem(item, language)}
                                 </label>
                             ))}
                         </div>
