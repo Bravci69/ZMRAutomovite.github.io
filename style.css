@@ -68,6 +68,7 @@ body {
 	justify-content: flex-end;
 	gap: 10px;
 	max-width: 560px;
+	width: 100%;
 }
 
 .header-tools {
@@ -78,12 +79,15 @@ body {
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	width: min(620px, 100%);
+	min-height: 96px;
 }
 
 .language-switcher {
 	display: flex;
 	gap: 8px;
 	flex-wrap: wrap;
+	justify-content: flex-end;
+	width: 100%;
 }
 
 .flag-button {
@@ -123,6 +127,7 @@ body {
 	transition: all 0.2s ease;
 	white-space: nowrap;
 	text-align: center;
+	min-width: 106px;
 }
 
 .nav-link:hover {
@@ -935,11 +940,11 @@ a:hover {
 }
 
 .hp-range-sliders input[type="range"].range-input-from {
-	z-index: 3;
+	z-index: 4;
 }
 
 .hp-range-sliders input[type="range"].range-input-to {
-	z-index: 4;
+	z-index: 3;
 }
 
 .hp-range-sliders input[type="range"]::-webkit-slider-runnable-track {
@@ -975,6 +980,7 @@ a:hover {
 	border: 2px solid var(--accent);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 	cursor: pointer;
+	pointer-events: auto;
 }
 
 .range-bounds {
@@ -1217,6 +1223,11 @@ a:hover {
 		justify-content: flex-start;
 		width: 100%;
 		align-items: flex-start;
+		min-height: auto;
+	}
+
+	.language-switcher {
+		justify-content: flex-start;
 	}
 
 	.logo {

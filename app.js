@@ -7,7 +7,7 @@ const CZK_TO_EUR_RATE = 25;
 const HORSEPOWER_MIN_FILTER = 256;
 const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
-const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || "";
+const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || "/api/reservation";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
@@ -1311,6 +1311,33 @@ function formatPrice(priceCzk, language) {
     }).format(amount);
 }
 
+async function sendReservationEmailViaProxy(payload) {
+    if (!RESERVATION_PROXY_URL) {
+        return { ok: false, error: "missing-endpoint" };
+    }
+
+    try {
+        const response = await fetch(RESERVATION_PROXY_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            return { ok: false, error: `http-${response.status}` };
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (data?.ok) {
+            return { ok: true };
+        }
+
+        return { ok: false, error: "invalid-response" };
+    } catch {
+        return { ok: false, error: "network" };
+    }
+}
+
 function getReservationTexts(language) {
     if (language === "de") {
         return {
@@ -1323,7 +1350,10 @@ function getReservationTexts(language) {
             email: "E-Mail",
             phone: "Telefon",
             sendReservation: "Reservierungsanfrage senden",
-            reservedSuccess: "Reservierungsanfrage vorbereitet. Bitte E-Mail bestätigen.",
+            reservedSuccess: "Reservierungsanfrage wurde erfolgreich gesendet.",
+            reserveErrorConfig: "Reservierungsdienst ist nicht konfiguriert.",
+            reserveErrorSend: "Reservierung konnte nicht gesendet werden. Bitte versuche es erneut.",
+            reserveSending: "Reservierung wird gesendet...",
             alreadyReserved: "Dieses Fahrzeug ist bereits reserviert.",
             reservationSubject: (carName) => `Reservierung Fahrzeug: ${carName}`,
             reservationBody: (car, form) => `Fahrzeug: ${car.name}\nID: ${car.id}\nJahr: ${car.year}\nPreis: ${car.priceCzk} CZK\n\nReservierungsanfrage von:\nVorname: ${form.firstName}\nNachname: ${form.lastName}\nE-Mail: ${form.email}\nTelefon: ${form.phone}`
@@ -1340,7 +1370,10 @@ function getReservationTexts(language) {
             email: "Email",
             phone: "Phone",
             sendReservation: "Send reservation request",
-            reservedSuccess: "Reservation request prepared. Please confirm in your email app.",
+            reservedSuccess: "Reservation request was sent successfully.",
+            reserveErrorConfig: "Reservation service is not configured.",
+            reserveErrorSend: "Reservation could not be sent. Please try again.",
+            reserveSending: "Sending reservation...",
             alreadyReserved: "This vehicle is already reserved.",
             reservationSubject: (carName) => `Vehicle reservation: ${carName}`,
             reservationBody: (car, form) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}`
@@ -1357,7 +1390,10 @@ function getReservationTexts(language) {
             email: "E-mail",
             phone: "Telefon",
             sendReservation: "Odeslat rezervaci",
-            reservedSuccess: "Rezervace je připravená. Potvrďte ji prosím v e-mailové aplikaci.",
+            reservedSuccess: "Rezervace byla úspěšně odeslána.",
+            reserveErrorConfig: "Rezervační služba není nakonfigurovaná.",
+            reserveErrorSend: "Rezervaci se nepodařilo odeslat. Zkuste to prosím znovu.",
+            reserveSending: "Odesílám rezervaci...",
             alreadyReserved: "Toto vozidlo je už rezervované.",
             reservationSubject: (carName) => `Rezervace vozidla: ${carName}`,
             reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}`
@@ -1373,7 +1409,10 @@ function getReservationTexts(language) {
         email: "E-mail",
         phone: "Telefón",
         sendReservation: "Odoslať rezerváciu",
-        reservedSuccess: "Rezervácia je pripravená. Potvrď ju prosím v e-mailovej aplikácii.",
+        reservedSuccess: "Rezervácia bola úspešne odoslaná.",
+        reserveErrorConfig: "Rezervačná služba nie je nakonfigurovaná.",
+        reserveErrorSend: "Rezerváciu sa nepodarilo odoslať. Skús to prosím znova.",
+        reserveSending: "Odosielam rezerváciu...",
         alreadyReserved: "Toto vozidlo je už rezervované.",
         reservationSubject: (carName) => `Rezervácia vozidla: ${carName}`,
         reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}`
@@ -1972,6 +2011,7 @@ function CarDetailPage({ cars, setCars, language, texts }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [reservationForm, setReservationForm] = useState({ firstName: "", lastName: "", email: "", phone: "" });
     const [reservationMessage, setReservationMessage] = useState("");
+    const [isReservationSending, setIsReservationSending] = useState(false);
 
     if (!car) {
         return (
@@ -1992,10 +2032,39 @@ function CarDetailPage({ cars, setCars, language, texts }) {
         setReservationMessage("");
     }, [car?.id]);
 
-    const submitReservation = (event) => {
+    const submitReservation = async (event) => {
         event.preventDefault();
-        if (!car || !car.available || car.reserved) {
+        if (!car || !car.available || car.reserved || isReservationSending) {
             setReservationMessage(reservationTexts.alreadyReserved);
+            return;
+        }
+
+        setReservationMessage(reservationTexts.reserveSending);
+        setIsReservationSending(true);
+
+        const reservationPayload = {
+            language,
+            toEmail: RESERVATION_EMAIL,
+            subject: reservationTexts.reservationSubject(car.name),
+            text: reservationTexts.reservationBody(car, reservationForm),
+            car: {
+                id: car.id,
+                name: car.name,
+                year: car.year,
+                priceCzk: car.priceCzk
+            },
+            form: {
+                firstName: String(reservationForm.firstName || ""),
+                lastName: String(reservationForm.lastName || ""),
+                email: String(reservationForm.email || ""),
+                phone: String(reservationForm.phone || "")
+            }
+        };
+
+        const reservationResult = await sendReservationEmailViaProxy(reservationPayload);
+        if (!reservationResult.ok) {
+            setReservationMessage(reservationResult.error === "missing-endpoint" ? reservationTexts.reserveErrorConfig : reservationTexts.reserveErrorSend);
+            setIsReservationSending(false);
             return;
         }
 
@@ -2003,11 +2072,8 @@ function CarDetailPage({ cars, setCars, language, texts }) {
         setCars(updatedCars);
         saveCars(updatedCars);
 
-        const subject = reservationTexts.reservationSubject(car.name);
-        const body = reservationTexts.reservationBody(car, reservationForm);
-        const mailto = `mailto:${RESERVATION_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = mailto;
         setReservationMessage(reservationTexts.reservedSuccess);
+        setIsReservationSending(false);
     };
 
     useEffect(() => {
@@ -2060,13 +2126,15 @@ function CarDetailPage({ cars, setCars, language, texts }) {
                     <p>{car.legal}</p>
                     <div className="reservation-box">
                         <h3>{reservationTexts.reserveTitle}</h3>
-                        <form className="reservation-form" onSubmit={submitReservation}>
-                            <input type="text" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={!car.available || car.reserved} />
-                            <input type="text" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={!car.available || car.reserved} />
-                            <input type="email" value={reservationForm.email} onChange={(e) => setReservationForm((prev) => ({ ...prev, email: e.target.value }))} placeholder={reservationTexts.email} required disabled={!car.available || car.reserved} />
-                            <input type="tel" value={reservationForm.phone} onChange={(e) => setReservationForm((prev) => ({ ...prev, phone: e.target.value }))} placeholder={reservationTexts.phone} required disabled={!car.available || car.reserved} />
-                            <button type="submit" className="button-link" disabled={!car.available || car.reserved}>{reservationTexts.reserveButton}</button>
-                        </form>
+                        {!car.reserved && car.available && (
+                            <form className="reservation-form" onSubmit={submitReservation}>
+                                <input type="text" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={isReservationSending} />
+                                <input type="text" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={isReservationSending} />
+                                <input type="email" value={reservationForm.email} onChange={(e) => setReservationForm((prev) => ({ ...prev, email: e.target.value }))} placeholder={reservationTexts.email} required disabled={isReservationSending} />
+                                <input type="tel" value={reservationForm.phone} onChange={(e) => setReservationForm((prev) => ({ ...prev, phone: e.target.value }))} placeholder={reservationTexts.phone} required disabled={isReservationSending} />
+                                <button type="submit" className="button-link" disabled={isReservationSending}>{isReservationSending ? reservationTexts.reserveSending : reservationTexts.reserveButton}</button>
+                            </form>
+                        )}
                         {reservationMessage && <p className="car-meta">{reservationMessage}</p>}
                         {(!car.available || car.reserved) && <p className="car-meta">{reservationTexts.reserveUnavailable}</p>}
                     </div>

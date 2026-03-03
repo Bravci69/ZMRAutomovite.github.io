@@ -17,23 +17,73 @@ Use a server-side proxy (Cloudflare Worker) and keep the key in Worker secrets.
 4. Set secret key securely:
 	- `wrangler secret put GOOGLE_TRANSLATE_API_KEY`
 5. Deploy:
-	- `wrangler deploy`
+	# ZMRAutomovite.github.io
+	Site for ZMR Automovite
 
-After deploy you get URL like:
-- `https://zmr-translate.<subdomain>.workers.dev/api/translate`
+	## Secure Google Translate setup (recommended)
 
-### 2) Configure frontend
+	The frontend is static, so do not put Google API keys into `app.js`.
+	Use a server-side proxy (Cloudflare Worker) and keep the key in Worker secrets.
 
-Set proxy URL globally before loading `app.js` (for example in page HTML):
+	### 1) Deploy proxy Worker
 
-```html
-<script>
-	window.ZMR_TRANSLATE_PROXY_URL = "https://zmr-translate.<subdomain>.workers.dev/api/translate";
-</script>
-```
+	1. Install Wrangler:
+		- `npm install -g wrangler`
+	2. Login to Cloudflare:
+		- `wrangler login`
+	3. From project root create Worker project (or reuse an existing one) and use file:
+		- `sources/translate-worker.js`
+	4. Set secret key securely:
+		- `wrangler secret put GOOGLE_TRANSLATE_API_KEY`
+	5. Deploy:
+		- `wrangler deploy`
 
-### 3) How it works
+	After deploy you get URL like:
+	- `https://zmr-translate.<subdomain>.workers.dev/api/translate`
 
-- Local dictionary translations are used first.
-- Unknown technical values are translated via proxy endpoint.
-- Translations are cached in browser localStorage (`zmrTechnicalTranslations`) to reduce API calls and cost.
+	### 2) Configure frontend
+
+	Set proxy URL globally before loading `app.js` (for example in page HTML):
+
+	```html
+	<script>
+		window.ZMR_TRANSLATE_PROXY_URL = "https://zmr-translate.<subdomain>.workers.dev/api/translate";
+	</script>
+	```
+
+	### 3) How it works
+
+	- Local dictionary translations are used first.
+	- Unknown technical values are translated via proxy endpoint.
+	- Translations are cached in browser localStorage (`zmrTechnicalTranslations`) to reduce API calls and cost.
+
+	## Automatic reservation emails (server-side)
+
+	To send reservation requests automatically (without opening the user email app), reuse the same Worker file:
+
+	- `sources/translate-worker.js`
+
+	### 1) Configure Worker secrets
+
+	- `wrangler secret put RESEND_API_KEY`
+
+	Set Worker variables (Wrangler config or Cloudflare dashboard):
+
+	- `RESERVATION_FROM_EMAIL` (example: `ZMR <onboarding@resend.dev>`)
+	- `RESERVATION_TO_EMAIL` (optional fallback inbox)
+
+	### 2) Reservation endpoint
+
+	After deploy, use endpoint:
+
+	- `https://zmr-translate.<subdomain>.workers.dev/api/reservation`
+
+	### 3) Configure frontend
+
+	Set this global variable before loading `app.js`:
+
+	```html
+	<script>
+		window.ZMR_RESERVATION_PROXY_URL = "https://zmr-translate.<subdomain>.workers.dev/api/reservation";
+	</script>
+	```
