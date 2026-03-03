@@ -1591,6 +1591,36 @@ function saveCars(cars) {
     }
 }
 
+function isDataUrlImage(value) {
+    return typeof value === "string" && value.trim().toLowerCase().startsWith("data:");
+}
+
+function sanitizeCarForCloud(car) {
+    if (!car || typeof car !== "object") {
+        return car;
+    }
+    const images = getCarImages(car).map((image) => String(image || "").trim()).filter(Boolean);
+    const cloudImages = images.filter((image) => !isDataUrlImage(image)).slice(0, 8);
+    const safeImages = cloudImages.length > 0
+        ? cloudImages
+        : ["https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80"];
+    const rawThumbnail = Number(car.thumbnailIndex);
+    const thumbnailIndex = Number.isInteger(rawThumbnail) && rawThumbnail >= 0 && rawThumbnail < safeImages.length ? rawThumbnail : 0;
+    return {
+        ...car,
+        images: safeImages,
+        thumbnailIndex,
+        image: safeImages[thumbnailIndex] || safeImages[0]
+    };
+}
+
+function sanitizeCarsForCloud(cars) {
+    if (!Array.isArray(cars)) {
+        return [];
+    }
+    return cars.map((car) => sanitizeCarForCloud(car));
+}
+
 async function fetchCarsFromCloud() {
     const firestoreCars = await fetchCarsFromFirestore();
     if (firestoreCars) {
@@ -1617,15 +1647,19 @@ async function fetchCarsFromCloud() {
 }
 
 async function saveCarsToCloud(cars) {
-    const firestoreSaved = await saveCarsToFirestore(cars);
+    if (!Array.isArray(cars)) {
+        return false;
+    }
+    const cloudCars = sanitizeCarsForCloud(cars);
+    const firestoreSaved = await saveCarsToFirestore(cloudCars);
     if (firestoreSaved) {
         return true;
     }
-    const firebaseSaved = await saveCarsToFirebase(cars);
+    const firebaseSaved = await saveCarsToFirebase(cloudCars);
     if (firebaseSaved) {
         return true;
     }
-    if (!CARS_API_URL || !Array.isArray(cars)) {
+    if (!CARS_API_URL) {
         return false;
     }
     try {
@@ -1636,7 +1670,7 @@ async function saveCarsToCloud(cars) {
                 requestId: createRequestId("cars"),
                 source: "cars-sync",
                 campaign: "website-cars-sync",
-                cars
+                cars: cloudCars
             })
         });
         return response.ok;
@@ -2926,7 +2960,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                 firebaseReady: "Firebase-Anmeldung aktiv. Änderungen werden in der Datenbank gespeichert.",
                 firebaseMissing: "Firebase-Anmeldung fehlt. Anmeldung erneut durchführen.",
                 cloudSaved: "Änderungen wurden in der Datenbank gespeichert.",
-                cloudSaveFailed: "Speichern in der Datenbank fehlgeschlagen. Bitte erneut anmelden und speichern."
+                cloudSaveFailed: "Speichern in der Datenbank fehlgeschlagen. Bitte erneut anmelden und speichern (bei hochgeladenen Fotos kleinere Bilder oder URL verwenden)."
             };
         }
         if (language === "en") {
@@ -2934,7 +2968,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                 firebaseReady: "Firebase login is active. Changes will be saved to the database.",
                 firebaseMissing: "Firebase login is missing. Please sign in again.",
                 cloudSaved: "Changes were saved to the database.",
-                cloudSaveFailed: "Saving to database failed. Please sign in again and retry."
+                cloudSaveFailed: "Saving to database failed. Please sign in again and retry (for uploaded photos use smaller images or URL)."
             };
         }
         if (language === "cs") {
@@ -2942,14 +2976,14 @@ function CmsPage({ cars, setCars, language, texts }) {
                 firebaseReady: "Firebase přihlášení je aktivní. Změny se ukládají do databáze.",
                 firebaseMissing: "Firebase přihlášení chybí. Přihlaste se prosím znovu.",
                 cloudSaved: "Změny byly uloženy do databáze.",
-                cloudSaveFailed: "Uložení do databáze selhalo. Přihlaste se znovu a uložte znovu."
+                cloudSaveFailed: "Uložení do databáze selhalo. Přihlaste se znovu a uložte znovu (u nahraných fotek použijte menší obrázky nebo URL)."
             };
         }
         return {
             firebaseReady: "Firebase prihlásenie je aktívne. Zmeny sa ukladajú do databázy.",
             firebaseMissing: "Firebase prihlásenie chýba. Prihláste sa prosím znova.",
             cloudSaved: "Zmeny boli uložené do databázy.",
-            cloudSaveFailed: "Uloženie do databázy zlyhalo. Prihláste sa znova a uložte ešte raz."
+            cloudSaveFailed: "Uloženie do databázy zlyhalo. Prihláste sa znova a uložte ešte raz (pri nahraných fotkách použite menšie obrázky alebo URL)."
         };
     }, [language]);
     const cmsUiTexts = useMemo(() => {
