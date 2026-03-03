@@ -33,6 +33,7 @@ const RESULTS_LABELS = {
 };
 const SERVICES_PAGE_CONTENT = {
     cs: {
+        kpis: ["48h reakce", "100+ prověření ročně", "Import USA/JP/EU", "Transparentní report"],
         highlightsTitle: "Co získáte v praxi",
         highlights: [
             { icon: "🛡️", title: "Prověřený technický stav", text: "Diagnostika, vizuální kontrola a vyhodnocení rizik před koupí." },
@@ -53,6 +54,7 @@ const SERVICES_PAGE_CONTENT = {
         ctaButton: "Kontaktovat nás"
     },
     sk: {
+        kpis: ["48h reakcia", "100+ preverení ročne", "Import USA/JP/EU", "Transparentný report"],
         highlightsTitle: "Čo získate v praxi",
         highlights: [
             { icon: "🛡️", title: "Overený technický stav", text: "Diagnostika, vizuálna kontrola a vyhodnotenie rizík pred kúpou." },
@@ -73,6 +75,7 @@ const SERVICES_PAGE_CONTENT = {
         ctaButton: "Kontaktovať nás"
     },
     de: {
+        kpis: ["48h Reaktionszeit", "100+ Prüfungen/Jahr", "Import USA/JP/EU", "Transparenter Report"],
         highlightsTitle: "Ihr konkreter Mehrwert",
         highlights: [
             { icon: "🛡️", title: "Geprüfter technischer Zustand", text: "Diagnose, Sichtprüfung und Risikobewertung vor dem Kauf." },
@@ -93,6 +96,7 @@ const SERVICES_PAGE_CONTENT = {
         ctaButton: "Kontakt aufnehmen"
     },
     en: {
+        kpis: ["48h response", "100+ checks/year", "USA/JP/EU import", "Transparent reporting"],
         highlightsTitle: "What you get",
         highlights: [
             { icon: "🛡️", title: "Verified technical condition", text: "Diagnostics, visual inspection and risk assessment before purchase." },
@@ -1638,18 +1642,27 @@ function AboutPage({ texts }) {
 
 function ServicesPage({ texts, language }) {
     const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.sk;
+    const serviceIcons = ["🔍", "🧪", "🚢", "🛠️", "✅"];
 
     return (
         <>
             <section className="card">
                 <h2>{texts.services.title}</h2>
                 <p>{texts.services.intro}</p>
+                <div className="services-kpi-strip" aria-label="Services highlights">
+                    {serviceContent.kpis.map((kpi) => (
+                        <span key={kpi} className="services-kpi-chip">{kpi}</span>
+                    ))}
+                </div>
             </section>
 
             <section className="grid wide-grid">
-                {texts.services.items.map((service) => (
+                {texts.services.items.map((service, index) => (
                     <article key={service.title} className="service-item">
-                        <h3>{service.title}</h3>
+                        <div className="service-item-head">
+                            <span className="service-item-icon" aria-hidden="true">{serviceIcons[index] || "✔"}</span>
+                            <h3>{service.title}</h3>
+                        </div>
                         <p>{service.text}</p>
                     </article>
                 ))}
