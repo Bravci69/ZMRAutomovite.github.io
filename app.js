@@ -110,6 +110,14 @@ const EQUIPMENT_ITEM_TRANSLATIONS_BY_KEY = Object.fromEntries(
     Object.entries(EQUIPMENT_ITEM_TRANSLATIONS).map(([key, translation]) => [String(key).trim().toLowerCase(), translation])
 );
 
+const EQUIPMENT_CANONICAL_BY_KEY = Object.entries(EQUIPMENT_ITEM_TRANSLATIONS).reduce((accumulator, [canonical, translations]) => {
+    accumulator[String(canonical).trim().toLowerCase()] = canonical;
+    Object.values(translations || {}).forEach((value) => {
+        accumulator[String(value).trim().toLowerCase()] = canonical;
+    });
+    return accumulator;
+}, {});
+
 const TECHNICAL_LABEL_TRANSLATIONS = {
     "Vehicle condition": { cs: "Stav vozidla", sk: "Stav vozidla", de: "Fahrzeugzustand", en: "Vehicle condition" },
     "Category": { cs: "Kategorie", sk: "Kategória", de: "Kategorie", en: "Category" },
@@ -198,6 +206,14 @@ const TECHNICAL_VALUE_TRANSLATIONS = {
 const TECHNICAL_VALUE_TRANSLATIONS_BY_KEY = Object.fromEntries(
     Object.entries(TECHNICAL_VALUE_TRANSLATIONS).map(([key, translation]) => [String(key).trim().toLowerCase(), translation])
 );
+
+const TECHNICAL_LABEL_CANONICAL_BY_KEY = Object.entries(TECHNICAL_LABEL_TRANSLATIONS).reduce((accumulator, [canonical, translations]) => {
+    accumulator[String(canonical).trim().toLowerCase()] = canonical;
+    Object.values(translations || {}).forEach((value) => {
+        accumulator[String(value).trim().toLowerCase()] = canonical;
+    });
+    return accumulator;
+}, {});
 
 const pendingTechnicalTranslationRequests = new Map();
 
@@ -624,6 +640,33 @@ function getEquipmentItems(car) {
     return [];
 }
 
+function getCarImages(car) {
+    if (Array.isArray(car?.images) && car.images.length > 0) {
+        return car.images.filter(Boolean);
+    }
+    if (typeof car?.image === "string" && car.image.trim()) {
+        return [car.image.trim()];
+    }
+    return ["https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80"];
+}
+
+function getCarThumbnail(car) {
+    const images = getCarImages(car);
+    const rawIndex = Number(car?.thumbnailIndex);
+    const index = Number.isInteger(rawIndex) && rawIndex >= 0 && rawIndex < images.length ? rawIndex : 0;
+    return images[index] || images[0];
+}
+
+function getCanonicalTechnicalLabel(label) {
+    const key = String(label || "").trim().toLowerCase();
+    return TECHNICAL_LABEL_CANONICAL_BY_KEY[key] || label;
+}
+
+function getCanonicalEquipmentItem(item) {
+    const key = String(item || "").trim().toLowerCase();
+    return EQUIPMENT_CANONICAL_BY_KEY[key] || item;
+}
+
 function getTechnicalData(car) {
     if (Array.isArray(car.technicalData) && car.technicalData.length > 0) {
         return car.technicalData;
@@ -649,6 +692,9 @@ function normalizeCar(car, index) {
     const previousOwners = Number.isFinite(Number(car.previousOwners)) ? Math.max(0, Number(car.previousOwners)) : 0;
     const manualGearsRaw = Number.isFinite(Number(car.manualGears)) ? Number(car.manualGears) : 0;
     const manualGears = transmission === "Manuál" ? Math.max(1, manualGearsRaw) : 0;
+    const images = getCarImages(car);
+    const rawThumbnailIndex = Number(car.thumbnailIndex);
+    const thumbnailIndex = Number.isInteger(rawThumbnailIndex) && rawThumbnailIndex >= 0 && rawThumbnailIndex < images.length ? rawThumbnailIndex : 0;
 
     return {
         ...car,
@@ -662,6 +708,9 @@ function normalizeCar(car, index) {
         fuel: normalizeFuelValue(car.fuel),
         transmission,
         manualGears,
+        images,
+        thumbnailIndex,
+        image: images[thumbnailIndex] || images[0],
         technicalData: Array.isArray(car.technicalData) ? car.technicalData : undefined,
         equipmentItems: getEquipmentItems(car),
         priceCzk: parsePriceCzk(car),
@@ -912,12 +961,62 @@ function createInitialTechnicalChecklistState() {
     return state;
 }
 
+function createTechnicalChecklistFromCar(car) {
+    const state = {};
+    TECHNICAL_CHECKLIST_FIELDS.forEach((field) => {
+        state[field.label] = {
+            enabled: false,
+            value: "",
+            icon: field.defaultIcon
+        };
+    });
+
+    const rows = getTechnicalData(car);
+    rows.forEach((row) => {
+        const canonicalLabel = getCanonicalTechnicalLabel(row?.label);
+        if (!state[canonicalLabel]) {
+            return;
+        }
+        const sanitizedValue = sanitizeTechnicalChecklistValue(canonicalLabel, row?.value || "");
+        state[canonicalLabel] = {
+            enabled: true,
+            value: canonicalLabel === "Performance" ? sanitizedValue : (TECHNICAL_NUMERIC_FIELD_LABELS.has(canonicalLabel) ? sanitizedValue : String(row?.value || "")),
+            icon: row?.icon || state[canonicalLabel].icon
+        };
+    });
+
+    return state;
+}
+
 function createInitialEquipmentChecklistState() {
     const state = {};
     EQUIPMENT_CHECKLIST_ITEMS.forEach((item) => {
         state[item] = false;
     });
     return state;
+}
+
+function createEquipmentChecklistFromCar(car) {
+    const state = createInitialEquipmentChecklistState();
+    getEquipmentItems(car).forEach((item) => {
+        const canonicalItem = getCanonicalEquipmentItem(item);
+        if (Object.prototype.hasOwnProperty.call(state, canonicalItem)) {
+            state[canonicalItem] = true;
+        }
+    });
+    return state;
+}
+
+function readFilesAsDataUrls(files) {
+    const fileList = Array.from(files || []);
+    return Promise.all(
+        fileList.map((file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+        }))
+    );
 }
 
 function buildTechnicalDataFromChecklist(checklist, baseForm, transmission, manualGears) {
@@ -1303,6 +1402,10 @@ function CarsPage({ cars, language, texts }) {
     const horsepowerFromCurrent = Number.isFinite(parseNumber(horsepowerFrom)) ? Math.min(horsepowerMaxBound, Math.max(horsepowerMinBound, parseNumber(horsepowerFrom))) : horsepowerMinBound;
     const horsepowerToCurrent = Number.isFinite(parseNumber(horsepowerTo)) ? Math.max(horsepowerMinBound, Math.min(horsepowerMaxBound, parseNumber(horsepowerTo))) : horsepowerMaxBound;
     const hasHorsepowerFilter = horsepowerFromCurrent > horsepowerMinBound || horsepowerToCurrent < horsepowerMaxBound;
+    const seatsRangeStartPercent = seatsMaxBound > seatsMinBound ? ((Math.min(seatsFromCurrent, seatsToCurrent) - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 0;
+    const seatsRangeEndPercent = seatsMaxBound > seatsMinBound ? ((Math.max(seatsFromCurrent, seatsToCurrent) - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 100;
+    const horsepowerRangeStartPercent = horsepowerMaxBound > horsepowerMinBound ? ((Math.min(horsepowerFromCurrent, horsepowerToCurrent) - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 0;
+    const horsepowerRangeEndPercent = horsepowerMaxBound > horsepowerMinBound ? ((Math.max(horsepowerFromCurrent, horsepowerToCurrent) - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 100;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
     const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
     const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
@@ -1518,6 +1621,13 @@ function CarsPage({ cars, language, texts }) {
                             <strong>{horsepowerFromCurrent} {texts.common.horsepowerUnit}</strong>
                             <strong>{horsepowerToCurrent} {texts.common.horsepowerUnit}</strong>
                         </div>
+                        <div
+                            className="range-fill-track"
+                            style={{
+                                "--range-start": `${horsepowerRangeStartPercent}%`,
+                                "--range-end": `${horsepowerRangeEndPercent}%`
+                            }}
+                        ></div>
                         <div className="hp-range-sliders">
                             <input
                                 type="range"
@@ -1551,6 +1661,13 @@ function CarsPage({ cars, language, texts }) {
                             <strong>{seatsFromCurrent} {texts.cars.seatsUnit}</strong>
                             <strong>{seatsToCurrent} {texts.cars.seatsUnit}</strong>
                         </div>
+                        <div
+                            className="range-fill-track"
+                            style={{
+                                "--range-start": `${seatsRangeStartPercent}%`,
+                                "--range-end": `${seatsRangeEndPercent}%`
+                            }}
+                        ></div>
                         <div className="hp-range-sliders">
                             <input
                                 type="range"
@@ -1580,7 +1697,7 @@ function CarsPage({ cars, language, texts }) {
             <section className="grid wide-grid">
                 {filteredCars.map((car) => (
                     <article key={car.id} className="car-card">
-                        <img src={car.image} alt={car.name} className="car-image" />
+                        <img src={getCarThumbnail(car)} alt={car.name} className="car-image" />
                         <div className="car-content">
                             <h2>{car.name}</h2>
                             <p className="car-meta">
@@ -1615,6 +1732,7 @@ function CarDetailPage({ cars, language, texts }) {
     const carId = readCarIdFromQuery();
     const car = cars.find((item) => item.id === carId) || cars[0];
     const [dynamicTechnicalValues, setDynamicTechnicalValues] = useState({});
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     if (!car) {
         return (
@@ -1627,6 +1745,12 @@ function CarDetailPage({ cars, language, texts }) {
 
     const technicalRows = getTechnicalData(car);
     const equipmentRows = getEquipmentItems(car);
+    const detailImages = getCarImages(car);
+    const detailMainImage = detailImages[Math.min(selectedImageIndex, detailImages.length - 1)] || detailImages[0];
+
+    useEffect(() => {
+        setSelectedImageIndex(Number.isInteger(car?.thumbnailIndex) ? car.thumbnailIndex : 0);
+    }, [car?.id]);
 
     useEffect(() => {
         let active = true;
@@ -1648,7 +1772,18 @@ function CarDetailPage({ cars, language, texts }) {
     return (
         <>
             <section className="card detail-card">
-                <img src={car.image} alt={car.name} className="detail-image" />
+                <div>
+                    <img src={detailMainImage} alt={car.name} className="detail-image" />
+                    {detailImages.length > 1 && (
+                        <div className="detail-gallery-thumbs">
+                            {detailImages.map((src, index) => (
+                                <button key={`${src}-${index}`} type="button" className={index === selectedImageIndex ? "detail-thumb active" : "detail-thumb"} onClick={() => setSelectedImageIndex(index)}>
+                                    <img src={src} alt={`${car.name} ${index + 1}`} />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
                 <div>
                     <h2>{car.name}</h2>
                     <p className="car-meta">
@@ -1710,6 +1845,9 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [isLogged, setIsLogged] = useState(localStorage.getItem(CMS_AUTH_KEY) === "1");
     const [credentials, setCredentials] = useState({ username: "", password: "" });
     const [error, setError] = useState("");
+    const [editingCarId, setEditingCarId] = useState(null);
+    const [dragImageIndex, setDragImageIndex] = useState(null);
+    const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
     const [form, setForm] = useState({
         name: "",
         brand: "",
@@ -1724,7 +1862,8 @@ function CmsPage({ cars, setCars, language, texts }) {
         fuel: "",
         transmission: "Automat",
         manualGears: "",
-        image: "",
+        images: [],
+        thumbnailIndex: 0,
         description: "",
         legal: "",
         equipment: "",
@@ -1732,6 +1871,116 @@ function CmsPage({ cars, setCars, language, texts }) {
     });
     const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
     const [equipmentChecklist, setEquipmentChecklist] = useState(createInitialEquipmentChecklistState);
+    const cmsUiTexts = useMemo(() => {
+        if (language === "de") {
+            return {
+                edit: "Bearbeiten",
+                update: "Änderungen speichern",
+                cancelEdit: "Bearbeitung abbrechen",
+                setThumbnail: "Als Vorschau festlegen",
+                thumbnail: "Vorschau",
+                removeImage: "Entfernen",
+                imageReadError: "Hochgeladene Bilder konnten nicht gelesen werden.",
+                dragHint: "Zum Ändern der Reihenfolge ziehen",
+                keyboardHint: "Mit Pfeiltasten verschieben"
+            };
+        }
+        if (language === "en") {
+            return {
+                edit: "Edit",
+                update: "Save changes",
+                cancelEdit: "Cancel edit",
+                setThumbnail: "Set as thumbnail",
+                thumbnail: "Thumbnail",
+                removeImage: "Remove",
+                imageReadError: "Unable to read uploaded images.",
+                dragHint: "Drag to reorder",
+                keyboardHint: "Move with arrow keys"
+            };
+        }
+        if (language === "cs") {
+            return {
+                edit: "Upravit",
+                update: "Uložit změny",
+                cancelEdit: "Zrušit úpravy",
+                setThumbnail: "Nastavit náhled",
+                thumbnail: "Náhled",
+                removeImage: "Odstranit",
+                imageReadError: "Nepodařilo se načíst nahrané obrázky.",
+                dragHint: "Přetáhněte pro změnu pořadí",
+                keyboardHint: "Přesuňte šipkami"
+            };
+        }
+        return {
+            edit: "Upraviť",
+            update: "Uložiť zmeny",
+            cancelEdit: "Zrušiť úpravu",
+            setThumbnail: "Nastaviť náhľad",
+            thumbnail: "Náhľad",
+            removeImage: "Odstrániť",
+            imageReadError: "Nepodarilo sa načítať nahrané obrázky.",
+            dragHint: "Potiahni pre zmenu poradia",
+            keyboardHint: "Presuň šípkami"
+        };
+    }, [language]);
+
+    const moveFormImage = (fromIndex, toIndex) => {
+        setForm((prev) => {
+            if (!Array.isArray(prev.images) || prev.images.length < 2) {
+                return prev;
+            }
+            if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= prev.images.length || toIndex >= prev.images.length) {
+                return prev;
+            }
+
+            const nextImages = [...prev.images];
+            const [movedImage] = nextImages.splice(fromIndex, 1);
+            nextImages.splice(toIndex, 0, movedImage);
+
+            let nextThumbnailIndex = prev.thumbnailIndex;
+            if (prev.thumbnailIndex === fromIndex) {
+                nextThumbnailIndex = toIndex;
+            } else if (fromIndex < prev.thumbnailIndex && toIndex >= prev.thumbnailIndex) {
+                nextThumbnailIndex = prev.thumbnailIndex - 1;
+            } else if (fromIndex > prev.thumbnailIndex && toIndex <= prev.thumbnailIndex) {
+                nextThumbnailIndex = prev.thumbnailIndex + 1;
+            }
+
+            return {
+                ...prev,
+                images: nextImages,
+                thumbnailIndex: Math.max(0, Math.min(nextThumbnailIndex, nextImages.length - 1))
+            };
+        });
+    };
+
+    const handleImageCardKeyDown = (event, index) => {
+        if (!Array.isArray(form.images) || form.images.length < 2) {
+            return;
+        }
+
+        let targetIndex = null;
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+            targetIndex = Math.max(0, index - 1);
+        } else if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+            targetIndex = Math.min(form.images.length - 1, index + 1);
+        } else if (event.key === "Home") {
+            targetIndex = 0;
+        } else if (event.key === "End") {
+            targetIndex = form.images.length - 1;
+        }
+
+        if (targetIndex === null || targetIndex === index) {
+            return;
+        }
+
+        event.preventDefault();
+        moveFormImage(index, targetIndex);
+        window.requestAnimationFrame(() => {
+            const nextCard = document.getElementById(`cms-image-card-${targetIndex}`);
+            nextCard?.focus();
+        });
+    };
 
     const driveSelectOptions = useMemo(() => DRIVE_OPTIONS.map((option) => ({ value: option, label: option })), []);
     const fuelSelectOptions = useMemo(() => FUEL_OPTIONS.map((option) => ({ value: option, label: option })), []);
@@ -1753,16 +2002,95 @@ function CmsPage({ cars, setCars, language, texts }) {
         setIsLogged(false);
     };
 
-    const handleImageUpload = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) {
+    const resetCmsForm = () => {
+        setEditingCarId(null);
+        setDragImageIndex(null);
+        setDragOverImageIndex(null);
+        setForm({
+            name: "",
+            brand: "",
+            year: "",
+            priceCzk: "",
+            mileage: "",
+            horsepower: "",
+            doors: "",
+            seats: "",
+            previousOwners: "",
+            drive: "",
+            fuel: "",
+            transmission: "Automat",
+            manualGears: "",
+            images: [],
+            thumbnailIndex: 0,
+            description: "",
+            legal: "",
+            equipment: "",
+            available: true
+        });
+        setTechnicalChecklist(createInitialTechnicalChecklistState());
+        setEquipmentChecklist(createInitialEquipmentChecklistState());
+    };
+
+    const beginEditCar = (car) => {
+        setEditingCarId(car.id);
+        setError("");
+        setForm({
+            name: car.name || "",
+            brand: car.brand || "",
+            year: car.year || "",
+            priceCzk: String(car.priceCzk || ""),
+            mileage: car.mileage || "",
+            horsepower: String(car.horsepower || ""),
+            doors: String(car.doors || ""),
+            seats: String(car.seats || ""),
+            previousOwners: String(car.previousOwners ?? 0),
+            drive: car.drive || "",
+            fuel: car.fuel || "",
+            transmission: car.transmission || "Automat",
+            manualGears: String(car.manualGears || ""),
+            images: getCarImages(car),
+            thumbnailIndex: Number.isInteger(car.thumbnailIndex) ? car.thumbnailIndex : 0,
+            description: car.description || "",
+            legal: car.legal || "",
+            equipment: car.equipment || "",
+            available: Boolean(car.available)
+        });
+        setTechnicalChecklist(createTechnicalChecklistFromCar(car));
+        setEquipmentChecklist(createEquipmentChecklistFromCar(car));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const handleImageUpload = async (event) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) {
             return;
         }
-        const reader = new FileReader();
-        reader.onload = () => {
-            setForm((prev) => ({ ...prev, image: reader.result }));
-        };
-        reader.readAsDataURL(file);
+        try {
+            const uploadedImages = await readFilesAsDataUrls(files);
+            setForm((prev) => {
+                const nextImages = [...prev.images, ...uploadedImages].filter(Boolean);
+                return {
+                    ...prev,
+                    images: nextImages,
+                    thumbnailIndex: Math.min(prev.thumbnailIndex, Math.max(0, nextImages.length - 1))
+                };
+            });
+            event.target.value = "";
+        } catch {
+            setError(cmsUiTexts.imageReadError);
+        }
+    };
+
+    const removeFormImage = (index) => {
+        setForm((prev) => {
+            const nextImages = prev.images.filter((_, imageIndex) => imageIndex !== index);
+            const nextThumbnailIndex = nextImages.length === 0 ? 0 : Math.min(prev.thumbnailIndex === index ? 0 : prev.thumbnailIndex, nextImages.length - 1);
+            return {
+                ...prev,
+                images: nextImages,
+                thumbnailIndex: nextThumbnailIndex
+            };
+        });
     };
 
     const addCar = (event) => {
@@ -1781,8 +2109,11 @@ function CmsPage({ cars, setCars, language, texts }) {
             return;
         }
 
-        const newCar = {
-            id: `zmr-${Date.now()}`,
+        const images = form.images.length > 0 ? form.images : ["https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80"];
+        const thumbnailIndex = Math.max(0, Math.min(Number(form.thumbnailIndex) || 0, images.length - 1));
+
+        const baseCar = {
+            id: editingCarId || `zmr-${Date.now()}`,
             name: form.name,
             brand: form.brand,
             year: form.year,
@@ -1796,7 +2127,9 @@ function CmsPage({ cars, setCars, language, texts }) {
             fuel: normalizeFuelValue(form.fuel),
             transmission,
             manualGears,
-            image: form.image || "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80",
+            images,
+            thumbnailIndex,
+            image: images[thumbnailIndex] || images[0],
             description: form.description,
             legal: form.legal,
             technicalData,
@@ -1805,33 +2138,13 @@ function CmsPage({ cars, setCars, language, texts }) {
             available: form.available
         };
 
-        const updated = [newCar, ...cars];
+        const updated = editingCarId
+            ? cars.map((car) => (car.id === editingCarId ? { ...car, ...baseCar } : car))
+            : [baseCar, ...cars];
         setCars(updated);
         saveCars(updated);
         setError("");
-
-        setForm({
-            name: "",
-            brand: "",
-            year: "",
-            priceCzk: "",
-            mileage: "",
-            horsepower: "",
-            doors: "",
-            seats: "",
-            previousOwners: "",
-            drive: "",
-            fuel: "",
-            transmission: "Automat",
-            manualGears: "",
-            image: "",
-            description: "",
-            legal: "",
-            equipment: "",
-            available: true
-        });
-        setTechnicalChecklist(createInitialTechnicalChecklistState());
-        setEquipmentChecklist(createInitialEquipmentChecklistState());
+        resetCmsForm();
     };
 
     const toggleAvailability = (id) => {
@@ -1907,7 +2220,53 @@ function CmsPage({ cars, setCars, language, texts }) {
                     {form.transmission === "Manuál" && (
                         <label>{texts.cms.fields.manualGears || "Počet prevodov"}<input type="number" min="1" max="10" value={form.manualGears} onChange={(e) => setForm((prev) => ({ ...prev, manualGears: e.target.value }))} required /></label>
                     )}
-                    <label className="full-width">{texts.cms.fields.image}<input type="file" accept="image/*" onChange={handleImageUpload} /></label>
+                    <label className="full-width">{texts.cms.fields.image}<input type="file" accept="image/*" multiple onChange={handleImageUpload} /></label>
+                    {form.images.length > 0 && (
+                        <div className="full-width cms-image-gallery">
+                            {form.images.map((src, index) => (
+                                <article
+                                    key={`${src}-${index}`}
+                                    id={`cms-image-card-${index}`}
+                                    className={`${index === form.thumbnailIndex ? "cms-image-item active" : "cms-image-item"}${dragImageIndex === index ? " dragging" : ""}${dragOverImageIndex === index && dragImageIndex !== index ? " drag-over" : ""}`}
+                                    draggable
+                                    title={`${cmsUiTexts.dragHint} • ${cmsUiTexts.keyboardHint}`}
+                                    tabIndex={0}
+                                    aria-label={`${cmsUiTexts.thumbnail} ${index + 1}. ${cmsUiTexts.keyboardHint}`}
+                                    onDragStart={(event) => {
+                                        setDragImageIndex(index);
+                                        setDragOverImageIndex(index);
+                                        event.dataTransfer.effectAllowed = "move";
+                                    }}
+                                    onDragOver={(event) => {
+                                        event.preventDefault();
+                                        setDragOverImageIndex(index);
+                                        event.dataTransfer.dropEffect = "move";
+                                    }}
+                                    onDrop={(event) => {
+                                        event.preventDefault();
+                                        if (dragImageIndex !== null) {
+                                            moveFormImage(dragImageIndex, index);
+                                        }
+                                        setDragImageIndex(null);
+                                        setDragOverImageIndex(null);
+                                    }}
+                                    onDragEnd={() => {
+                                        setDragImageIndex(null);
+                                        setDragOverImageIndex(null);
+                                    }}
+                                    onKeyDown={(event) => handleImageCardKeyDown(event, index)}
+                                >
+                                    <img src={src} alt={`Preview ${index + 1}`} />
+                                    <div className="cms-image-actions">
+                                        <button type="button" className="button-link button-secondary" onClick={() => setForm((prev) => ({ ...prev, thumbnailIndex: index }))}>
+                                            {index === form.thumbnailIndex ? cmsUiTexts.thumbnail : cmsUiTexts.setThumbnail}
+                                        </button>
+                                        <button type="button" className="button-link danger" onClick={() => removeFormImage(index)}>{cmsUiTexts.removeImage}</button>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    )}
                     <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
                     <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
                     <div className="full-width checklist-block">
@@ -1973,7 +2332,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                         />
                         {texts.cms.fields.available}
                     </label>
-                    <button type="submit" className="button-link">{texts.cms.addButton}</button>
+                    <button type="submit" className="button-link">{editingCarId ? cmsUiTexts.update : texts.cms.addButton}</button>
+                    {editingCarId && (
+                        <button type="button" className="button-link button-secondary" onClick={resetCmsForm}>{cmsUiTexts.cancelEdit}</button>
+                    )}
                 </form>
             </section>
 
@@ -1992,6 +2354,9 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 </p>
                             </div>
                             <div className="cms-actions">
+                                <button className="button-link button-secondary" onClick={() => beginEditCar(car)}>
+                                    {cmsUiTexts.edit}
+                                </button>
                                 <button className="button-link button-secondary" onClick={() => toggleAvailability(car.id)}>
                                     {texts.cms.toggleAvailability}
                                 </button>

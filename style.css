@@ -810,6 +810,21 @@ a:hover {
 	color: var(--text);
 }
 
+.range-fill-track {
+	height: 8px;
+	border-radius: 999px;
+	background: linear-gradient(
+		90deg,
+		rgba(255, 255, 255, 0.16) 0%,
+		rgba(255, 255, 255, 0.16) var(--range-start),
+		rgba(222, 59, 59, 0.9) var(--range-start),
+		rgba(222, 59, 59, 0.9) var(--range-end),
+		rgba(255, 255, 255, 0.16) var(--range-end),
+		rgba(255, 255, 255, 0.16) 100%
+	);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
 .hp-range-sliders {
 	display: grid;
 	gap: 8px;
@@ -938,6 +953,84 @@ a:hover {
 	font-size: 0.92rem;
 }
 
+.cms-image-gallery {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.cms-image-item {
+	display: grid;
+	gap: 8px;
+	padding: 8px;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.03);
+	cursor: grab;
+}
+
+.cms-image-item.active {
+	border-color: rgba(222, 59, 59, 0.58);
+	box-shadow: 0 0 0 2px rgba(222, 59, 59, 0.2);
+}
+
+.cms-image-item.dragging {
+	opacity: 0.55;
+	cursor: grabbing;
+}
+
+.cms-image-item.drag-over {
+	border-color: rgba(255, 255, 255, 0.52);
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+}
+
+.cms-image-item:focus-visible {
+	outline: none;
+	border-color: rgba(222, 59, 59, 0.64);
+	box-shadow: 0 0 0 3px rgba(222, 59, 59, 0.24);
+}
+
+.cms-image-item img {
+	width: 100%;
+	height: 120px;
+	object-fit: cover;
+	border-radius: 10px;
+}
+
+.cms-image-actions {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.detail-gallery-thumbs {
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+	flex-wrap: wrap;
+}
+
+.detail-thumb {
+	padding: 0;
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.03);
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.detail-thumb img {
+	width: 78px;
+	height: 58px;
+	object-fit: cover;
+	display: block;
+}
+
+.detail-thumb.active {
+	border-color: rgba(222, 59, 59, 0.58);
+	box-shadow: 0 0 0 2px rgba(222, 59, 59, 0.2);
+}
+
 .cms-actions {
 	display: flex;
 	gap: 10px;
@@ -987,6 +1080,10 @@ a:hover {
 
 	.technical-grid-cms,
 	.equipment-grid-cms {
+		grid-template-columns: 1fr;
+	}
+
+	.cms-image-gallery {
 		grid-template-columns: 1fr;
 	}
 }
