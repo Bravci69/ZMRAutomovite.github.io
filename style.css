@@ -64,10 +64,10 @@ body {
 
 .nav {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	justify-content: flex-end;
 	gap: 10px;
-	max-width: 560px;
+	max-width: 640px;
 	width: 100%;
 }
 
@@ -78,7 +78,7 @@ body {
 	gap: 12px;
 	flex-wrap: wrap;
 	justify-content: flex-end;
-	width: min(620px, 100%);
+	width: min(700px, 100%);
 	min-height: 96px;
 }
 
@@ -127,7 +127,7 @@ body {
 	transition: all 0.2s ease;
 	white-space: nowrap;
 	text-align: center;
-	min-width: 106px;
+	min-width: 0;
 }
 
 .nav-link:hover {
@@ -218,6 +218,64 @@ a:hover {
 	border-left: 4px solid var(--accent);
 	border-radius: 14px;
 	padding: 18px;
+}
+
+.services-section,
+.services-cta {
+	display: grid;
+	gap: 14px;
+}
+
+.services-highlights-grid,
+.services-process-grid,
+.services-deliverables-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 12px;
+}
+
+.services-highlight-item,
+.services-process-item,
+.services-deliverable-item {
+	background: rgba(27, 39, 57, 0.9);
+	border: 1px solid var(--line);
+	border-radius: 14px;
+	padding: 16px;
+}
+
+.services-highlight-item,
+.services-process-item {
+	display: grid;
+	gap: 8px;
+}
+
+.services-highlight-icon {
+	width: 36px;
+	height: 36px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
+	background: rgba(222, 59, 59, 0.18);
+	border: 1px solid rgba(222, 59, 59, 0.4);
+	font-size: 1.05rem;
+}
+
+.services-deliverable-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 600;
+	color: #dfe8f6;
+}
+
+.services-deliverable-item span:first-child {
+	color: #ff8f8f;
+	font-size: 0.95rem;
+}
+
+.services-cta .button-link {
+	justify-self: start;
 }
 
 .map-wrap {
@@ -1226,6 +1284,7 @@ a:hover {
 	}
 
 	.nav {
+		flex-wrap: wrap;
 		justify-content: flex-start;
 		max-width: 100%;
 	}

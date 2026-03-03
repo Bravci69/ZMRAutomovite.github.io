@@ -31,6 +31,88 @@ const RESULTS_LABELS = {
     de: "Ergebnisse",
     en: "results"
 };
+const SERVICES_PAGE_CONTENT = {
+    cs: {
+        highlightsTitle: "Co získáte v praxi",
+        highlights: [
+            { icon: "🛡️", title: "Prověřený technický stav", text: "Diagnostika, vizuální kontrola a vyhodnocení rizik před koupí." },
+            { icon: "📑", title: "Jasná dokumentace", text: "Srozumitelný výstup s doporučením, prioritami a odhadem nákladů." },
+            { icon: "🚚", title: "Import bez stresu", text: "Koordinace přepravy, formality a příprava na registraci i STK." }
+        ],
+        processTitle: "Jak spolupráce probíhá",
+        processSteps: [
+            { title: "1. Konzultace", text: "Upřesníme požadavky, rozpočet a vhodné modely." },
+            { title: "2. Kontrola vozidla", text: "Prověříme technický stav, historii a reálnou hodnotu." },
+            { title: "3. Dovoz a administrativa", text: "Zajistíme logistiku, dokumenty a legislativní kroky." },
+            { title: "4. Předání a podpora", text: "Předáme vozidlo s doporučením pro servis a provoz." }
+        ],
+        deliverablesTitle: "Výstupy služby",
+        deliverables: ["Kontrolní report vozidla", "Doporučení oprav podle priority", "Ověření historie a právního stavu", "Podpora při registraci a STK"],
+        ctaTitle: "Potřebujete konzultaci k vozu?",
+        ctaText: "Pošlete poptávku a připravíme konkrétní postup podle vaší situace.",
+        ctaButton: "Kontaktovat nás"
+    },
+    sk: {
+        highlightsTitle: "Čo získate v praxi",
+        highlights: [
+            { icon: "🛡️", title: "Overený technický stav", text: "Diagnostika, vizuálna kontrola a vyhodnotenie rizík pred kúpou." },
+            { icon: "📑", title: "Jasná dokumentácia", text: "Zrozumiteľný výstup s odporúčaniami, prioritami a odhadom nákladov." },
+            { icon: "🚚", title: "Dovoz bez stresu", text: "Koordinácia prepravy, administratívy a prípravy na registráciu aj STK." }
+        ],
+        processTitle: "Ako prebieha spolupráca",
+        processSteps: [
+            { title: "1. Konzultácia", text: "Spresníme požiadavky, rozpočet a vhodné modely." },
+            { title: "2. Kontrola vozidla", text: "Preveríme technický stav, históriu a reálnu hodnotu." },
+            { title: "3. Dovoz a administratíva", text: "Zabezpečíme logistiku, dokumenty a legislatívne kroky." },
+            { title: "4. Odovzdanie a podpora", text: "Vozidlo odovzdáme s odporúčaním pre servis a prevádzku." }
+        ],
+        deliverablesTitle: "Výstupy služby",
+        deliverables: ["Kontrolný report vozidla", "Odporúčanie opráv podľa priority", "Overenie histórie a právneho stavu", "Podpora pri registrácii a STK"],
+        ctaTitle: "Potrebujete konzultáciu k vozidlu?",
+        ctaText: "Pošlite dopyt a pripravíme konkrétny postup podľa vašej situácie.",
+        ctaButton: "Kontaktovať nás"
+    },
+    de: {
+        highlightsTitle: "Ihr konkreter Mehrwert",
+        highlights: [
+            { icon: "🛡️", title: "Geprüfter technischer Zustand", text: "Diagnose, Sichtprüfung und Risikobewertung vor dem Kauf." },
+            { icon: "📑", title: "Klare Dokumentation", text: "Verständlicher Bericht mit Prioritäten und Kosteneinschätzung." },
+            { icon: "🚚", title: "Import ohne Stress", text: "Koordination von Transport, Formalitäten und Zulassungsvorbereitung." }
+        ],
+        processTitle: "So läuft die Zusammenarbeit",
+        processSteps: [
+            { title: "1. Beratung", text: "Wir klären Anforderungen, Budget und passende Modelle." },
+            { title: "2. Fahrzeugprüfung", text: "Wir prüfen Zustand, Historie und realistischen Marktwert." },
+            { title: "3. Import & Formalitäten", text: "Wir übernehmen Logistik, Unterlagen und rechtliche Schritte." },
+            { title: "4. Übergabe & Support", text: "Sie erhalten das Fahrzeug mit klaren Empfehlungen für Betrieb und Service." }
+        ],
+        deliverablesTitle: "Leistungsumfang im Ergebnis",
+        deliverables: ["Detaillierter Prüfbericht", "Empfehlung von Reparaturen nach Priorität", "Prüfung von Historie und Rechtsstatus", "Unterstützung bei Zulassung und HU/STK"],
+        ctaTitle: "Benötigen Sie eine Fahrzeugberatung?",
+        ctaText: "Senden Sie uns Ihre Anfrage und wir erstellen einen klaren nächsten Schritt.",
+        ctaButton: "Kontakt aufnehmen"
+    },
+    en: {
+        highlightsTitle: "What you get",
+        highlights: [
+            { icon: "🛡️", title: "Verified technical condition", text: "Diagnostics, visual inspection and risk assessment before purchase." },
+            { icon: "📑", title: "Clear documentation", text: "Actionable report with priorities and estimated follow-up costs." },
+            { icon: "🚚", title: "Import without stress", text: "Transport, paperwork and registration-readiness handled end-to-end." }
+        ],
+        processTitle: "How we work",
+        processSteps: [
+            { title: "1. Consultation", text: "We define your requirements, budget and model shortlist." },
+            { title: "2. Vehicle inspection", text: "We verify condition, history and fair market value." },
+            { title: "3. Import & administration", text: "We handle logistics, documents and compliance steps." },
+            { title: "4. Handover & support", text: "You get the vehicle with practical maintenance recommendations." }
+        ],
+        deliverablesTitle: "Service deliverables",
+        deliverables: ["Vehicle inspection report", "Priority-based repair recommendations", "History and legal-status verification", "Support for registration and STK/TÜV readiness"],
+        ctaTitle: "Need advice for a specific car?",
+        ctaText: "Send us your request and we will prepare a concrete next-step plan.",
+        ctaButton: "Contact us"
+    }
+};
 const AUTO_RESET_FILTERS_LABELS = {
     cs: "Filtry byly automaticky resetovány, aby se zobrazila všechna vozidla.",
     sk: "Filtre boli automaticky resetované, aby sa zobrazili všetky vozidlá.",
@@ -1554,7 +1636,9 @@ function AboutPage({ texts }) {
     );
 }
 
-function ServicesPage({ texts }) {
+function ServicesPage({ texts, language }) {
+    const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.sk;
+
     return (
         <>
             <section className="card">
@@ -1569,6 +1653,49 @@ function ServicesPage({ texts }) {
                         <p>{service.text}</p>
                     </article>
                 ))}
+            </section>
+
+            <section className="card services-section">
+                <h2>{serviceContent.highlightsTitle}</h2>
+                <div className="services-highlights-grid">
+                    {serviceContent.highlights.map((item) => (
+                        <article key={item.title} className="services-highlight-item">
+                            <span className="services-highlight-icon" aria-hidden="true">{item.icon}</span>
+                            <h3>{item.title}</h3>
+                            <p>{item.text}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="card services-section">
+                <h2>{serviceContent.processTitle}</h2>
+                <div className="services-process-grid">
+                    {serviceContent.processSteps.map((step) => (
+                        <article key={step.title} className="services-process-item">
+                            <h3>{step.title}</h3>
+                            <p>{step.text}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="card services-section">
+                <h2>{serviceContent.deliverablesTitle}</h2>
+                <div className="services-deliverables-grid">
+                    {serviceContent.deliverables.map((item) => (
+                        <div key={item} className="services-deliverable-item">
+                            <span aria-hidden="true">✔</span>
+                            <span>{item}</span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className="card services-cta">
+                <h2>{serviceContent.ctaTitle}</h2>
+                <p>{serviceContent.ctaText}</p>
+                <a href="kontakt.html" className="button-link">{serviceContent.ctaButton}</a>
             </section>
         </>
     );
@@ -2830,7 +2957,7 @@ function App() {
                 return {
                     title: texts.pages.services.title,
                     subtitle: texts.pages.services.subtitle,
-                    content: <ServicesPage texts={texts} />
+                    content: <ServicesPage texts={texts} language={language} />
                 };
             case "cars":
                 return {
