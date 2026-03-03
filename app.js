@@ -5,6 +5,7 @@ const CMS_AUTH_KEY = "zmrCmsAuth";
 const LANGUAGE_STORAGE_KEY = "zmrLanguage";
 const CZK_TO_EUR_RATE = 25;
 const HORSEPOWER_MIN_FILTER = 256;
+const CARS_PER_PAGE = 12;
 const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
 const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || "/api/reservation";
@@ -1624,34 +1625,11 @@ function DarkSelect({ value, onChange, options, placeholder, ariaLabel }) {
 }
 
 function getCars() {
-    const fallbackCars = defaultCars.map((car, index) => normalizeCar(car, index));
-    const raw = localStorage.getItem(CARS_STORAGE_KEY);
-    if (!raw) {
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(fallbackCars));
-        return fallbackCars;
-    }
-
-    try {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-            const normalized = parsed.map((car, index) => normalizeCar(car, index));
-            localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(normalized));
-            return normalized;
-        }
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(fallbackCars));
-        return fallbackCars;
-    } catch {
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(fallbackCars));
-        return fallbackCars;
-    }
+    return [];
 }
 
-function saveCars(cars) {
-    try {
-        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(cars));
-    } catch (error) {
-        console.error("Nepodarilo sa uložiť vozidlá do localStorage.", error);
-    }
+function saveCars() {
+    return;
 }
 function isDataUrlImage(value) {
     return typeof value === "string" && value.trim().toLowerCase().startsWith("data:");
@@ -2151,20 +2129,19 @@ function Navigation({ activePage, texts, className = "", onNavigate }) {
 }
 
 function LanguageSwitcher({ language, onChange, texts }) {
+    const languageSelectOptions = useMemo(() => LANGUAGE_OPTIONS.map((item) => ({
+        value: item.code,
+        label: `${item.flag} ${item.label}`
+    })), []);
+
     return (
         <div className="language-switcher" role="group" aria-label={texts.common.language}>
-            {LANGUAGE_OPTIONS.map((item) => (
-                <button
-                    key={item.code}
-                    type="button"
-                    className={item.code === language ? "flag-button active" : "flag-button"}
-                    onClick={() => onChange(item.code)}
-                    aria-label={item.label}
-                    title={item.label}
-                >
-                    <span aria-hidden="true">{item.flag}</span>
-                </button>
-            ))}
+            <DarkSelect
+                value={language}
+                onChange={(value) => onChange(value || "sk")}
+                options={languageSelectOptions}
+                ariaLabel={texts.common.language}
+            />
         </div>
     );
 }
@@ -2501,6 +2478,7 @@ function CarsPage({ cars, language, texts }) {
     const resultsLabel = RESULTS_LABELS[language] || RESULTS_LABELS.cs;
     const autoResetNoticeLabel = AUTO_RESET_FILTERS_LABELS[language] || AUTO_RESET_FILTERS_LABELS.cs;
     const [showAutoResetNotice, setShowAutoResetNotice] = useState(false);
+    const [pageLimit] = useState(CARS_PER_PAGE);
 
     const fuelOptions = useMemo(() => FUEL_OPTIONS, []);
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
@@ -2567,6 +2545,7 @@ function CarsPage({ cars, language, texts }) {
         }
         return [];
     }, [filteredCars, cars]);
+    const limitedCarsForRender = useMemo(() => carsForRender.slice(0, pageLimit), [carsForRender, pageLimit]);
 
     const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || hasSeatsFilter || doors || brand || drive || transmission);
     const activeFilterChips = [];
@@ -2719,7 +2698,7 @@ function CarsPage({ cars, language, texts }) {
                 <div className="filters-head">
                     <h2>{texts.cars.filterTitle}</h2>
                     <div className="filters-tools">
-                        <span className="results-badge">{carsForRender.length} {resultsLabel}</span>
+                        <span className="results-badge">{limitedCarsForRender.length} {resultsLabel}</span>
                         <button type="button" className="filters-reset" onClick={clearFilters} disabled={!hasActiveFilters}>
                             ↺ {resetFiltersLabel}
                         </button>
@@ -2836,7 +2815,7 @@ function CarsPage({ cars, language, texts }) {
             </section>
 
             <section className="grid wide-grid">
-                {carsForRender.map((car) => (
+                {limitedCarsForRender.map((car) => (
                     (() => {
                         const localizedName = getLocalizedCarText(car, "name", language);
                         const localizedDescription = getLocalizedCarText(car, "description", language);
@@ -2867,7 +2846,7 @@ function CarsPage({ cars, language, texts }) {
                 ))}
             </section>
 
-            {carsForRender.length === 0 && (
+            {limitedCarsForRender.length === 0 && (
                 <section className="card">
                     <p>{texts.cars.noResults}</p>
                 </section>
@@ -3803,9 +3782,17 @@ function App() {
             return;
         }
         saveCars(cars);
-        if (isCloudSyncReady) {
-            saveCarsToCloud(cars);
+        if (!isCloudSyncReady) {
+            return;
         }
+
+        const syncTimeoutId = window.setTimeout(() => {
+            saveCarsToCloud(cars);
+        }, 650);
+
+        return () => {
+            window.clearTimeout(syncTimeoutId);
+        };
     }, [cars, isCloudSyncReady, isCarsDataPage]);
 
     useEffect(() => {
@@ -3869,6 +3856,8 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+
 
 
 
