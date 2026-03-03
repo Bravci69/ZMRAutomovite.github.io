@@ -694,6 +694,17 @@ a:hover {
 	cursor: not-allowed;
 }
 
+.filters-auto-reset-notice {
+	margin: 0;
+	padding: 10px 12px;
+	border-radius: 12px;
+	border: 1px solid rgba(222, 59, 59, 0.36);
+	background: rgba(222, 59, 59, 0.12);
+	color: #ffd6d6;
+	font-size: 0.88rem;
+	font-weight: 700;
+}
+
 .search-row {
 	display: grid;
 	gap: 8px;
@@ -936,7 +947,7 @@ a:hover {
 	height: 18px;
 	box-shadow: none;
 	background: transparent;
-	pointer-events: none;
+	pointer-events: auto;
 }
 
 .hp-range-sliders input[type="range"].range-input-from {

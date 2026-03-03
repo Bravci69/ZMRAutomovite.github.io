@@ -31,6 +31,12 @@ const RESULTS_LABELS = {
     de: "Ergebnisse",
     en: "results"
 };
+const AUTO_RESET_FILTERS_LABELS = {
+    cs: "Filtry byly automaticky resetovány, aby se zobrazila všechna vozidla.",
+    sk: "Filtre boli automaticky resetované, aby sa zobrazili všetky vozidlá.",
+    de: "Filter wurden automatisch zurückgesetzt, damit alle Fahrzeuge angezeigt werden.",
+    en: "Filters were reset automatically to show all vehicles."
+};
 
 const TECHNICAL_CHECKLIST_FIELDS = [
     { label: "Vehicle condition", defaultValue: "Used vehicle", defaultIcon: "🚗" },
@@ -1604,6 +1610,8 @@ function CarsPage({ cars, language, texts }) {
     const [transmission, setTransmission] = useState("");
     const resetFiltersLabel = RESET_LABELS[language] || RESET_LABELS.cs;
     const resultsLabel = RESULTS_LABELS[language] || RESULTS_LABELS.cs;
+    const autoResetNoticeLabel = AUTO_RESET_FILTERS_LABELS[language] || AUTO_RESET_FILTERS_LABELS.cs;
+    const [showAutoResetNotice, setShowAutoResetNotice] = useState(false);
 
     const fuelOptions = useMemo(() => FUEL_OPTIONS, []);
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
@@ -1774,6 +1782,7 @@ function CarsPage({ cars, language, texts }) {
 
     const clearFilters = () => {
         setSearch("");
+        setDebouncedSearch("");
         setFuel("");
         setHorsepowerFrom("");
         setHorsepowerTo("");
@@ -1784,6 +1793,27 @@ function CarsPage({ cars, language, texts }) {
         setDrive("");
         setTransmission("");
     };
+
+    useEffect(() => {
+        if (filteredCars.length === 0 && hasActiveFilters) {
+            clearFilters();
+            setShowAutoResetNotice(true);
+        }
+    }, [filteredCars.length, hasActiveFilters]);
+
+    useEffect(() => {
+        if (!showAutoResetNotice) {
+            return undefined;
+        }
+
+        const timeoutId = window.setTimeout(() => {
+            setShowAutoResetNotice(false);
+        }, 3200);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [showAutoResetNotice]);
 
     const applyQuickSeats = (minSeats) => {
         setSeatsFrom(String(Math.max(seatsMinBound, minSeats)));
@@ -1804,6 +1834,7 @@ function CarsPage({ cars, language, texts }) {
                         </button>
                     </div>
                 </div>
+                {showAutoResetNotice && <p className="filters-auto-reset-notice">{autoResetNoticeLabel}</p>}
                 <label className="search-row">
                     <span>{texts.cars.search}</span>
                     <div className="search-input-wrap">
