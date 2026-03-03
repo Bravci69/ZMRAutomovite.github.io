@@ -3400,11 +3400,13 @@ function CmsPage({ cars, setCars, language, texts }) {
                 <h2>{texts.cms.loginTitle}</h2>
                 <p>{texts.cms.loginInfo}</p>
                 {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
-                <form className="form-grid" onSubmit={handleLogin}>
+                <form className="form-grid" onSubmit={handleLogin} autoComplete="on">
                     <label>
                         {texts.cms.username}
                         <input
                             type="email"
+                            name="cmsEmail"
+                            autoComplete="username"
                             value={credentials.email}
                             onChange={(e) => setCredentials((prev) => ({ ...prev, email: e.target.value }))}
                             required
@@ -3414,6 +3416,8 @@ function CmsPage({ cars, setCars, language, texts }) {
                         {texts.cms.password}
                         <input
                             type="password"
+                            name="cmsPassword"
+                            autoComplete="current-password"
                             value={credentials.password}
                             onChange={(e) => setCredentials((prev) => ({ ...prev, password: e.target.value }))}
                             required
@@ -3435,10 +3439,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                 </div>
                 <p>{texts.cms.intro}</p>
                 {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
-                <form className="form-grid" onSubmit={addCar}>
+                <form className="form-grid" onSubmit={addCar} autoComplete="off">
                     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMessage}</p>
-                    <label>{texts.cms.fields.name}<input type="text" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
-                    <label>{texts.cms.fields.brand}<input type="text" value={form.brand} onChange={(e) => setForm((prev) => ({ ...prev, brand: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.name}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.brand}<input type="text" name="vehicleBrand" autoComplete="off" value={form.brand} onChange={(e) => setForm((prev) => ({ ...prev, brand: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.year}<input type="text" value={form.year} onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.priceCzk}<input type="number" min="0" value={form.priceCzk} onChange={(e) => setForm((prev) => ({ ...prev, priceCzk: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.mileage}<input type="text" value={form.mileage} onChange={(e) => setForm((prev) => ({ ...prev, mileage: e.target.value }))} required /></label>
