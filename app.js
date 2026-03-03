@@ -2466,6 +2466,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         description: "",
         legal: "",
         equipment: "",
+        status: "available",
         reserved: false,
         available: true
     });
@@ -2488,7 +2489,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 imageRemoved: (position, total) => `Bild ${position} entfernt. Verbleibend: ${total}.`,
                 imagesAdded: (added, total) => `Es wurden ${added} Bilder hinzugefügt. Insgesamt: ${total}.`,
                 reservedLabel: "Fahrzeug ist reserviert",
-                toggleReserved: "Reservierung umschalten"
+                toggleReserved: "Reservierung umschalten",
+                statusLabel: "Fahrzeugstatus",
+                statusAvailable: "Verfügbar",
+                statusReserved: "Reserviert",
+                statusUnavailable: "Nicht verfügbar"
             };
         }
         if (language === "en") {
@@ -2507,7 +2512,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 imageRemoved: (position, total) => `Image ${position} removed. Remaining: ${total}.`,
                 imagesAdded: (added, total) => `${added} images added. Total: ${total}.`,
                 reservedLabel: "Vehicle is reserved",
-                toggleReserved: "Toggle reservation"
+                toggleReserved: "Toggle reservation",
+                statusLabel: "Vehicle status",
+                statusAvailable: "Available",
+                statusReserved: "Reserved",
+                statusUnavailable: "Unavailable"
             };
         }
         if (language === "cs") {
@@ -2526,7 +2535,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 imageRemoved: (position, total) => `Obrázek ${position} odstraněn. Zbývá: ${total}.`,
                 imagesAdded: (added, total) => `Přidáno obrázků: ${added}. Celkem: ${total}.`,
                 reservedLabel: "Vozidlo je rezervované",
-                toggleReserved: "Přepnout rezervaci"
+                toggleReserved: "Přepnout rezervaci",
+                statusLabel: "Stav vozidla",
+                statusAvailable: "Dostupné",
+                statusReserved: "Rezervováno",
+                statusUnavailable: "Nedostupné"
             };
         }
         return {
@@ -2544,9 +2557,40 @@ function CmsPage({ cars, setCars, language, texts }) {
             imageRemoved: (position, total) => `Obrázok ${position} odstránený. Zostáva: ${total}.`,
             imagesAdded: (added, total) => `Pridané obrázky: ${added}. Celkovo: ${total}.`,
             reservedLabel: "Vozidlo je rezervované",
-            toggleReserved: "Prepnúť rezerváciu"
+            toggleReserved: "Prepnúť rezerváciu",
+            statusLabel: "Stav vozidla",
+            statusAvailable: "Dostupné",
+            statusReserved: "Rezervované",
+            statusUnavailable: "Nedostupné"
         };
     }, [language]);
+
+    const getStatusFromCar = (car) => {
+        if (!car?.available) {
+            return "unavailable";
+        }
+        if (car?.reserved) {
+            return "reserved";
+        }
+        return "available";
+    };
+
+    const applyStatusToCar = (car, status) => {
+        const nextStatus = ["available", "reserved", "unavailable"].includes(status) ? status : "available";
+        if (nextStatus === "reserved") {
+            return { ...car, available: true, reserved: true };
+        }
+        if (nextStatus === "unavailable") {
+            return { ...car, available: false, reserved: false };
+        }
+        return { ...car, available: true, reserved: false };
+    };
+
+    const statusSelectOptions = useMemo(() => ([
+        { value: "available", label: cmsUiTexts.statusAvailable },
+        { value: "reserved", label: cmsUiTexts.statusReserved },
+        { value: "unavailable", label: cmsUiTexts.statusUnavailable }
+    ]), [cmsUiTexts]);
 
     const announceLiveMessage = (message) => {
         setLiveMessage("");
@@ -2658,6 +2702,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             description: "",
             legal: "",
             equipment: "",
+            status: "available",
             reserved: false,
             available: true
         });
@@ -2687,6 +2732,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             description: car.description || "",
             legal: car.legal || "",
             equipment: car.equipment || "",
+            status: getStatusFromCar(car),
             reserved: Boolean(car.reserved),
             available: Boolean(car.available)
         });
@@ -2772,17 +2818,25 @@ function CmsPage({ cars, setCars, language, texts }) {
             technicalData,
             equipmentItems,
             equipment: equipmentItems.length > 0 ? `Výbava: ${equipmentItems.slice(0, 8).join(", ")}` : form.equipment,
-            reserved: Boolean(form.reserved),
-            available: form.available
+            reserved: false,
+            available: true
         };
 
+        const carWithStatus = applyStatusToCar(baseCar, form.status);
+
         const updated = editingCarId
-            ? cars.map((car) => (car.id === editingCarId ? { ...car, ...baseCar } : car))
-            : [baseCar, ...cars];
+            ? cars.map((car) => (car.id === editingCarId ? { ...car, ...carWithStatus } : car))
+            : [carWithStatus, ...cars];
         setCars(updated);
         saveCars(updated);
         setError("");
         resetCmsForm();
+    };
+
+    const setCarStatus = (id, status) => {
+        const updated = cars.map((car) => car.id === id ? applyStatusToCar(car, status) : car);
+        setCars(updated);
+        saveCars(updated);
     };
 
     const toggleAvailability = (id) => {
@@ -2973,20 +3027,13 @@ function CmsPage({ cars, setCars, language, texts }) {
                     </div>
                     <label className="full-width">{texts.cms.fields.equipment}<textarea value={form.equipment} onChange={(e) => setForm((prev) => ({ ...prev, equipment: e.target.value }))} required /></label>
                     <label className="checkbox-row full-width">
-                        <input
-                            type="checkbox"
-                            checked={form.reserved}
-                            onChange={(e) => setForm((prev) => ({ ...prev, reserved: e.target.checked }))}
+                        {cmsUiTexts.statusLabel}
+                        <DarkSelect
+                            value={form.status}
+                            onChange={(value) => setForm((prev) => ({ ...prev, status: value || "available" }))}
+                            options={statusSelectOptions}
+                            ariaLabel={cmsUiTexts.statusLabel}
                         />
-                        {cmsUiTexts.reservedLabel}
-                    </label>
-                    <label className="checkbox-row full-width">
-                        <input
-                            type="checkbox"
-                            checked={form.available}
-                            onChange={(e) => setForm((prev) => ({ ...prev, available: e.target.checked }))}
-                        />
-                        {texts.cms.fields.available}
                     </label>
                     <button type="submit" className="button-link">{editingCarId ? cmsUiTexts.update : texts.cms.addButton}</button>
                     {editingCarId && (
@@ -3013,12 +3060,14 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 <button className="button-link button-secondary" onClick={() => beginEditCar(car)}>
                                     {cmsUiTexts.edit}
                                 </button>
-                                <button className="button-link button-secondary" onClick={() => toggleReserved(car.id)}>
-                                    {cmsUiTexts.toggleReserved}
-                                </button>
-                                <button className="button-link button-secondary" onClick={() => toggleAvailability(car.id)}>
-                                    {texts.cms.toggleAvailability}
-                                </button>
+                                <div className="cms-status-select">
+                                    <DarkSelect
+                                        value={getStatusFromCar(car)}
+                                        onChange={(value) => setCarStatus(car.id, value || "available")}
+                                        options={statusSelectOptions}
+                                        ariaLabel={cmsUiTexts.statusLabel}
+                                    />
+                                </div>
                                 <button className="button-link danger" onClick={() => removeCar(car.id)}>
                                     {texts.cms.remove}
                                 </button>

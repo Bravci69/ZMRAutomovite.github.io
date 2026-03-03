@@ -1380,6 +1380,10 @@ a:hover {
 	justify-content: flex-end;
 }
 
+.cms-status-select {
+	min-width: 170px;
+}
+
 .error-text {
 	color: #ff9d9d;
 	font-weight: 700;
