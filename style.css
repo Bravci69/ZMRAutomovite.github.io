@@ -793,6 +793,15 @@ a:hover {
 	color: var(--muted);
 }
 
+.seat-range-field {
+	display: grid;
+	gap: 8px;
+	grid-column: span 2;
+	font-weight: 700;
+	font-size: 0.9rem;
+	color: var(--muted);
+}
+
 .hp-range-values {
 	display: flex;
 	justify-content: space-between;
@@ -864,6 +873,19 @@ a:hover {
 .checklist-item {
 	font-size: 0.9rem;
 	color: var(--text);
+}
+
+.fixed-tech-icon {
+	width: 22px;
+	height: 22px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	background: rgba(255, 255, 255, 0.05);
+	font-size: 0.95rem;
+	line-height: 1;
 }
 
 .full-width {
@@ -956,6 +978,10 @@ a:hover {
 	}
 
 	.hp-range-field {
+		grid-column: 1 / -1;
+	}
+
+	.seat-range-field {
 		grid-column: 1 / -1;
 	}
 

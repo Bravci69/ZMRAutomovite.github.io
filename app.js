@@ -41,7 +41,24 @@ const TECHNICAL_CHECKLIST_FIELDS = [
     { label: "Number of vehicle owners", defaultValue: "", defaultIcon: "👤" }
 ];
 
-const TECHNICAL_ICON_OPTIONS = ["🚗", "🌍", "📍", "⚡", "🛞", "⛽", "💺", "🚪", "🕹️", "👤", "🧾", "🔧", "📊", "🛡️"];
+const TECHNICAL_NUMERIC_FIELD_LABELS = new Set(["Mileage", "Performance", "Number of seats", "Number of doors", "Number of vehicle owners"]);
+
+const TECHNICAL_ICON_TRANSLATIONS = {
+    "🚗": { cs: "Vozidlo", sk: "Vozidlo", de: "Fahrzeug", en: "Vehicle" },
+    "🌍": { cs: "Původ", sk: "Pôvod", de: "Herkunft", en: "Origin" },
+    "📍": { cs: "Nájezd", sk: "Nájazd", de: "Kilometerstand", en: "Mileage" },
+    "⚡": { cs: "Výkon", sk: "Výkon", de: "Leistung", en: "Performance" },
+    "🛞": { cs: "Pohon", sk: "Pohon", de: "Antrieb", en: "Drive" },
+    "⛽": { cs: "Palivo", sk: "Palivo", de: "Kraftstoff", en: "Fuel" },
+    "💺": { cs: "Sedadla", sk: "Sedadlá", de: "Sitze", en: "Seats" },
+    "🚪": { cs: "Dveře", sk: "Dvere", de: "Türen", en: "Doors" },
+    "🕹️": { cs: "Převodovka", sk: "Prevodovka", de: "Getriebe", en: "Gearbox" },
+    "👤": { cs: "Majitel", sk: "Majiteľ", de: "Besitzer", en: "Owner" },
+    "🧾": { cs: "Technické údaje", sk: "Technické údaje", de: "Technische Daten", en: "Technical data" },
+    "🔧": { cs: "Servis", sk: "Servis", de: "Service", en: "Service" },
+    "📊": { cs: "Parametry", sk: "Parametre", de: "Parameter", en: "Parameters" },
+    "🛡️": { cs: "Bezpečnost", sk: "Bezpečnosť", de: "Sicherheit", en: "Safety" }
+};
 
 const EQUIPMENT_CHECKLIST_ITEMS = [
     "ABS",
@@ -691,6 +708,21 @@ function translateEquipmentItem(item, language) {
     return translation[language] || translation.en || item;
 }
 
+function translateTechnicalIconLabel(icon, language) {
+    const translation = TECHNICAL_ICON_TRANSLATIONS[icon];
+    if (!translation) {
+        return "Icon";
+    }
+    return translation[language] || translation.en || "Icon";
+}
+
+function sanitizeTechnicalChecklistValue(label, value) {
+    if (!TECHNICAL_NUMERIC_FIELD_LABELS.has(label)) {
+        return value;
+    }
+    return String(value || "").replace(/[^\d]/g, "");
+}
+
 function normalizeTranslationValueKey(value) {
     return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
 }
@@ -907,7 +939,13 @@ function buildTechnicalDataFromChecklist(checklist, baseForm, transmission, manu
             if (!selected?.enabled) {
                 return null;
             }
-            const rawValue = selected.value?.trim() || fallbackByLabel[field.label] || "";
+            let rawValue = selected.value?.trim() || fallbackByLabel[field.label] || "";
+            if (TECHNICAL_NUMERIC_FIELD_LABELS.has(field.label)) {
+                rawValue = rawValue.replace(/[^\d]/g, "");
+            }
+            if (field.label === "Performance" && rawValue && !/hp$/i.test(rawValue)) {
+                rawValue = `${rawValue} hp`;
+            }
             if (!rawValue) {
                 return null;
             }
@@ -1253,11 +1291,17 @@ function CarsPage({ cars, language, texts }) {
     const fuelOptions = useMemo(() => FUEL_OPTIONS, []);
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
     const driveOptions = useMemo(() => DRIVE_OPTIONS, []);
+    const seatValues = useMemo(() => cars.map((car) => Number(car.seats)).filter((count) => Number.isFinite(count) && count >= 2), [cars]);
+    const seatsMinBound = 2;
+    const seatsMaxBound = seatValues.length > 0 ? Math.max(...seatValues) : 9;
+    const seatsFromCurrent = Number.isFinite(parseNumber(seatsFrom)) ? Math.min(seatsMaxBound, Math.max(seatsMinBound, parseNumber(seatsFrom))) : seatsMinBound;
+    const seatsToCurrent = Number.isFinite(parseNumber(seatsTo)) ? Math.max(seatsMinBound, Math.min(seatsMaxBound, parseNumber(seatsTo))) : seatsMaxBound;
+    const hasSeatsFilter = seatsFromCurrent > seatsMinBound || seatsToCurrent < seatsMaxBound;
     const horsepowerValues = useMemo(() => cars.map((car) => Number(car.horsepower)).filter((count) => Number.isFinite(count) && count >= 0), [cars]);
     const horsepowerMinBound = horsepowerValues.length > 0 ? Math.min(...horsepowerValues) : 0;
     const horsepowerMaxBound = horsepowerValues.length > 0 ? Math.max(...horsepowerValues) : 500;
-    const horsepowerFromCurrent = Number.isFinite(parseNumber(horsepowerFrom)) ? Math.max(horsepowerMinBound, parseNumber(horsepowerFrom)) : horsepowerMinBound;
-    const horsepowerToCurrent = Number.isFinite(parseNumber(horsepowerTo)) ? Math.min(horsepowerMaxBound, parseNumber(horsepowerTo)) : horsepowerMaxBound;
+    const horsepowerFromCurrent = Number.isFinite(parseNumber(horsepowerFrom)) ? Math.min(horsepowerMaxBound, Math.max(horsepowerMinBound, parseNumber(horsepowerFrom))) : horsepowerMinBound;
+    const horsepowerToCurrent = Number.isFinite(parseNumber(horsepowerTo)) ? Math.max(horsepowerMinBound, Math.min(horsepowerMaxBound, parseNumber(horsepowerTo))) : horsepowerMaxBound;
     const hasHorsepowerFilter = horsepowerFromCurrent > horsepowerMinBound || horsepowerToCurrent < horsepowerMaxBound;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
     const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
@@ -1269,9 +1313,9 @@ function CarsPage({ cars, language, texts }) {
         const query = debouncedSearch.trim().toLowerCase();
         const hpFromValue = hasHorsepowerFilter ? horsepowerFromCurrent : undefined;
         const hpToValue = hasHorsepowerFilter ? horsepowerToCurrent : undefined;
-        const seatsFromValue = parseNumber(seatsFrom);
-        const seatsToValue = parseNumber(seatsTo);
-        const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !seatsFrom && !seatsTo && !hasHorsepowerFilter;
+        const seatsFromValue = hasSeatsFilter ? seatsFromCurrent : undefined;
+        const seatsToValue = hasSeatsFilter ? seatsToCurrent : undefined;
+        const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !hasSeatsFilter && !hasHorsepowerFilter;
 
         if (noFiltersSet) {
             return [...cars].sort((a, b) => {
@@ -1305,9 +1349,9 @@ function CarsPage({ cars, language, texts }) {
                 }
                 return a.available ? -1 : 1;
             });
-    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
+    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsFromCurrent, seatsToCurrent, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
 
-    const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || doors || seatsFrom || seatsTo || brand || drive || transmission);
+    const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || hasSeatsFilter || doors || brand || drive || transmission);
     const activeFilterChips = [];
 
     useEffect(() => {
@@ -1350,12 +1394,12 @@ function CarsPage({ cars, language, texts }) {
             drive,
             transmission,
             doors,
-            seatsFrom,
-            seatsTo,
+            seatsFrom: hasSeatsFilter ? String(seatsFromCurrent) : "",
+            seatsTo: hasSeatsFilter ? String(seatsToCurrent) : "",
             horsepowerFrom: hasHorsepowerFilter ? String(horsepowerFromCurrent) : "",
             horsepowerTo: hasHorsepowerFilter ? String(horsepowerToCurrent) : ""
         });
-    }, [debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
+    }, [debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsFromCurrent, seatsToCurrent, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
 
     if (search) {
         activeFilterChips.push({ key: "search", label: `${texts.cars.search}: ${search}`, clear: () => setSearch("") });
@@ -1375,11 +1419,9 @@ function CarsPage({ cars, language, texts }) {
     if (doors) {
         activeFilterChips.push({ key: "doors", label: `${texts.cars.doors}: ${doors}`, clear: () => setDoors("") });
     }
-    if (seatsFrom) {
-        activeFilterChips.push({ key: "seatsFrom", label: `${texts.cars.seatsFrom}: ${seatsFrom}`, clear: () => setSeatsFrom("") });
-    }
-    if (seatsTo) {
-        activeFilterChips.push({ key: "seatsTo", label: `${texts.cars.seatsTo}: ${seatsTo}`, clear: () => setSeatsTo("") });
+    if (hasSeatsFilter) {
+        activeFilterChips.push({ key: "seatsFrom", label: `${texts.cars.seatsFrom}: ${seatsFromCurrent}`, clear: () => { setSeatsFrom(""); setSeatsTo(""); } });
+        activeFilterChips.push({ key: "seatsTo", label: `${texts.cars.seatsTo}: ${seatsToCurrent}`, clear: () => { setSeatsFrom(""); setSeatsTo(""); } });
     }
     if (hasHorsepowerFilter) {
         activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerFromCurrent}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
@@ -1400,11 +1442,11 @@ function CarsPage({ cars, language, texts }) {
     };
 
     const applyQuickSeats = (minSeats) => {
-        setSeatsFrom(String(minSeats));
-        setSeatsTo("");
+        setSeatsFrom(String(Math.max(seatsMinBound, minSeats)));
+        setSeatsTo(String(seatsMaxBound));
     };
 
-    const isQuickSeatActive = (minSeats) => seatsTo === "" && seatsFrom === String(minSeats);
+    const isQuickSeatActive = (minSeats) => hasSeatsFilter && seatsFromCurrent === Math.max(seatsMinBound, minSeats) && seatsToCurrent === seatsMaxBound;
 
     return (
         <>
@@ -1503,14 +1545,35 @@ function CarsPage({ cars, language, texts }) {
                         {texts.cars.doors}
                         <DarkSelect value={doors} onChange={setDoors} options={doorSelectOptions} placeholder={texts.cars.doorsAll} ariaLabel={texts.cars.doors} />
                     </label>
-                    <label>
-                        {texts.cars.seatsFrom}
-                        <input type="number" min="2" value={seatsFrom} onChange={(event) => setSeatsFrom(event.target.value)} />
-                    </label>
-                    <label>
-                        {texts.cars.seatsTo}
-                        <input type="number" min="2" value={seatsTo} onChange={(event) => setSeatsTo(event.target.value)} />
-                    </label>
+                    <div className="seat-range-field">
+                        <span>{texts.cars.seatsFrom} / {texts.cars.seatsTo}</span>
+                        <div className="hp-range-values">
+                            <strong>{seatsFromCurrent} {texts.cars.seatsUnit}</strong>
+                            <strong>{seatsToCurrent} {texts.cars.seatsUnit}</strong>
+                        </div>
+                        <div className="hp-range-sliders">
+                            <input
+                                type="range"
+                                min={seatsMinBound}
+                                max={seatsMaxBound}
+                                value={seatsFromCurrent}
+                                onChange={(event) => {
+                                    const next = Math.min(Number(event.target.value), seatsToCurrent);
+                                    setSeatsFrom(String(next));
+                                }}
+                            />
+                            <input
+                                type="range"
+                                min={seatsMinBound}
+                                max={seatsMaxBound}
+                                value={seatsToCurrent}
+                                onChange={(event) => {
+                                    const next = Math.max(Number(event.target.value), seatsFromCurrent);
+                                    setSeatsTo(String(next));
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -1614,7 +1677,7 @@ function CarDetailPage({ cars, language, texts }) {
                     <div className="accordion-content technical-grid">
                         {technicalRows.map((row, index) => (
                             <article key={`${row.label}-${index}`} className="technical-item">
-                                <span className="technical-icon" aria-hidden="true">{row.icon || "•"}</span>
+                                <span className="technical-icon" title={translateTechnicalIconLabel(row.icon || "🧾", language)} aria-label={translateTechnicalIconLabel(row.icon || "🧾", language)}>{row.icon || "•"}</span>
                                 <div>
                                     <h4>{translateTechnicalLabel(row.label, language)}</h4>
                                     <p>{dynamicTechnicalValues[normalizeTranslationValueKey(row.value)] || translateTechnicalValue(row.value, language)}</p>
@@ -1853,6 +1916,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                         <div className="checklist-grid technical-grid-cms">
                             {TECHNICAL_CHECKLIST_FIELDS.map((field) => {
                                 const row = technicalChecklist[field.label] || { enabled: false, value: "", icon: field.defaultIcon };
+                                const isNumericField = TECHNICAL_NUMERIC_FIELD_LABELS.has(field.label);
                                 return (
                                     <div key={field.label} className="checklist-item technical-check-item">
                                         <label className="checkbox-row">
@@ -1864,25 +1928,20 @@ function CmsPage({ cars, setCars, language, texts }) {
                                                     [field.label]: { ...row, enabled: e.target.checked }
                                                 }))}
                                             />
+                                            <span className="fixed-tech-icon" title={translateTechnicalIconLabel(row.icon || field.defaultIcon, language)} aria-label={translateTechnicalIconLabel(row.icon || field.defaultIcon, language)}>{row.icon || field.defaultIcon}</span>
                                             {translateTechnicalLabel(field.label, language)}
                                         </label>
                                         <input
-                                            type="text"
+                                            type={isNumericField ? "number" : "text"}
+                                            min={isNumericField ? "0" : undefined}
+                                            inputMode={isNumericField ? "numeric" : undefined}
+                                            pattern={isNumericField ? "[0-9]*" : undefined}
                                             value={row.value}
                                             onChange={(e) => setTechnicalChecklist((prev) => ({
                                                 ...prev,
-                                                [field.label]: { ...row, value: e.target.value }
+                                                [field.label]: { ...row, value: sanitizeTechnicalChecklistValue(field.label, e.target.value) }
                                             }))}
                                             disabled={!row.enabled}
-                                        />
-                                        <DarkSelect
-                                            value={row.icon}
-                                            onChange={(value) => setTechnicalChecklist((prev) => ({
-                                                ...prev,
-                                                [field.label]: { ...row, icon: value || field.defaultIcon }
-                                            }))}
-                                            options={TECHNICAL_ICON_OPTIONS.map((icon) => ({ value: icon, label: icon }))}
-                                            ariaLabel={field.label}
                                         />
                                     </div>
                                 );
