@@ -209,6 +209,9 @@ Použi tieto premenné:
 - `window.ZMR_FIRESTORE_DOCUMENT_PATH` (predvolené: `zmrSync/cars`)
 - `window.ZMR_FIRESTORE_ID_TOKEN` (voliteľné; vyplň iba ak budeš mať write pravidlá viazané na prihlásenie)
 
+Pre CMS login nie je potrebné nastavovať `ZMR_FIRESTORE_ID_TOKEN` ručne.
+Po prihlásení do CMS cez Firebase email/heslo si aplikácia token získa a obnovuje automaticky.
+
 Synchronizácia v aplikácii ide v poradí:
 
 1. Firestore
@@ -233,3 +236,45 @@ service cloud.firestore {
 ```
 
 Ak zatiaľ nemáš Firebase Auth vo fronte, nechaj write pravidlá dočasne otvorené iba počas testu a potom ich uzamkni.
+
+### Firebase Auth pre CMS zápis
+
+Ak chceš bezpečný zápis do Firestore bez fallbacku:
+
+1. Vo Firebase Console zapni `Authentication` -> `Email/Password` provider.
+2. Vytvor CMS používateľa (email + heslo).
+3. Prihlás sa v CMS cez tento email a heslo.
+
+Aplikácia následne:
+
+- získa Firebase ID token,
+- uloží refresh token lokálne,
+- automaticky obnovuje ID token pre ďalšie zápisy do Firestore.
+
+### Rovno vytvoriť databázu teraz (Firestore)
+
+Áno, vieš to spraviť hneď týmto postupom:
+
+1. Nainštaluj Firebase CLI a prihlás sa:
+
+- `npm install -g firebase-tools`
+- `firebase login`
+
+2. V koreňi projektu nastav Firebase projekt:
+
+- `firebase use --add`
+- vyber projekt `zmrautomovite`
+
+3. Aktivuj Firestore (ak ešte nie je zapnutý) vo Firebase Console.
+
+4. Nasaď pravidlá pripravené v repozitári:
+
+- `firebase deploy --only firestore`
+
+5. Prihlás sa do CMS (email/heslo z Firebase Auth) a pridaj auto.
+
+Prvý zápis vytvorí dokument automaticky na ceste:
+
+- `zmrSync/cars`
+
+Ak chceš inú cestu dokumentu, zmeň `window.ZMR_FIRESTORE_DOCUMENT_PATH` v HTML konfigurácii.

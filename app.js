@@ -15,7 +15,8 @@ const FIREBASE_AUTH_TOKEN = window.ZMR_FIREBASE_AUTH_TOKEN || "";
 const FIRESTORE_PROJECT_ID = window.ZMR_FIRESTORE_PROJECT_ID || "";
 const FIRESTORE_API_KEY = window.ZMR_FIRESTORE_API_KEY || "";
 const FIRESTORE_DOCUMENT_PATH = window.ZMR_FIRESTORE_DOCUMENT_PATH || "zmrSync/cars";
-const FIRESTORE_ID_TOKEN = window.ZMR_FIRESTORE_ID_TOKEN || "";
+let runtimeFirestoreIdToken = window.ZMR_FIRESTORE_ID_TOKEN || "";
+const FIREBASE_AUTH_SESSION_KEY = "zmrFirebaseAuthSession";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
@@ -875,6 +876,139 @@ function createRequestId(prefix = "req") {
     return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+function setRuntimeFirestoreIdToken(token) {
+    runtimeFirestoreIdToken = String(token || "");
+    window.ZMR_FIRESTORE_ID_TOKEN = runtimeFirestoreIdToken;
+}
+
+function saveFirebaseAuthSession(session) {
+    if (!session || typeof session !== "object") {
+        return;
+    }
+    try {
+        localStorage.setItem(FIREBASE_AUTH_SESSION_KEY, JSON.stringify(session));
+    } catch {
+        return;
+    }
+}
+
+function readFirebaseAuthSession() {
+    try {
+        const raw = localStorage.getItem(FIREBASE_AUTH_SESSION_KEY);
+        if (!raw) {
+            return null;
+        }
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
+        return null;
+    }
+}
+
+function clearFirebaseAuthSession() {
+    try {
+        localStorage.removeItem(FIREBASE_AUTH_SESSION_KEY);
+    } catch {
+        return;
+    }
+}
+
+function createFirebaseSessionFromAuthResponse(payload) {
+    if (!payload || typeof payload !== "object" || !payload.idToken) {
+        return null;
+    }
+    const expiresInSeconds = Math.max(60, Number(payload.expiresIn) || 3600);
+    return {
+        idToken: String(payload.idToken || ""),
+        refreshToken: String(payload.refreshToken || ""),
+        localId: String(payload.localId || ""),
+        email: String(payload.email || ""),
+        expiresAt: Date.now() + expiresInSeconds * 1000
+    };
+}
+
+function isFirebaseSessionValid(session) {
+    return Boolean(session?.idToken) && Number(session?.expiresAt) > Date.now() + 30000;
+}
+
+async function signInCmsWithFirebaseEmailPassword(email, password) {
+    if (!FIRESTORE_API_KEY) {
+        return null;
+    }
+    const normalizedEmail = String(email || "").trim();
+    if (!normalizedEmail || !password) {
+        return null;
+    }
+    try {
+        const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(FIRESTORE_API_KEY)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: normalizedEmail,
+                password,
+                returnSecureToken: true
+            })
+        });
+        if (!response.ok) {
+            return null;
+        }
+        const payload = await response.json();
+        return createFirebaseSessionFromAuthResponse(payload);
+    } catch {
+        return null;
+    }
+}
+
+async function refreshFirebaseAuthSession(refreshToken) {
+    if (!FIRESTORE_API_KEY || !refreshToken) {
+        return null;
+    }
+    try {
+        const body = new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: String(refreshToken)
+        });
+        const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(FIRESTORE_API_KEY)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: body.toString()
+        });
+        if (!response.ok) {
+            return null;
+        }
+        const payload = await response.json();
+        return createFirebaseSessionFromAuthResponse({
+            idToken: payload?.id_token,
+            refreshToken: payload?.refresh_token,
+            localId: payload?.user_id,
+            expiresIn: payload?.expires_in
+        });
+    } catch {
+        return null;
+    }
+}
+
+async function ensureFirebaseCmsIdToken() {
+    const existing = readFirebaseAuthSession();
+    if (isFirebaseSessionValid(existing)) {
+        setRuntimeFirestoreIdToken(existing.idToken);
+        return true;
+    }
+    if (!existing?.refreshToken) {
+        setRuntimeFirestoreIdToken("");
+        return false;
+    }
+    const refreshed = await refreshFirebaseAuthSession(existing.refreshToken);
+    if (!refreshed) {
+        clearFirebaseAuthSession();
+        setRuntimeFirestoreIdToken("");
+        return false;
+    }
+    saveFirebaseAuthSession(refreshed);
+    setRuntimeFirestoreIdToken(refreshed.idToken);
+    return true;
+}
+
 async function translateTextsForLanguage(texts, targetLanguage) {
     if (!TRANSLATE_PROXY_URL || !Array.isArray(texts) || texts.length === 0) {
         return {};
@@ -1659,8 +1793,8 @@ function buildFirestoreDocumentUrl() {
 
 function getFirestoreHeaders() {
     const headers = { "Content-Type": "application/json" };
-    if (FIRESTORE_ID_TOKEN) {
-        headers.Authorization = `Bearer ${FIRESTORE_ID_TOKEN}`;
+    if (runtimeFirestoreIdToken) {
+        headers.Authorization = `Bearer ${runtimeFirestoreIdToken}`;
     }
     return headers;
 }
@@ -2973,9 +3107,28 @@ function CmsPage({ cars, setCars, language, texts }) {
     const fuelSelectOptions = useMemo(() => FUEL_OPTIONS.map((option) => ({ value: option, label: option })), []);
     const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: option })), []);
 
-    const handleLogin = (event) => {
+    useEffect(() => {
+        if (!isLogged) {
+            setRuntimeFirestoreIdToken("");
+            return;
+        }
+        ensureFirebaseCmsIdToken();
+    }, [isLogged]);
+
+    const handleLogin = async (event) => {
         event.preventDefault();
+        const firebaseSession = await signInCmsWithFirebaseEmailPassword(credentials.username, credentials.password);
+        if (firebaseSession) {
+            saveFirebaseAuthSession(firebaseSession);
+            setRuntimeFirestoreIdToken(firebaseSession.idToken);
+            localStorage.setItem(CMS_AUTH_KEY, "1");
+            setIsLogged(true);
+            setError("");
+            return;
+        }
         if (credentials.username === "admin" && credentials.password === "admin") {
+            clearFirebaseAuthSession();
+            setRuntimeFirestoreIdToken("");
             localStorage.setItem(CMS_AUTH_KEY, "1");
             setIsLogged(true);
             setError("");
@@ -2985,6 +3138,8 @@ function CmsPage({ cars, setCars, language, texts }) {
     };
 
     const handleLogout = () => {
+        clearFirebaseAuthSession();
+        setRuntimeFirestoreIdToken("");
         localStorage.removeItem(CMS_AUTH_KEY);
         setIsLogged(false);
     };
