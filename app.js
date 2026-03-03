@@ -4,6 +4,9 @@ const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
 const LANGUAGE_STORAGE_KEY = "zmrLanguage";
 const CZK_TO_EUR_RATE = 25;
+const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
+const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
+const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
 const LANGUAGE_OPTIONS = [
     { code: "cs", flag: "🇨🇿", label: "Čeština" },
     { code: "sk", flag: "🇸🇰", label: "Slovenčina" },
@@ -86,10 +89,18 @@ const I18N = {
             brandAll: "Všechny značky",
             drive: "Náhon",
             driveAll: "Všechny náhony",
+            transmission: "Převodovka",
+            transmissionAll: "Všechny převodovky",
             hpFrom: "Výkon od (k)",
             hpTo: "Výkon do (k)",
             doors: "Dveře",
             doorsAll: "Všechny",
+            seats: "Sedadla",
+            seatsAll: "Všechny",
+            seatsFrom: "Sedadla od",
+            seatsTo: "Sedadla do",
+            quickSeats: "Rychlé sedadla",
+            seatsUnit: "sedadel",
             activeFilters: "Aktivní filtry",
             clearAll: "Zrušit vše",
             detailButton: "Detail vozidla",
@@ -108,6 +119,7 @@ const I18N = {
             password: "Heslo",
             loginButton: "Přihlásit se",
             loginError: "Nesprávné přihlašovací údaje.",
+            manualGearsRequired: "U manuálu je povinné zadat počet převodů.",
             manageTitle: "Správa vozidel",
             logoutButton: "Odhlásit se",
             intro: "Můžete přidávat nová vozidla, nahrát fotku, vyplnit popis, legislativní informace i výbavu.",
@@ -119,9 +131,11 @@ const I18N = {
                 mileage: "Nájezd",
                 horsepower: "Výkon (k)",
                 doors: "Počet dveří",
+                seats: "Počet sedadel",
                 drive: "Náhon",
                 fuel: "Palivo",
                 transmission: "Převodovka",
+                manualGears: "Počet převodů",
                 image: "Fotka vozidla",
                 description: "Základní popis",
                 legal: "Legislativní informace",
@@ -180,12 +194,12 @@ const I18N = {
             processText: "Po prijatí dopytu pripravíme plán, realizujeme kontrolu alebo dovoz a odovzdáme odporúčania."
         },
         cars: {
-            filterTitle: "Vyhľadávanie a filtre", search: "Vyhľadávanie", searchPlaceholder: "Model, značka, náhon...", fuel: "Palivo", fuelAll: "Všetky palivá", brand: "Značka", brandAll: "Všetky značky", drive: "Náhon", driveAll: "Všetky náhony", hpFrom: "Výkon od (k)", hpTo: "Výkon do (k)", doors: "Dvere", doorsAll: "Všetky", activeFilters: "Aktívne filtre", clearAll: "Zrušiť všetko", detailButton: "Detail vozidla", noResults: "Pre zadané filtre sa nenašli žiadne vozidlá."
+            filterTitle: "Vyhľadávanie a filtre", search: "Vyhľadávanie", searchPlaceholder: "Model, značka, náhon...", fuel: "Palivo", fuelAll: "Všetky palivá", brand: "Značka", brandAll: "Všetky značky", drive: "Náhon", driveAll: "Všetky náhony", transmission: "Prevodovka", transmissionAll: "Všetky prevodovky", hpFrom: "Výkon od (k)", hpTo: "Výkon do (k)", doors: "Dvere", doorsAll: "Všetky", seats: "Sedadlá", seatsAll: "Všetky", seatsFrom: "Sedadlá od", seatsTo: "Sedadlá do", quickSeats: "Rýchle sedadlá", seatsUnit: "sedadiel", activeFilters: "Aktívne filtre", clearAll: "Zrušiť všetko", detailButton: "Detail vozidla", noResults: "Pre zadané filtre sa nenašli žiadne vozidlá."
         },
         carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava" },
         cms: {
-            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.",
-            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
+            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.",
+            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
             addButton: "Pridať vozidlo", currentCars: "Aktuálne vozidlá", toggleAvailability: "Zmeniť dostupnosť", remove: "Odstrániť"
         }
     },
@@ -205,11 +219,11 @@ const I18N = {
         about: { title: "Über unser Unternehmen", p1: "ZMR Automovité ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
         services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
-        cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
+        cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", transmission: "Getriebe", transmissionAll: "Alle Getriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", seats: "Sitze", seatsAll: "Alle", seatsFrom: "Sitze ab", seatsTo: "Sitze bis", quickSeats: "Schnellauswahl", seatsUnit: "Sitze", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
         carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung" },
         cms: {
-            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
-            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
+            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
+            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
             addButton: "Fahrzeug hinzufügen", currentCars: "Aktuelle Fahrzeuge", toggleAvailability: "Verfügbarkeit ändern", remove: "Entfernen"
         }
     },
@@ -229,11 +243,11 @@ const I18N = {
         about: { title: "About our company", p1: "ZMR Automovité specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
         services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
-        cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
+        cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", transmission: "Transmission", transmissionAll: "All transmissions", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", seats: "Seats", seatsAll: "All", seatsFrom: "Seats from", seatsTo: "Seats to", quickSeats: "Quick seats", seatsUnit: "seats", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
         carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", legalTitle: "Legal information", equipmentTitle: "Equipment" },
         cms: {
-            loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
-            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", drive: "Drive", fuel: "Fuel", transmission: "Transmission", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
+            loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
+            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
             addButton: "Add vehicle", currentCars: "Current vehicles", toggleAvailability: "Toggle availability", remove: "Remove"
         }
     }
@@ -249,9 +263,11 @@ const defaultCars = [
         mileage: "89 400 km",
         horsepower: 258,
         doors: 5,
+        seats: 5,
         drive: "Zadní",
         fuel: "Benzín",
         transmission: "Automat",
+        manualGears: 0,
         image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80",
         description: "Spoľahlivé a pravidelne servisované vozidlo vhodné na dlhé trasy aj každodenné používanie. Vozidlo je po technickej kontrole a má transparentnú históriu.",
         legal: "Legislatívne informácie: Vozidlo je možné prihlásiť v ČR/SR po štandardnom procese registrácie. Emisná norma EURO 6. Pri dovoze zabezpečíme kompletné podklady pre evidenciu a STK.",
@@ -267,9 +283,11 @@ const defaultCars = [
         mileage: "89 400 km",
         horsepower: 258,
         doors: 5,
+        seats: 5,
         drive: "xDrive",
         fuel: "Benzín",
         transmission: "Automat",
+        manualGears: 0,
         image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1200&q=80",
         description: "Ukážkový záznam vozidla na test podstránok. Použitý rovnaký model, aby bolo jasné, ako bude fungovať detail každého auta.",
         legal: "Legislatívne informácie: Vozidlo je možné prihlásiť v ČR/SR po štandardnom procese registrácie. Emisná norma EURO 6. Pri dovoze zabezpečíme kompletné podklady pre evidenciu a STK.",
@@ -329,17 +347,75 @@ function parsePriceCzk(car) {
     return Math.round(legacyPrice);
 }
 
+function sanitizeOption(value, allowedValues, fallbackValue) {
+    if (allowedValues.includes(value)) {
+        return value;
+    }
+    return fallbackValue;
+}
+
+function normalizeDriveValue(value) {
+    const raw = String(value || "").trim().toLowerCase();
+    if (["všetky 4", "vsechny 4", "xdrive", "awd", "4x4"].includes(raw)) {
+        return "Všetky 4";
+    }
+    if (["predný", "predni", "přední", "fwd", "front"].includes(raw)) {
+        return "Predný";
+    }
+    if (["zadný", "zadni", "zadní", "rwd", "rear"].includes(raw)) {
+        return "Zadný";
+    }
+    return sanitizeOption(value, DRIVE_OPTIONS, "Predný");
+}
+
+function normalizeFuelValue(value) {
+    const raw = String(value || "").trim().toLowerCase();
+    if (["nafta", "diesel"].includes(raw)) {
+        return "Nafta";
+    }
+    if (["benzín", "benzin", "petrol", "gasoline"].includes(raw)) {
+        return "Benzín";
+    }
+    if (["elektrina", "electric", "ev"].includes(raw)) {
+        return "Elektrina";
+    }
+    if (["plug inhybrid", "plug-in hybrid", "plugin hybrid", "phev"].includes(raw)) {
+        return "Plug inhybrid";
+    }
+    if (["plyn", "lpg", "cng", "gas"].includes(raw)) {
+        return "Plyn";
+    }
+    return sanitizeOption(value, FUEL_OPTIONS, "Benzín");
+}
+
 function normalizeCar(car, index) {
+    const transmission = sanitizeOption(car.transmission, TRANSMISSION_OPTIONS, "Automat");
+    const doors = Number.isFinite(Number(car.doors)) ? Math.max(2, Number(car.doors)) : 2;
+    const seats = Number.isFinite(Number(car.seats)) ? Math.max(2, Number(car.seats)) : 2;
+    const manualGearsRaw = Number.isFinite(Number(car.manualGears)) ? Number(car.manualGears) : 0;
+    const manualGears = transmission === "Manuál" ? Math.max(1, manualGearsRaw) : 0;
+
     return {
         ...car,
         id: car.id || `zmr-${Date.now()}-${index}`,
         brand: car.brand || getBrandFromName(car.name),
         horsepower: Number.isFinite(Number(car.horsepower)) ? Number(car.horsepower) : 0,
-        doors: Number.isFinite(Number(car.doors)) ? Number(car.doors) : 0,
-        drive: car.drive || "Neuvedeno",
+        doors,
+        seats,
+        drive: normalizeDriveValue(car.drive),
+        fuel: normalizeFuelValue(car.fuel),
+        transmission,
+        manualGears,
         priceCzk: parsePriceCzk(car),
         available: Boolean(car.available)
     };
+}
+
+function formatTransmission(car) {
+    if (car.transmission === "Manuál" && car.manualGears > 0) {
+        return `${car.transmission} (${car.manualGears})`;
+    }
+    return car.transmission;
 }
 
 function getCars() {
@@ -385,7 +461,10 @@ function readCarFiltersFromQuery() {
         fuel: params.get("fuel") || "",
         brand: params.get("brand") || "",
         drive: params.get("drive") || "",
+        transmission: params.get("transmission") || "",
         doors: params.get("doors") || "",
+        seatsFrom: params.get("seatsFrom") || params.get("seats") || "",
+        seatsTo: params.get("seatsTo") || "",
         horsepowerFrom: params.get("hpFrom") || "",
         horsepowerTo: params.get("hpTo") || ""
     };
@@ -398,7 +477,11 @@ function syncCarFiltersToQuery(filters) {
         fuel: filters.fuel,
         brand: filters.brand,
         drive: filters.drive,
+        transmission: filters.transmission,
         doors: filters.doors,
+        seatsFrom: filters.seatsFrom,
+        seatsTo: filters.seatsTo,
+        seats: "",
         hpFrom: filters.horsepowerFrom,
         hpTo: filters.horsepowerTo
     };
@@ -599,20 +682,24 @@ function CarsPage({ cars, language, texts }) {
     const [horsepowerFrom, setHorsepowerFrom] = useState(() => readCarFiltersFromQuery().horsepowerFrom);
     const [horsepowerTo, setHorsepowerTo] = useState(() => readCarFiltersFromQuery().horsepowerTo);
     const [doors, setDoors] = useState(() => readCarFiltersFromQuery().doors);
+    const [seatsFrom, setSeatsFrom] = useState(() => readCarFiltersFromQuery().seatsFrom);
+    const [seatsTo, setSeatsTo] = useState(() => readCarFiltersFromQuery().seatsTo);
     const [brand, setBrand] = useState(() => readCarFiltersFromQuery().brand);
     const [drive, setDrive] = useState(() => readCarFiltersFromQuery().drive);
+    const [transmission, setTransmission] = useState(() => readCarFiltersFromQuery().transmission);
     const resetFiltersLabel = RESET_LABELS[language] || RESET_LABELS.cs;
     const resultsLabel = RESULTS_LABELS[language] || RESULTS_LABELS.cs;
 
-    const fuelOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.fuel).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
+    const fuelOptions = useMemo(() => FUEL_OPTIONS, []);
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
-    const driveOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.drive).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
+    const driveOptions = useMemo(() => DRIVE_OPTIONS, []);
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
-
     const filteredCars = useMemo(() => {
         const query = debouncedSearch.trim().toLowerCase();
         const hpFromValue = parseNumber(horsepowerFrom);
         const hpToValue = parseNumber(horsepowerTo);
+        const seatsFromValue = parseNumber(seatsFrom);
+        const seatsToValue = parseNumber(seatsTo);
 
         return cars
             .filter((car) => {
@@ -620,12 +707,16 @@ function CarsPage({ cars, language, texts }) {
                 const matchesFuel = !fuel || car.fuel === fuel;
                 const matchesBrand = !brand || car.brand === brand;
                 const matchesDrive = !drive || car.drive === drive;
+                const matchesTransmission = !transmission || car.transmission === transmission;
                 const matchesDoors = !doors || String(car.doors) === String(doors);
+                const carSeats = Number(car.seats);
+                const matchesMinSeats = !Number.isFinite(seatsFromValue) || carSeats >= seatsFromValue;
+                const matchesMaxSeats = !Number.isFinite(seatsToValue) || carSeats <= seatsToValue;
                 const carHorsepower = Number(car.horsepower);
                 const matchesMinHorsepower = !Number.isFinite(hpFromValue) || carHorsepower >= hpFromValue;
                 const matchesMaxHorsepower = !Number.isFinite(hpToValue) || carHorsepower <= hpToValue;
 
-                return matchesQuery && matchesFuel && matchesBrand && matchesDrive && matchesDoors && matchesMinHorsepower && matchesMaxHorsepower;
+                return matchesQuery && matchesFuel && matchesBrand && matchesDrive && matchesTransmission && matchesDoors && matchesMinSeats && matchesMaxSeats && matchesMinHorsepower && matchesMaxHorsepower;
             })
             .sort((a, b) => {
                 if (a.available === b.available) {
@@ -633,9 +724,9 @@ function CarsPage({ cars, language, texts }) {
                 }
                 return a.available ? -1 : 1;
             });
-    }, [cars, debouncedSearch, fuel, brand, drive, doors, horsepowerFrom, horsepowerTo]);
+    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, horsepowerFrom, horsepowerTo]);
 
-    const hasActiveFilters = Boolean(search || fuel || horsepowerFrom || horsepowerTo || doors || brand || drive);
+    const hasActiveFilters = Boolean(search || fuel || horsepowerFrom || horsepowerTo || doors || seatsFrom || seatsTo || brand || drive || transmission);
     const activeFilterChips = [];
 
     useEffect(() => {
@@ -656,7 +747,10 @@ function CarsPage({ cars, language, texts }) {
             setFuel(nextFilters.fuel);
             setBrand(nextFilters.brand);
             setDrive(nextFilters.drive);
+            setTransmission(nextFilters.transmission);
             setDoors(nextFilters.doors);
+            setSeatsFrom(nextFilters.seatsFrom);
+            setSeatsTo(nextFilters.seatsTo);
             setHorsepowerFrom(nextFilters.horsepowerFrom);
             setHorsepowerTo(nextFilters.horsepowerTo);
         };
@@ -673,11 +767,14 @@ function CarsPage({ cars, language, texts }) {
             fuel,
             brand,
             drive,
+            transmission,
             doors,
+            seatsFrom,
+            seatsTo,
             horsepowerFrom,
             horsepowerTo
         });
-    }, [debouncedSearch, fuel, brand, drive, doors, horsepowerFrom, horsepowerTo]);
+    }, [debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, horsepowerFrom, horsepowerTo]);
 
     if (search) {
         activeFilterChips.push({ key: "search", label: `${texts.cars.search}: ${search}`, clear: () => setSearch("") });
@@ -691,8 +788,17 @@ function CarsPage({ cars, language, texts }) {
     if (drive) {
         activeFilterChips.push({ key: "drive", label: `${texts.cars.drive}: ${drive}`, clear: () => setDrive("") });
     }
+    if (transmission) {
+        activeFilterChips.push({ key: "transmission", label: `${texts.cars.transmission}: ${transmission}`, clear: () => setTransmission("") });
+    }
     if (doors) {
         activeFilterChips.push({ key: "doors", label: `${texts.cars.doors}: ${doors}`, clear: () => setDoors("") });
+    }
+    if (seatsFrom) {
+        activeFilterChips.push({ key: "seatsFrom", label: `${texts.cars.seatsFrom}: ${seatsFrom}`, clear: () => setSeatsFrom("") });
+    }
+    if (seatsTo) {
+        activeFilterChips.push({ key: "seatsTo", label: `${texts.cars.seatsTo}: ${seatsTo}`, clear: () => setSeatsTo("") });
     }
     if (horsepowerFrom) {
         activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerFrom}`, clear: () => setHorsepowerFrom("") });
@@ -707,9 +813,19 @@ function CarsPage({ cars, language, texts }) {
         setHorsepowerFrom("");
         setHorsepowerTo("");
         setDoors("");
+        setSeatsFrom("");
+        setSeatsTo("");
         setBrand("");
         setDrive("");
+        setTransmission("");
     };
+
+    const applyQuickSeats = (minSeats) => {
+        setSeatsFrom(String(minSeats));
+        setSeatsTo("");
+    };
+
+    const isQuickSeatActive = (minSeats) => seatsTo === "" && seatsFrom === String(minSeats);
 
     return (
         <>
@@ -723,8 +839,24 @@ function CarsPage({ cars, language, texts }) {
                         </button>
                     </div>
                 </div>
-                <div className="search-row">
-                    <input type="text" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
+                <label className="search-row">
+                    <span>{texts.cars.search}</span>
+                    <div className="search-input-wrap">
+                        <span className="search-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                <path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L19 21.5 21.5 19l-4.5-5zM10 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"></path>
+                            </svg>
+                        </span>
+                        <input type="text" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
+                    </div>
+                </label>
+                <div className="seats-quick-row">
+                    <span>{texts.cars.quickSeats}</span>
+                    <div className="seats-quick-buttons">
+                        <button type="button" className={isQuickSeatActive(2) ? "quick-seat-btn active" : "quick-seat-btn"} aria-pressed={isQuickSeatActive(2)} onClick={() => applyQuickSeats(2)}>2+</button>
+                        <button type="button" className={isQuickSeatActive(5) ? "quick-seat-btn active" : "quick-seat-btn"} aria-pressed={isQuickSeatActive(5)} onClick={() => applyQuickSeats(5)}>5+</button>
+                        <button type="button" className={isQuickSeatActive(7) ? "quick-seat-btn active" : "quick-seat-btn"} aria-pressed={isQuickSeatActive(7)} onClick={() => applyQuickSeats(7)}>7+</button>
+                    </div>
                 </div>
                 {activeFilterChips.length > 0 && (
                     <div className="active-filters-wrap">
@@ -771,6 +903,15 @@ function CarsPage({ cars, language, texts }) {
                         </select>
                     </label>
                     <label>
+                        {texts.cars.transmission}
+                        <select value={transmission} onChange={(event) => setTransmission(event.target.value)}>
+                            <option value="">{texts.cars.transmissionAll}</option>
+                            {TRANSMISSION_OPTIONS.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label>
                         {texts.cars.hpFrom}
                         <input type="number" min="0" value={horsepowerFrom} onChange={(event) => setHorsepowerFrom(event.target.value)} />
                     </label>
@@ -787,6 +928,14 @@ function CarsPage({ cars, language, texts }) {
                             ))}
                         </select>
                     </label>
+                    <label>
+                        {texts.cars.seatsFrom}
+                        <input type="number" min="2" value={seatsFrom} onChange={(event) => setSeatsFrom(event.target.value)} />
+                    </label>
+                    <label>
+                        {texts.cars.seatsTo}
+                        <input type="number" min="2" value={seatsTo} onChange={(event) => setSeatsTo(event.target.value)} />
+                    </label>
                 </div>
             </section>
 
@@ -797,10 +946,10 @@ function CarsPage({ cars, language, texts }) {
                         <div className="car-content">
                             <h2>{car.name}</h2>
                             <p className="car-meta">
-                                {car.year} • {car.mileage} • {car.fuel} • {car.transmission}
+                                {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
                             </p>
                             <p className="car-meta">
-                                {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.drive}
+                                {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
                             </p>
                             <p>{car.description}</p>
                             <p className={car.available ? "status available" : "status unavailable"}>
@@ -843,10 +992,10 @@ function CarDetailPage({ cars, language, texts }) {
             <div>
                 <h2>{car.name}</h2>
                 <p className="car-meta">
-                    {car.year} • {car.mileage} • {car.fuel} • {car.transmission}
+                    {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
                 </p>
                 <p className="car-meta">
-                    {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.drive}
+                    {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
                 </p>
                 <p>{car.description}</p>
                 <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
@@ -874,9 +1023,11 @@ function CmsPage({ cars, setCars, language, texts }) {
         mileage: "",
         horsepower: "",
         doors: "",
+        seats: "",
         drive: "",
         fuel: "",
-        transmission: "",
+        transmission: "Automat",
+        manualGears: "",
         image: "",
         description: "",
         legal: "",
@@ -914,6 +1065,14 @@ function CmsPage({ cars, setCars, language, texts }) {
 
     const addCar = (event) => {
         event.preventDefault();
+
+        const transmission = sanitizeOption(form.transmission, TRANSMISSION_OPTIONS, "Automat");
+        const manualGears = transmission === "Manuál" ? Math.max(1, Math.round(parseNumber(form.manualGears) || 0)) : 0;
+        if (transmission === "Manuál" && manualGears < 1) {
+            setError(texts.cms.manualGearsRequired || "Pri manuáli je povinné zadať počet prevodov.");
+            return;
+        }
+
         const newCar = {
             id: `zmr-${Date.now()}`,
             name: form.name,
@@ -922,10 +1081,12 @@ function CmsPage({ cars, setCars, language, texts }) {
             priceCzk: Math.round(parseNumber(form.priceCzk) || 0),
             mileage: form.mileage,
             horsepower: Math.round(parseNumber(form.horsepower) || 0),
-            doors: Math.round(parseNumber(form.doors) || 0),
-            drive: form.drive,
-            fuel: form.fuel,
-            transmission: form.transmission,
+            doors: Math.max(2, Math.round(parseNumber(form.doors) || 0)),
+            seats: Math.max(2, Math.round(parseNumber(form.seats) || 0)),
+            drive: normalizeDriveValue(form.drive),
+            fuel: normalizeFuelValue(form.fuel),
+            transmission,
+            manualGears,
             image: form.image || "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80",
             description: form.description,
             legal: form.legal,
@@ -936,6 +1097,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         const updated = [newCar, ...cars];
         setCars(updated);
         saveCars(updated);
+        setError("");
 
         setForm({
             name: "",
@@ -945,9 +1107,11 @@ function CmsPage({ cars, setCars, language, texts }) {
             mileage: "",
             horsepower: "",
             doors: "",
+            seats: "",
             drive: "",
             fuel: "",
-            transmission: "",
+            transmission: "Automat",
+            manualGears: "",
             image: "",
             description: "",
             legal: "",
@@ -1015,9 +1179,27 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label>{texts.cms.fields.mileage}<input type="text" value={form.mileage} onChange={(e) => setForm((prev) => ({ ...prev, mileage: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.horsepower}<input type="number" min="0" value={form.horsepower} onChange={(e) => setForm((prev) => ({ ...prev, horsepower: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.doors}<input type="number" min="2" max="6" value={form.doors} onChange={(e) => setForm((prev) => ({ ...prev, doors: e.target.value }))} required /></label>
-                    <label>{texts.cms.fields.drive}<input type="text" value={form.drive} onChange={(e) => setForm((prev) => ({ ...prev, drive: e.target.value }))} required /></label>
-                    <label>{texts.cms.fields.fuel}<input type="text" value={form.fuel} onChange={(e) => setForm((prev) => ({ ...prev, fuel: e.target.value }))} required /></label>
-                    <label>{texts.cms.fields.transmission}<input type="text" value={form.transmission} onChange={(e) => setForm((prev) => ({ ...prev, transmission: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.seats || "Počet sedadiel"}<input type="number" min="2" max="9" value={form.seats} onChange={(e) => setForm((prev) => ({ ...prev, seats: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.drive}
+                        <select value={form.drive} onChange={(e) => setForm((prev) => ({ ...prev, drive: e.target.value }))} required>
+                            <option value="">-</option>
+                            {DRIVE_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                    </label>
+                    <label>{texts.cms.fields.fuel}
+                        <select value={form.fuel} onChange={(e) => setForm((prev) => ({ ...prev, fuel: e.target.value }))} required>
+                            <option value="">-</option>
+                            {FUEL_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                    </label>
+                    <label>{texts.cms.fields.transmission}
+                        <select value={form.transmission} onChange={(e) => setForm((prev) => ({ ...prev, transmission: e.target.value }))} required>
+                            {TRANSMISSION_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                    </label>
+                    {form.transmission === "Manuál" && (
+                        <label>{texts.cms.fields.manualGears || "Počet prevodov"}<input type="number" min="1" max="10" value={form.manualGears} onChange={(e) => setForm((prev) => ({ ...prev, manualGears: e.target.value }))} required /></label>
+                    )}
                     <label className="full-width">{texts.cms.fields.image}<input type="file" accept="image/*" onChange={handleImageUpload} /></label>
                     <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
                     <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
@@ -1042,7 +1224,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                             <div>
                                 <h3>{car.name}</h3>
                                 <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
-                                <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.drive}</p>
+                                <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive} • {formatTransmission(car)}</p>
                                 <p className={car.available ? "status available" : "status unavailable"}>
                                     {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
                                 </p>
