@@ -19,7 +19,7 @@ let runtimeFirestoreIdToken = window.ZMR_FIRESTORE_ID_TOKEN || "";
 const FIREBASE_AUTH_SESSION_KEY = "zmrFirebaseAuthSession";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
-const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
+const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug-in hybrid", "Plyn"];
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
 const LANGUAGE_OPTIONS = [
@@ -334,7 +334,7 @@ const TECHNICAL_VALUE_TRANSLATIONS = {
     "Petrol": { cs: "Benzín", sk: "Benzín", de: "Benzin", en: "Petrol" },
     "Diesel": { cs: "Nafta", sk: "Nafta", de: "Diesel", en: "Diesel" },
     "Electric": { cs: "Elektřina", sk: "Elektrina", de: "Elektrisch", en: "Electric" },
-    "Plug in hybrid": { cs: "Plug-in hybrid", sk: "Plug-in hybrid", de: "Plug-in-Hybrid", en: "Plug in hybrid" },
+    "Plug in hybrid": { cs: "Plug-in hybrid", sk: "Plug-in hybrid", de: "Plug-in-Hybrid", en: "Plug-in hybrid" },
     "LPG": { cs: "Plyn", sk: "Plyn", de: "Gas", en: "LPG" },
     "CNG": { cs: "CNG", sk: "CNG", de: "CNG", en: "CNG" },
     "All-wheel drive": { cs: "Všechny 4", sk: "Všetky 4", de: "Allrad", en: "All-wheel drive" },
@@ -776,8 +776,8 @@ function normalizeFuelValue(value) {
     if (["elektrina", "electric", "ev"].includes(raw)) {
         return "Elektrina";
     }
-    if (["plug inhybrid", "plug-in hybrid", "plugin hybrid", "phev"].includes(raw)) {
-        return "Plug inhybrid";
+    if (["plug inhybrid", "plug in hybrid", "plug-in hybrid", "plugin hybrid", "phev"].includes(raw)) {
+        return "Plug-in hybrid";
     }
     if (["plyn", "lpg", "cng", "gas"].includes(raw)) {
         return "Plyn";
@@ -2067,12 +2067,10 @@ function getCarAvailabilityRank(car) {
 
 function Navigation({ activePage, texts }) {
     const items = [
-        { key: "home", label: texts.nav.home, href: "index.html" },
-        { key: "about", label: texts.nav.about, href: "o-nas.html" },
-        { key: "services", label: texts.nav.services, href: "sluzby.html" },
         { key: "cars", label: texts.nav.cars, href: "auta.html" },
-        { key: "contact", label: texts.nav.contact, href: "kontakt.html" },
-        { key: "cms", label: "CMS", href: "cms.html" }
+        { key: "services", label: texts.nav.services, href: "sluzby.html" },
+        { key: "about", label: texts.nav.about, href: "o-nas.html" },
+        { key: "contact", label: texts.nav.contact, href: "kontakt.html" }
     ];
 
     return (
