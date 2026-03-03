@@ -465,8 +465,8 @@ const I18N = {
         },
         cms: {
             loginTitle: "CMS přihlášení",
-            loginInfo: "Přístup pro zaměstnance. Testovací údaje: admin / admin.",
-            username: "Uživatelské jméno",
+            loginInfo: "Přístup pro zaměstnance. Přihlaste se firemním e-mailem a heslem.",
+            username: "E-mail",
             password: "Heslo",
             loginButton: "Přihlásit se",
             loginError: "Nesprávné přihlašovací údaje.",
@@ -555,7 +555,7 @@ const I18N = {
         },
         carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", technicalTitle: "Technické údaje", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava", previousOwners: "Počet predošlých majiteľov" },
         cms: {
-            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", requiredDriveFuel: "Palivo a náhon sú povinné.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.", technicalHelp: "Formát: každý riadok ako Názov: Hodnota", equipmentHelp: "Každý riadok = 1 položka výbavy",
+            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Prihláste sa firemným e-mailom a heslom.", username: "E-mail", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", requiredDriveFuel: "Palivo a náhon sú povinné.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.", technicalHelp: "Formát: každý riadok ako Názov: Hodnota", equipmentHelp: "Každý riadok = 1 položka výbavy",
             fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", previousOwners: "Počet predošlých majiteľov", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", technicalDataRaw: "Technické údaje (Názov: Hodnota)", equipmentItemsRaw: "Výbava (1 položka na riadok)", available: "Vozidlo je dostupné" },
             addButton: "Pridať vozidlo", currentCars: "Aktuálne vozidlá", toggleAvailability: "Zmeniť dostupnosť", remove: "Odstrániť"
         }
@@ -579,7 +579,7 @@ const I18N = {
         cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", transmission: "Getriebe", transmissionAll: "Alle Getriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", seats: "Sitze", seatsAll: "Alle", seatsFrom: "Sitze ab", seatsTo: "Sitze bis", quickSeats: "Schnellauswahl", seatsUnit: "Sitze", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
         carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", technicalTitle: "Technische Daten", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung", previousOwners: "Anzahl Vorbesitzer" },
         cms: {
-            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", requiredDriveFuel: "Kraftstoff und Antrieb sind Pflichtfelder.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.", technicalHelp: "Format: jede Zeile als Bezeichnung: Wert", equipmentHelp: "Jede Zeile = 1 Ausstattungsmerkmal",
+            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Bitte mit Firmen-E-Mail und Passwort anmelden.", username: "E-Mail", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", requiredDriveFuel: "Kraftstoff und Antrieb sind Pflichtfelder.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.", technicalHelp: "Format: jede Zeile als Bezeichnung: Wert", equipmentHelp: "Jede Zeile = 1 Ausstattungsmerkmal",
             fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", previousOwners: "Anzahl Vorbesitzer", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", technicalDataRaw: "Technische Daten (Bezeichnung: Wert)", equipmentItemsRaw: "Ausstattung (1 Punkt pro Zeile)", available: "Fahrzeug ist verfügbar" },
             addButton: "Fahrzeug hinzufügen", currentCars: "Aktuelle Fahrzeuge", toggleAvailability: "Verfügbarkeit ändern", remove: "Entfernen"
         }
@@ -603,7 +603,7 @@ const I18N = {
         cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", transmission: "Transmission", transmissionAll: "All transmissions", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", seats: "Seats", seatsAll: "All", seatsFrom: "Seats from", seatsTo: "Seats to", quickSeats: "Quick seats", seatsUnit: "seats", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
         carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", technicalTitle: "Technical data", legalTitle: "Legal information", equipmentTitle: "Equipment", previousOwners: "Number of previous owners" },
         cms: {
-            loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", requiredDriveFuel: "Fuel and drive are required.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.", technicalHelp: "Format: each line as Label: Value", equipmentHelp: "Each line = 1 equipment item",
+            loginTitle: "CMS login", loginInfo: "Staff access. Sign in with company email and password.", username: "Email", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", requiredDriveFuel: "Fuel and drive are required.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.", technicalHelp: "Format: each line as Label: Value", equipmentHelp: "Each line = 1 equipment item",
             fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", previousOwners: "Number of previous owners", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", technicalDataRaw: "Technical data (Label: Value)", equipmentItemsRaw: "Equipment (1 item per line)", available: "Vehicle is available" },
             addButton: "Add vehicle", currentCars: "Current vehicles", toggleAvailability: "Toggle availability", remove: "Remove"
         }
@@ -1825,6 +1825,7 @@ async function saveCarsToFirestore(cars) {
     if (!Array.isArray(cars)) {
         return false;
     }
+    await ensureFirebaseCmsIdToken();
     const url = buildFirestoreDocumentUrl();
     if (!url) {
         return false;
@@ -2886,7 +2887,7 @@ function CarDetailPage({ cars, setCars, language, texts }) {
 
 function CmsPage({ cars, setCars, language, texts }) {
     const [isLogged, setIsLogged] = useState(localStorage.getItem(CMS_AUTH_KEY) === "1");
-    const [credentials, setCredentials] = useState({ username: "", password: "" });
+    const [credentials, setCredentials] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const [editingCarId, setEditingCarId] = useState(null);
     const [dragImageIndex, setDragImageIndex] = useState(null);
@@ -3117,18 +3118,10 @@ function CmsPage({ cars, setCars, language, texts }) {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        const firebaseSession = await signInCmsWithFirebaseEmailPassword(credentials.username, credentials.password);
+        const firebaseSession = await signInCmsWithFirebaseEmailPassword(credentials.email, credentials.password);
         if (firebaseSession) {
             saveFirebaseAuthSession(firebaseSession);
             setRuntimeFirestoreIdToken(firebaseSession.idToken);
-            localStorage.setItem(CMS_AUTH_KEY, "1");
-            setIsLogged(true);
-            setError("");
-            return;
-        }
-        if (credentials.username === "admin" && credentials.password === "admin") {
-            clearFirebaseAuthSession();
-            setRuntimeFirestoreIdToken("");
             localStorage.setItem(CMS_AUTH_KEY, "1");
             setIsLogged(true);
             setError("");
@@ -3346,9 +3339,9 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label>
                         {texts.cms.username}
                         <input
-                            type="text"
-                            value={credentials.username}
-                            onChange={(e) => setCredentials((prev) => ({ ...prev, username: e.target.value }))}
+                            type="email"
+                            value={credentials.email}
+                            onChange={(e) => setCredentials((prev) => ({ ...prev, email: e.target.value }))}
                             required
                         />
                     </label>
