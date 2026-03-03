@@ -1848,6 +1848,7 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [editingCarId, setEditingCarId] = useState(null);
     const [dragImageIndex, setDragImageIndex] = useState(null);
     const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
+    const [liveMessage, setLiveMessage] = useState("");
     const [form, setForm] = useState({
         name: "",
         brand: "",
@@ -1882,7 +1883,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 removeImage: "Entfernen",
                 imageReadError: "Hochgeladene Bilder konnten nicht gelesen werden.",
                 dragHint: "Zum Ändern der Reihenfolge ziehen",
-                keyboardHint: "Mit Pfeiltasten verschieben"
+                keyboardHint: "Mit Pfeiltasten verschieben",
+                movedToPosition: (position, total) => `Bild auf Position ${position} von ${total} verschoben.`,
+                thumbnailSet: (position, total) => `Vorschaubild auf Position ${position} von ${total} eingestellt.`,
+                imageRemoved: (position, total) => `Bild ${position} entfernt. Verbleibend: ${total}.`,
+                imagesAdded: (added, total) => `Es wurden ${added} Bilder hinzugefügt. Insgesamt: ${total}.`
             };
         }
         if (language === "en") {
@@ -1895,7 +1900,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 removeImage: "Remove",
                 imageReadError: "Unable to read uploaded images.",
                 dragHint: "Drag to reorder",
-                keyboardHint: "Move with arrow keys"
+                keyboardHint: "Move with arrow keys",
+                movedToPosition: (position, total) => `Image moved to position ${position} of ${total}.`,
+                thumbnailSet: (position, total) => `Thumbnail set to position ${position} of ${total}.`,
+                imageRemoved: (position, total) => `Image ${position} removed. Remaining: ${total}.`,
+                imagesAdded: (added, total) => `${added} images added. Total: ${total}.`
             };
         }
         if (language === "cs") {
@@ -1908,7 +1917,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 removeImage: "Odstranit",
                 imageReadError: "Nepodařilo se načíst nahrané obrázky.",
                 dragHint: "Přetáhněte pro změnu pořadí",
-                keyboardHint: "Přesuňte šipkami"
+                keyboardHint: "Přesuňte šipkami",
+                movedToPosition: (position, total) => `Obrázek přesunut na pozici ${position} z ${total}.`,
+                thumbnailSet: (position, total) => `Náhled nastaven na pozici ${position} z ${total}.`,
+                imageRemoved: (position, total) => `Obrázek ${position} odstraněn. Zbývá: ${total}.`,
+                imagesAdded: (added, total) => `Přidáno obrázků: ${added}. Celkem: ${total}.`
             };
         }
         return {
@@ -1920,9 +1933,20 @@ function CmsPage({ cars, setCars, language, texts }) {
             removeImage: "Odstrániť",
             imageReadError: "Nepodarilo sa načítať nahrané obrázky.",
             dragHint: "Potiahni pre zmenu poradia",
-            keyboardHint: "Presuň šípkami"
+            keyboardHint: "Presuň šípkami",
+            movedToPosition: (position, total) => `Obrázok presunutý na pozíciu ${position} z ${total}.`,
+            thumbnailSet: (position, total) => `Náhľad nastavený na pozíciu ${position} z ${total}.`,
+            imageRemoved: (position, total) => `Obrázok ${position} odstránený. Zostáva: ${total}.`,
+            imagesAdded: (added, total) => `Pridané obrázky: ${added}. Celkovo: ${total}.`
         };
     }, [language]);
+
+    const announceLiveMessage = (message) => {
+        setLiveMessage("");
+        window.setTimeout(() => {
+            setLiveMessage(message);
+        }, 10);
+    };
 
     const moveFormImage = (fromIndex, toIndex) => {
         setForm((prev) => {
@@ -1936,6 +1960,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             const nextImages = [...prev.images];
             const [movedImage] = nextImages.splice(fromIndex, 1);
             nextImages.splice(toIndex, 0, movedImage);
+            announceLiveMessage(cmsUiTexts.movedToPosition(toIndex + 1, nextImages.length));
 
             let nextThumbnailIndex = prev.thumbnailIndex;
             if (prev.thumbnailIndex === fromIndex) {
@@ -2006,6 +2031,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setEditingCarId(null);
         setDragImageIndex(null);
         setDragOverImageIndex(null);
+        setLiveMessage("");
         setForm({
             name: "",
             brand: "",
@@ -2069,6 +2095,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             const uploadedImages = await readFilesAsDataUrls(files);
             setForm((prev) => {
                 const nextImages = [...prev.images, ...uploadedImages].filter(Boolean);
+                announceLiveMessage(cmsUiTexts.imagesAdded(uploadedImages.length, nextImages.length));
                 return {
                     ...prev,
                     images: nextImages,
@@ -2085,6 +2112,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setForm((prev) => {
             const nextImages = prev.images.filter((_, imageIndex) => imageIndex !== index);
             const nextThumbnailIndex = nextImages.length === 0 ? 0 : Math.min(prev.thumbnailIndex === index ? 0 : prev.thumbnailIndex, nextImages.length - 1);
+            announceLiveMessage(cmsUiTexts.imageRemoved(index + 1, nextImages.length));
             return {
                 ...prev,
                 images: nextImages,
@@ -2199,6 +2227,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                 </div>
                 <p>{texts.cms.intro}</p>
                 <form className="form-grid" onSubmit={addCar}>
+                    <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMessage}</p>
                     <label>{texts.cms.fields.name}<input type="text" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.brand}<input type="text" value={form.brand} onChange={(e) => setForm((prev) => ({ ...prev, brand: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.year}<input type="text" value={form.year} onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))} required /></label>
@@ -2258,7 +2287,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 >
                                     <img src={src} alt={`Preview ${index + 1}`} />
                                     <div className="cms-image-actions">
-                                        <button type="button" className="button-link button-secondary" onClick={() => setForm((prev) => ({ ...prev, thumbnailIndex: index }))}>
+                                        <button type="button" className="button-link button-secondary" onClick={() => {
+                                            setForm((prev) => ({ ...prev, thumbnailIndex: index }));
+                                            announceLiveMessage(cmsUiTexts.thumbnailSet(index + 1, form.images.length));
+                                        }}>
                                             {index === form.thumbnailIndex ? cmsUiTexts.thumbnail : cmsUiTexts.setThumbnail}
                                         </button>
                                         <button type="button" className="button-link danger" onClick={() => removeFormImage(index)}>{cmsUiTexts.removeImage}</button>
