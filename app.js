@@ -23,10 +23,10 @@ const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug-in hybrid", "Plyn"]
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
 const LANGUAGE_OPTIONS = [
-    { code: "cs", flag: "🇨🇿", label: "Čeština" },
-    { code: "sk", flag: "🇸🇰", label: "Slovenčina" },
-    { code: "de", flag: "🇩🇪", label: "Deutsch" },
-    { code: "en", flag: "🇬🇧", label: "English" }
+    { code: "cs", flagSrc: "sources/flags/cz.svg", label: "Čeština" },
+    { code: "sk", flagSrc: "sources/flags/sk.svg", label: "Slovenčina" },
+    { code: "de", flagSrc: "sources/flags/de.svg", label: "Deutsch" },
+    { code: "en", flagSrc: "sources/flags/gb.svg", label: "English" }
 ];
 const RESET_LABELS = {
     cs: "Vymazat filtry",
@@ -399,10 +399,25 @@ const I18N = {
             whyTitle: "Proč si vybrat ZMR Automovité",
             whyP1: "Naším cílem je, aby klient přesně věděl, co kupuje. Nejde jen o rychlý pohled na vozidlo, ale o detailní proces prověření technického stavu, historie, výbavy a legislativní připravenosti.",
             whyP2: "Spolupráce je transparentní od prvního kontaktu: domluvíme rozsah kontroly, připravíme výstupní zprávu, vysvětlíme rizika a navrhneme další postup.",
+            highlightsTitle: "Co klienti oceňují nejvíc",
+            highlights: [
+                { title: "Technická jistota", text: "Každé vozidlo hodnotíme systematicky – od diagnostiky až po dokumentaci, aby bylo jasné, do čeho jdete." },
+                { title: "Transparentní komunikace", text: "Vše vysvětlujeme srozumitelně: co je v pořádku, co je riziko a co doporučujeme řešit ihned." },
+                { title: "Podpora od A do Z", text: "Pomůžeme s výběrem, kontrolou, dovozem i administrativou, abyste neřešili proces po částech." }
+            ],
+            processTitle: "Jak spolupráce probíhá",
+            processSteps: [
+                "1. Upřesníme požadavky, rozpočet a preferované modely.",
+                "2. Provedeme kontrolu stavu, historie a reálné hodnoty vozidla.",
+                "3. Zpracujeme doporučení a navrhneme další konkrétní kroky.",
+                "4. V případě zájmu zajistíme dovoz, registraci a předání vozu."
+            ],
             approachTitle: "Komplexní přístup",
             approachText: "Pokrýváme celý proces od výběru modelu přes obhlídku až po dovoz a základní servis.",
             outputTitle: "Jasné výstupy",
-            outputText: "Dostanete srozumitelné informace o stavu, legislativě, výbavě i možných investicích po koupi."
+            outputText: "Dostanete srozumitelné informace o stavu, legislativě, výbavě i možných investicích po koupi.",
+            ctaTitle: "Chci nezávaznou konzultaci",
+            ctaText: "Popište nám, jaké vozidlo hledáte, a připravíme doporučený postup na míru."
         },
         about: {
             title: "O naší společnosti",
@@ -521,10 +536,25 @@ const I18N = {
             whyTitle: "Prečo si vybrať ZMR Automovité",
             whyP1: "Naším cieľom je, aby klient presne vedel, čo kupuje. Neponúkame len rýchly pohľad na vozidlo, ale detailné preverenie stavu, histórie aj legislatívy.",
             whyP2: "Spoluprácu vedieme transparentne od prvého kontaktu až po odovzdanie odporúčaní.",
+            highlightsTitle: "Čo klienti oceňujú najviac",
+            highlights: [
+                { title: "Technická istota", text: "Každé vozidlo hodnotíme systematicky – od diagnostiky po dokumentáciu, aby bolo jasné, do čoho idete." },
+                { title: "Transparentná komunikácia", text: "Všetko vysvetľujeme zrozumiteľne: čo je v poriadku, čo je riziko a čo riešiť prioritne." },
+                { title: "Podpora od A po Z", text: "Pomôžeme s výberom, kontrolou, dovozom aj administratívou, aby ste proces neriešili po častiach." }
+            ],
+            processTitle: "Ako prebieha spolupráca",
+            processSteps: [
+                "1. Spresníme požiadavky, rozpočet a preferované modely.",
+                "2. Preveríme technický stav, históriu a reálnu hodnotu vozidla.",
+                "3. Pripravíme odporúčania a navrhneme konkrétne ďalšie kroky.",
+                "4. Na požiadanie zabezpečíme dovoz, registráciu a odovzdanie vozidla."
+            ],
             approachTitle: "Komplexný prístup",
             approachText: "Pokrývame výber, obhliadku, kontrolu, dovoz aj základný servis.",
             outputTitle: "Jasné výstupy",
-            outputText: "Dostanete zrozumiteľné informácie o stave, legislatíve, výbave aj ďalších nákladoch."
+            outputText: "Dostanete zrozumiteľné informácie o stave, legislatíve, výbave aj ďalších nákladoch.",
+            ctaTitle: "Chcem nezáväznú konzultáciu",
+            ctaText: "Napíšte nám, aké vozidlo hľadáte, a pripravíme vám odporúčaný postup na mieru."
         },
         about: {
             title: "O našej spoločnosti",
@@ -572,7 +602,30 @@ const I18N = {
             contact: { title: "Kontakt", subtitle: "Wir unterstützen Sie bei Prüfung, Import und Auswahl des passenden Fahrzeugs." },
             cms: { title: "Fahrzeug-CMS", subtitle: "Interner Bereich zur Verwaltung des Fahrzeugangebots." }
         },
-        home: { whyTitle: "Warum ZMR Automovité", whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.", whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.", approachTitle: "Ganzheitlicher Ansatz", approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.", outputTitle: "Klare Ergebnisse", outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung." },
+        home: {
+            whyTitle: "Warum ZMR Automovité",
+            whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.",
+            whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.",
+            highlightsTitle: "Was Kunden besonders schätzen",
+            highlights: [
+                { title: "Technische Sicherheit", text: "Systematische Fahrzeugprüfung von Diagnose bis Dokumentation – klar, nachvollziehbar und praxisnah." },
+                { title: "Klare Kommunikation", text: "Wir erklären verständlich, was in Ordnung ist, wo Risiken liegen und was priorisiert werden sollte." },
+                { title: "Begleitung aus einer Hand", text: "Von Auswahl über Prüfung bis Import und Formalitäten erhalten Sie einen durchgängigen Prozess." }
+            ],
+            processTitle: "So läuft die Zusammenarbeit",
+            processSteps: [
+                "1. Anforderungen, Budget und passende Modelle definieren.",
+                "2. Zustand, Historie und Marktwert professionell prüfen.",
+                "3. Ergebnisse transparent auswerten und nächste Schritte festlegen.",
+                "4. Auf Wunsch Import, Zulassung und Übergabe organisieren."
+            ],
+            approachTitle: "Ganzheitlicher Ansatz",
+            approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.",
+            outputTitle: "Klare Ergebnisse",
+            outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung.",
+            ctaTitle: "Unverbindliche Beratung anfragen",
+            ctaText: "Teilen Sie uns Ihr Wunschfahrzeug mit und wir bereiten einen konkreten nächsten Schritt vor."
+        },
         about: { title: "Über unser Unternehmen", p1: "ZMR Automovité ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
         services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
@@ -596,7 +649,30 @@ const I18N = {
             contact: { title: "Contact", subtitle: "We are ready to help with inspection, import and vehicle selection." },
             cms: { title: "Vehicle CMS", subtitle: "Internal area for managing vehicle inventory." }
         },
-        home: { whyTitle: "Why choose ZMR Automovité", whyP1: "We provide in-depth vehicle checks, not just a quick glance.", whyP2: "Transparent cooperation from first contact to final recommendation.", approachTitle: "Comprehensive approach", approachText: "Selection, inspection, import and basic service in one place.", outputTitle: "Clear outputs", outputText: "You get clear information about condition, legal requirements and expected costs." },
+        home: {
+            whyTitle: "Why choose ZMR Automovité",
+            whyP1: "We provide in-depth vehicle checks, not just a quick glance.",
+            whyP2: "Transparent cooperation from first contact to final recommendation.",
+            highlightsTitle: "What clients value most",
+            highlights: [
+                { title: "Technical confidence", text: "Each vehicle is reviewed methodically, from diagnostics to documentation, so decisions are based on facts." },
+                { title: "Clear communication", text: "We explain what is fine, what is risky and what should be prioritized, in plain language." },
+                { title: "End-to-end support", text: "Selection, inspection, import and administration are handled as one coherent process." }
+            ],
+            processTitle: "How cooperation works",
+            processSteps: [
+                "1. Define requirements, budget and target models.",
+                "2. Verify condition, history and market value.",
+                "3. Deliver clear recommendations and next steps.",
+                "4. If needed, organize import, registration and handover."
+            ],
+            approachTitle: "Comprehensive approach",
+            approachText: "Selection, inspection, import and basic service in one place.",
+            outputTitle: "Clear outputs",
+            outputText: "You get clear information about condition, legal requirements and expected costs.",
+            ctaTitle: "Request a free consultation",
+            ctaText: "Tell us what vehicle you are looking for and we will prepare a practical next-step plan."
+        },
         about: { title: "About our company", p1: "ZMR Automovité specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
         services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
@@ -2065,7 +2141,7 @@ function getCarAvailabilityRank(car) {
     return 0;
 }
 
-function Navigation({ activePage, texts }) {
+function Navigation({ activePage, texts, className = "", onNavigate }) {
     const items = [
         { key: "cars", label: texts.nav.cars, href: "auta.html" },
         { key: "services", label: texts.nav.services, href: "sluzby.html" },
@@ -2074,12 +2150,13 @@ function Navigation({ activePage, texts }) {
     ];
 
     return (
-        <nav className="nav">
+        <nav className={className ? `nav ${className}` : "nav"}>
             {items.map((item) => (
                 <a
                     key={item.key}
                     href={item.href}
                     className={item.key === activePage ? "nav-link active" : "nav-link"}
+                    onClick={() => onNavigate?.()}
                 >
                     {item.label}
                 </a>
@@ -2100,7 +2177,7 @@ function LanguageSwitcher({ language, onChange, texts }) {
                     aria-label={item.label}
                     title={item.label}
                 >
-                    <span aria-hidden="true">{item.flag}</span>
+                    <img src={item.flagSrc} alt="" className="flag-icon" loading="lazy" decoding="async" aria-hidden="true" />
                 </button>
             ))}
         </div>
@@ -2108,6 +2185,50 @@ function LanguageSwitcher({ language, onChange, texts }) {
 }
 
 function PageShell({ page, title, subtitle, language, onLanguageChange, texts, children }) {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const menuToggleRef = useRef(null);
+    const mobileMenuRef = useRef(null);
+    const menuLabel = language === "cs"
+        ? "Menu"
+        : language === "de"
+            ? "Menü"
+            : language === "en"
+                ? "Menu"
+                : "Menu";
+
+    useEffect(() => {
+        setIsMobileMenuOpen(false);
+    }, [page, language]);
+
+    useEffect(() => {
+        const closeDesktopMenu = () => {
+            if (window.innerWidth > 860) {
+                setIsMobileMenuOpen(false);
+            }
+        };
+        window.addEventListener("resize", closeDesktopMenu);
+        return () => window.removeEventListener("resize", closeDesktopMenu);
+    }, []);
+
+    useEffect(() => {
+        if (!isMobileMenuOpen) {
+            return;
+        }
+        const handleOutsidePointer = (event) => {
+            const target = event.target;
+            if (!(target instanceof Node)) {
+                return;
+            }
+            const isInToggle = menuToggleRef.current && menuToggleRef.current.contains(target);
+            const isInMenu = mobileMenuRef.current && mobileMenuRef.current.contains(target);
+            if (!isInToggle && !isInMenu) {
+                setIsMobileMenuOpen(false);
+            }
+        };
+        document.addEventListener("pointerdown", handleOutsidePointer);
+        return () => document.removeEventListener("pointerdown", handleOutsidePointer);
+    }, [isMobileMenuOpen]);
+
     return (
         <>
             <header className="top-header">
@@ -2116,7 +2237,21 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
                         <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automovité logo" className="logo" />
                     </a>
                     <div className="header-tools">
-                        <Navigation activePage={page} texts={texts} />
+                        <button
+                            ref={menuToggleRef}
+                            type="button"
+                            className={isMobileMenuOpen ? "menu-toggle open" : "menu-toggle"}
+                            aria-label={menuLabel}
+                            aria-expanded={isMobileMenuOpen}
+                            aria-controls="primary-mobile-nav"
+                            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                        >
+                            <span aria-hidden="true">{isMobileMenuOpen ? "✕" : "☰"}</span>
+                            <span>{menuLabel}</span>
+                        </button>
+                        <div ref={mobileMenuRef} id="primary-mobile-nav" className={isMobileMenuOpen ? "mobile-nav-wrap open" : "mobile-nav-wrap"}>
+                            <Navigation activePage={page} texts={texts} className="primary-nav" onNavigate={() => setIsMobileMenuOpen(false)} />
+                        </div>
                         <LanguageSwitcher language={language} onChange={onLanguageChange} texts={texts} />
                     </div>
                 </div>
@@ -2143,6 +2278,27 @@ function HomePage({ texts }) {
                 <p>{texts.home.whyP2}</p>
             </section>
 
+            <section className="card">
+                <h2>{texts.home.highlightsTitle}</h2>
+                <div className="grid wide-grid">
+                    {texts.home.highlights.map((item) => (
+                        <article key={item.title} className="service-item">
+                            <h3>{item.title}</h3>
+                            <p>{item.text}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="card">
+                <h2>{texts.home.processTitle}</h2>
+                <ol>
+                    {texts.home.processSteps.map((step) => (
+                        <li key={step}>{step}</li>
+                    ))}
+                </ol>
+            </section>
+
             <section className="card split-card">
                 <div>
                     <h2>{texts.home.approachTitle}</h2>
@@ -2151,6 +2307,8 @@ function HomePage({ texts }) {
                 <div>
                     <h2>{texts.home.outputTitle}</h2>
                     <p>{texts.home.outputText}</p>
+                    <p className="car-meta">{texts.home.ctaText}</p>
+                    <a href="kontakt.html" className="button-link">{texts.home.ctaTitle}</a>
                 </div>
             </section>
         </>
