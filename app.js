@@ -4,6 +4,8 @@ const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
 const LANGUAGE_STORAGE_KEY = "zmrLanguage";
 const CZK_TO_EUR_RATE = 25;
+const HORSEPOWER_MIN_FILTER = 256;
+const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
@@ -170,6 +172,7 @@ const TECHNICAL_VALUE_TRANSLATIONS = {
     "Plug-in hybrid": { cs: "Plug-in hybrid", sk: "Plug-in hybrid", de: "Plug-in-Hybrid", en: "Plug-in hybrid" },
     "Available": { cs: "Dostupné", sk: "Dostupné", de: "Verfügbar", en: "Available" },
     "Unavailable": { cs: "Nedostupné", sk: "Nedostupné", de: "Nicht verfügbar", en: "Unavailable" },
+    "Reserved": { cs: "Rezervováno", sk: "Rezervované", de: "Reserviert", en: "Reserved" },
     "Yes": { cs: "Ano", sk: "Áno", de: "Ja", en: "Yes" },
     "No": { cs: "Ne", sk: "Nie", de: "Nein", en: "No" },
     "Gasoline": { cs: "Benzín", sk: "Benzín", de: "Benzin", en: "Gasoline" },
@@ -673,7 +676,7 @@ function getTechnicalData(car) {
     }
 
     return [
-        { label: "Vehicle condition", value: car.available ? "Available" : "Unavailable", icon: "🚗" },
+        { label: "Vehicle condition", value: car.reserved ? "Reserved" : (car.available ? "Available" : "Unavailable"), icon: "🚗" },
         { label: "Mileage", value: car.mileage || "-", icon: "📍" },
         { label: "Performance", value: `${car.horsepower || 0} hp`, icon: "⚡" },
         { label: "Drive type", value: car.drive || "-", icon: "🛞" },
@@ -711,6 +714,7 @@ function normalizeCar(car, index) {
         images,
         thumbnailIndex,
         image: images[thumbnailIndex] || images[0],
+        reserved: Boolean(car.reserved),
         technicalData: Array.isArray(car.technicalData) ? car.technicalData : undefined,
         equipmentItems: getEquipmentItems(car),
         priceCzk: parsePriceCzk(car),
@@ -1212,6 +1216,85 @@ function formatPrice(priceCzk, language) {
     }).format(amount);
 }
 
+function getReservationTexts(language) {
+    if (language === "de") {
+        return {
+            statusReserved: "Reserviert",
+            reserveButton: "Reservieren",
+            reserveUnavailable: "Fahrzeug kann nicht reserviert werden",
+            reserveTitle: "Fahrzeug reservieren",
+            firstName: "Vorname",
+            lastName: "Nachname",
+            email: "E-Mail",
+            phone: "Telefon",
+            sendReservation: "Reservierungsanfrage senden",
+            reservedSuccess: "Reservierungsanfrage vorbereitet. Bitte E-Mail bestätigen.",
+            alreadyReserved: "Dieses Fahrzeug ist bereits reserviert.",
+            reservationSubject: (carName) => `Reservierung Fahrzeug: ${carName}`,
+            reservationBody: (car, form) => `Fahrzeug: ${car.name}\nID: ${car.id}\nJahr: ${car.year}\nPreis: ${car.priceCzk} CZK\n\nReservierungsanfrage von:\nVorname: ${form.firstName}\nNachname: ${form.lastName}\nE-Mail: ${form.email}\nTelefon: ${form.phone}`
+        };
+    }
+    if (language === "en") {
+        return {
+            statusReserved: "Reserved",
+            reserveButton: "Reserve",
+            reserveUnavailable: "Vehicle cannot be reserved",
+            reserveTitle: "Reserve vehicle",
+            firstName: "First name",
+            lastName: "Last name",
+            email: "Email",
+            phone: "Phone",
+            sendReservation: "Send reservation request",
+            reservedSuccess: "Reservation request prepared. Please confirm in your email app.",
+            alreadyReserved: "This vehicle is already reserved.",
+            reservationSubject: (carName) => `Vehicle reservation: ${carName}`,
+            reservationBody: (car, form) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}`
+        };
+    }
+    if (language === "cs") {
+        return {
+            statusReserved: "Rezervováno",
+            reserveButton: "Rezervovat",
+            reserveUnavailable: "Vozidlo nelze rezervovat",
+            reserveTitle: "Rezervace vozidla",
+            firstName: "Jméno",
+            lastName: "Příjmení",
+            email: "E-mail",
+            phone: "Telefon",
+            sendReservation: "Odeslat rezervaci",
+            reservedSuccess: "Rezervace je připravená. Potvrďte ji prosím v e-mailové aplikaci.",
+            alreadyReserved: "Toto vozidlo je už rezervované.",
+            reservationSubject: (carName) => `Rezervace vozidla: ${carName}`,
+            reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}`
+        };
+    }
+    return {
+        statusReserved: "Rezervované",
+        reserveButton: "Rezervovať",
+        reserveUnavailable: "Vozidlo nie je možné rezervovať",
+        reserveTitle: "Rezervácia vozidla",
+        firstName: "Meno",
+        lastName: "Priezvisko",
+        email: "E-mail",
+        phone: "Telefón",
+        sendReservation: "Odoslať rezerváciu",
+        reservedSuccess: "Rezervácia je pripravená. Potvrď ju prosím v e-mailovej aplikácii.",
+        alreadyReserved: "Toto vozidlo je už rezervované.",
+        reservationSubject: (carName) => `Rezervácia vozidla: ${carName}`,
+        reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}`
+    };
+}
+
+function getCarAvailabilityRank(car) {
+    if (!car?.available) {
+        return 2;
+    }
+    if (car?.reserved) {
+        return 1;
+    }
+    return 0;
+}
+
 function Navigation({ activePage, texts }) {
     const items = [
         { key: "home", label: texts.nav.home, href: "index.html" },
@@ -1373,6 +1456,7 @@ function ContactPage({ texts }) {
 }
 
 function CarsPage({ cars, language, texts }) {
+    const reservationTexts = useMemo(() => getReservationTexts(language), [language]);
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [fuel, setFuel] = useState("");
@@ -1399,8 +1483,8 @@ function CarsPage({ cars, language, texts }) {
     const seatsRangeTo = Math.max(seatsFromCurrent, seatsToCurrent);
     const hasSeatsFilter = seatsFromCurrent > seatsMinBound || seatsToCurrent < seatsMaxBound;
     const horsepowerValues = useMemo(() => cars.map((car) => Number(car.horsepower)).filter((count) => Number.isFinite(count) && count >= 0), [cars]);
-    const horsepowerMinBound = horsepowerValues.length > 0 ? Math.min(...horsepowerValues) : 0;
-    const horsepowerMaxBound = horsepowerValues.length > 0 ? Math.max(...horsepowerValues) : 500;
+    const horsepowerMinBound = HORSEPOWER_MIN_FILTER;
+    const horsepowerMaxBound = Math.max(HORSEPOWER_MIN_FILTER, horsepowerValues.length > 0 ? Math.max(...horsepowerValues) : 500);
     const horsepowerFromCurrent = Number.isFinite(parseNumber(horsepowerFrom)) ? Math.min(horsepowerMaxBound, Math.max(horsepowerMinBound, parseNumber(horsepowerFrom))) : horsepowerMinBound;
     const horsepowerToCurrent = Number.isFinite(parseNumber(horsepowerTo)) ? Math.max(horsepowerMinBound, Math.min(horsepowerMaxBound, parseNumber(horsepowerTo))) : horsepowerMaxBound;
     const horsepowerRangeFrom = Math.min(horsepowerFromCurrent, horsepowerToCurrent);
@@ -1428,12 +1512,7 @@ function CarsPage({ cars, language, texts }) {
         const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !hasSeatsFilter && !hasHorsepowerFilter;
 
         if (noFiltersSet) {
-            return [...cars].sort((a, b) => {
-                if (a.available === b.available) {
-                    return 0;
-                }
-                return a.available ? -1 : 1;
-            });
+            return [...cars].sort((a, b) => getCarAvailabilityRank(a) - getCarAvailabilityRank(b));
         }
 
         return cars
@@ -1453,12 +1532,7 @@ function CarsPage({ cars, language, texts }) {
 
                 return matchesQuery && matchesFuel && matchesBrand && matchesDrive && matchesTransmission && matchesDoors && matchesMinSeats && matchesMaxSeats && matchesMinHorsepower && matchesMaxHorsepower;
             })
-            .sort((a, b) => {
-                if (a.available === b.available) {
-                    return 0;
-                }
-                return a.available ? -1 : 1;
-            });
+            .sort((a, b) => getCarAvailabilityRank(a) - getCarAvailabilityRank(b));
     }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsRangeFrom, seatsRangeTo, hasHorsepowerFilter, horsepowerRangeFrom, horsepowerRangeTo]);
 
     const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || hasSeatsFilter || doors || brand || drive || transmission);
@@ -1744,8 +1818,8 @@ function CarsPage({ cars, language, texts }) {
                                 {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
                             </p>
                             <p>{car.description}</p>
-                            <p className={car.available ? "status available" : "status unavailable"}>
-                                {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
+                            <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
+                                {car.reserved ? reservationTexts.statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
                             </p>
                             <div className="car-footer">
                                 <strong>{formatPrice(car.priceCzk, language)}</strong>
@@ -1765,11 +1839,14 @@ function CarsPage({ cars, language, texts }) {
     );
 }
 
-function CarDetailPage({ cars, language, texts }) {
+function CarDetailPage({ cars, setCars, language, texts }) {
+    const reservationTexts = useMemo(() => getReservationTexts(language), [language]);
     const carId = readCarIdFromQuery();
     const car = cars.find((item) => item.id === carId) || cars[0];
     const [dynamicTechnicalValues, setDynamicTechnicalValues] = useState({});
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [reservationForm, setReservationForm] = useState({ firstName: "", lastName: "", email: "", phone: "" });
+    const [reservationMessage, setReservationMessage] = useState("");
 
     if (!car) {
         return (
@@ -1787,7 +1864,26 @@ function CarDetailPage({ cars, language, texts }) {
 
     useEffect(() => {
         setSelectedImageIndex(Number.isInteger(car?.thumbnailIndex) ? car.thumbnailIndex : 0);
+        setReservationMessage("");
     }, [car?.id]);
+
+    const submitReservation = (event) => {
+        event.preventDefault();
+        if (!car || !car.available || car.reserved) {
+            setReservationMessage(reservationTexts.alreadyReserved);
+            return;
+        }
+
+        const updatedCars = cars.map((item) => item.id === car.id ? { ...item, reserved: true } : item);
+        setCars(updatedCars);
+        saveCars(updatedCars);
+
+        const subject = reservationTexts.reservationSubject(car.name);
+        const body = reservationTexts.reservationBody(car, reservationForm);
+        const mailto = `mailto:${RESERVATION_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+        setReservationMessage(reservationTexts.reservedSuccess);
+    };
 
     useEffect(() => {
         let active = true;
@@ -1832,11 +1928,23 @@ function CarDetailPage({ cars, language, texts }) {
                     <p className="car-meta">👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
                     <p>{car.description}</p>
                     <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
-                    <p className={car.available ? "status available" : "status unavailable"}>
-                        {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
+                    <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
+                        {car.reserved ? reservationTexts.statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
                     </p>
                     <h3>{texts.carDetail.legalTitle}</h3>
                     <p>{car.legal}</p>
+                    <div className="reservation-box">
+                        <h3>{reservationTexts.reserveTitle}</h3>
+                        <form className="reservation-form" onSubmit={submitReservation}>
+                            <input type="text" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={!car.available || car.reserved} />
+                            <input type="text" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={!car.available || car.reserved} />
+                            <input type="email" value={reservationForm.email} onChange={(e) => setReservationForm((prev) => ({ ...prev, email: e.target.value }))} placeholder={reservationTexts.email} required disabled={!car.available || car.reserved} />
+                            <input type="tel" value={reservationForm.phone} onChange={(e) => setReservationForm((prev) => ({ ...prev, phone: e.target.value }))} placeholder={reservationTexts.phone} required disabled={!car.available || car.reserved} />
+                            <button type="submit" className="button-link" disabled={!car.available || car.reserved}>{reservationTexts.reserveButton}</button>
+                        </form>
+                        {reservationMessage && <p className="car-meta">{reservationMessage}</p>}
+                        {(!car.available || car.reserved) && <p className="car-meta">{reservationTexts.reserveUnavailable}</p>}
+                    </div>
                 </div>
             </section>
 
@@ -1905,6 +2013,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         description: "",
         legal: "",
         equipment: "",
+        reserved: false,
         available: true
     });
     const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
@@ -1924,7 +2033,9 @@ function CmsPage({ cars, setCars, language, texts }) {
                 movedToPosition: (position, total) => `Bild auf Position ${position} von ${total} verschoben.`,
                 thumbnailSet: (position, total) => `Vorschaubild auf Position ${position} von ${total} eingestellt.`,
                 imageRemoved: (position, total) => `Bild ${position} entfernt. Verbleibend: ${total}.`,
-                imagesAdded: (added, total) => `Es wurden ${added} Bilder hinzugefügt. Insgesamt: ${total}.`
+                imagesAdded: (added, total) => `Es wurden ${added} Bilder hinzugefügt. Insgesamt: ${total}.`,
+                reservedLabel: "Fahrzeug ist reserviert",
+                toggleReserved: "Reservierung umschalten"
             };
         }
         if (language === "en") {
@@ -1941,7 +2052,9 @@ function CmsPage({ cars, setCars, language, texts }) {
                 movedToPosition: (position, total) => `Image moved to position ${position} of ${total}.`,
                 thumbnailSet: (position, total) => `Thumbnail set to position ${position} of ${total}.`,
                 imageRemoved: (position, total) => `Image ${position} removed. Remaining: ${total}.`,
-                imagesAdded: (added, total) => `${added} images added. Total: ${total}.`
+                imagesAdded: (added, total) => `${added} images added. Total: ${total}.`,
+                reservedLabel: "Vehicle is reserved",
+                toggleReserved: "Toggle reservation"
             };
         }
         if (language === "cs") {
@@ -1958,7 +2071,9 @@ function CmsPage({ cars, setCars, language, texts }) {
                 movedToPosition: (position, total) => `Obrázek přesunut na pozici ${position} z ${total}.`,
                 thumbnailSet: (position, total) => `Náhled nastaven na pozici ${position} z ${total}.`,
                 imageRemoved: (position, total) => `Obrázek ${position} odstraněn. Zbývá: ${total}.`,
-                imagesAdded: (added, total) => `Přidáno obrázků: ${added}. Celkem: ${total}.`
+                imagesAdded: (added, total) => `Přidáno obrázků: ${added}. Celkem: ${total}.`,
+                reservedLabel: "Vozidlo je rezervované",
+                toggleReserved: "Přepnout rezervaci"
             };
         }
         return {
@@ -1974,7 +2089,9 @@ function CmsPage({ cars, setCars, language, texts }) {
             movedToPosition: (position, total) => `Obrázok presunutý na pozíciu ${position} z ${total}.`,
             thumbnailSet: (position, total) => `Náhľad nastavený na pozíciu ${position} z ${total}.`,
             imageRemoved: (position, total) => `Obrázok ${position} odstránený. Zostáva: ${total}.`,
-            imagesAdded: (added, total) => `Pridané obrázky: ${added}. Celkovo: ${total}.`
+            imagesAdded: (added, total) => `Pridané obrázky: ${added}. Celkovo: ${total}.`,
+            reservedLabel: "Vozidlo je rezervované",
+            toggleReserved: "Prepnúť rezerváciu"
         };
     }, [language]);
 
@@ -2088,6 +2205,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             description: "",
             legal: "",
             equipment: "",
+            reserved: false,
             available: true
         });
         setTechnicalChecklist(createInitialTechnicalChecklistState());
@@ -2116,6 +2234,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             description: car.description || "",
             legal: car.legal || "",
             equipment: car.equipment || "",
+            reserved: Boolean(car.reserved),
             available: Boolean(car.available)
         });
         setTechnicalChecklist(createTechnicalChecklistFromCar(car));
@@ -2200,6 +2319,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             technicalData,
             equipmentItems,
             equipment: equipmentItems.length > 0 ? `Výbava: ${equipmentItems.slice(0, 8).join(", ")}` : form.equipment,
+            reserved: Boolean(form.reserved),
             available: form.available
         };
 
@@ -2214,6 +2334,12 @@ function CmsPage({ cars, setCars, language, texts }) {
 
     const toggleAvailability = (id) => {
         const updated = cars.map((car) => car.id === id ? { ...car, available: !car.available } : car);
+        setCars(updated);
+        saveCars(updated);
+    };
+
+    const toggleReserved = (id) => {
+        const updated = cars.map((car) => car.id === id ? { ...car, reserved: !car.reserved } : car);
         setCars(updated);
         saveCars(updated);
     };
@@ -2396,6 +2522,14 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label className="checkbox-row full-width">
                         <input
                             type="checkbox"
+                            checked={form.reserved}
+                            onChange={(e) => setForm((prev) => ({ ...prev, reserved: e.target.checked }))}
+                        />
+                        {cmsUiTexts.reservedLabel}
+                    </label>
+                    <label className="checkbox-row full-width">
+                        <input
+                            type="checkbox"
                             checked={form.available}
                             onChange={(e) => setForm((prev) => ({ ...prev, available: e.target.checked }))}
                         />
@@ -2418,13 +2552,16 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
                                 <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive} • {formatTransmission(car)}</p>
                                 <p>👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
-                                <p className={car.available ? "status available" : "status unavailable"}>
-                                    {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
+                                <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
+                                    {car.reserved ? getReservationTexts(language).statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
                                 </p>
                             </div>
                             <div className="cms-actions">
                                 <button className="button-link button-secondary" onClick={() => beginEditCar(car)}>
                                     {cmsUiTexts.edit}
+                                </button>
+                                <button className="button-link button-secondary" onClick={() => toggleReserved(car.id)}>
+                                    {cmsUiTexts.toggleReserved}
                                 </button>
                                 <button className="button-link button-secondary" onClick={() => toggleAvailability(car.id)}>
                                     {texts.cms.toggleAvailability}
@@ -2481,7 +2618,7 @@ function App() {
                 return {
                     title: texts.pages.carDetail.title,
                     subtitle: texts.pages.carDetail.subtitle,
-                    content: <CarDetailPage cars={cars} language={language} texts={texts} />
+                    content: <CarDetailPage cars={cars} setCars={setCars} language={language} texts={texts} />
                 };
             case "contact":
                 return {

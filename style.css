@@ -398,6 +398,48 @@ a:hover {
 	border: 1px solid rgba(255, 126, 126, 0.35);
 }
 
+.status.reserved {
+	background: rgba(255, 193, 7, 0.18);
+	color: #ffe7a3;
+	border: 1px solid rgba(255, 214, 102, 0.45);
+}
+
+.reservation-box {
+	margin-top: 10px;
+	padding: 12px;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.03);
+	display: grid;
+	gap: 10px;
+}
+
+.reservation-box h3 {
+	margin: 0;
+}
+
+.reservation-form {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.reservation-form input {
+	width: 100%;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.045));
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 12px;
+	padding: 10px 12px;
+	color: var(--text);
+	font-family: inherit;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+.reservation-form button {
+	grid-column: 1 / -1;
+}
+
 .button-link {
 	display: inline-flex;
 	align-items: center;
@@ -874,15 +916,50 @@ a:hover {
 .hp-range-sliders input[type="range"] {
 	position: absolute;
 	left: 12px;
-	right: 12px;
+	width: calc(100% - 24px);
 	top: 50%;
 	transform: translateY(-50%);
-	width: 100%;
 	accent-color: var(--accent);
+	-webkit-appearance: none;
+	appearance: none;
 	padding: 0;
-	height: auto;
+	height: 18px;
 	box-shadow: none;
 	background: transparent;
+}
+
+.hp-range-sliders input[type="range"]::-webkit-slider-runnable-track {
+	height: 6px;
+	background: transparent;
+}
+
+.hp-range-sliders input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	border: 2px solid var(--accent);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+	margin-top: -5px;
+	cursor: pointer;
+}
+
+.hp-range-sliders input[type="range"]::-moz-range-track {
+	height: 6px;
+	background: transparent;
+	border: 0;
+}
+
+.hp-range-sliders input[type="range"]::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: #fff;
+	border: 2px solid var(--accent);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
 }
 
 .range-bounds {
@@ -1169,5 +1246,9 @@ a:hover {
 
 	.card {
 		padding: 18px;
+	}
+
+	.reservation-form {
+		grid-template-columns: 1fr;
 	}
 }
