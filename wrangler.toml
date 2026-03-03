@@ -1,0 +1,13 @@
+name = "zmr-translate"
+main = "sources/translate-worker.js"
+compatibility_date = "2026-03-03"
+
+[vars]
+RESERVATION_FROM_EMAIL = "ZMR <onboarding@resend.dev>"
+# Optional fallback inbox if frontend does not send toEmail:
+# RESERVATION_TO_EMAIL = "info@zmrautomovite.cz"
+
+[[kv_namespaces]]
+binding = "CARS_KV"
+id = "PUT_PRODUCTION_KV_NAMESPACE_ID_HERE"
+# preview_id = "PUT_PREVIEW_KV_NAMESPACE_ID_HERE"

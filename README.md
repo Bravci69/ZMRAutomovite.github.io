@@ -107,3 +107,27 @@ Use a server-side proxy (Cloudflare Worker) and keep the key in Worker secrets.
 			window.ZMR_CARS_API_URL = "https://zmr-translate.<subdomain>.workers.dev/api/cars";
 		</script>
 		```
+
+		## Quick deploy now
+
+		1. Login and create KV namespace:
+
+		- `wrangler login`
+		- `wrangler kv namespace create CARS_KV`
+
+		2. Put returned KV namespace `id` into [wrangler.toml](wrangler.toml).
+
+		3. Set required secrets:
+
+		- `wrangler secret put GOOGLE_TRANSLATE_API_KEY`
+		- `wrangler secret put RESEND_API_KEY`
+
+		4. Deploy worker:
+
+		- `wrangler deploy`
+
+		5. In your HTML (before `app.js`), set:
+
+		- `window.ZMR_TRANSLATE_PROXY_URL = "https://.../api/translate"`
+		- `window.ZMR_RESERVATION_PROXY_URL = "https://.../api/reservation"`
+		- `window.ZMR_CARS_API_URL = "https://.../api/cars"`
