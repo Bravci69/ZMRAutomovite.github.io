@@ -399,25 +399,10 @@ const I18N = {
             whyTitle: "Proč si vybrat ZMR Automovité",
             whyP1: "Naším cílem je, aby klient přesně věděl, co kupuje. Nejde jen o rychlý pohled na vozidlo, ale o detailní proces prověření technického stavu, historie, výbavy a legislativní připravenosti.",
             whyP2: "Spolupráce je transparentní od prvního kontaktu: domluvíme rozsah kontroly, připravíme výstupní zprávu, vysvětlíme rizika a navrhneme další postup.",
-            highlightsTitle: "Co klienti oceňují nejvíc",
-            highlights: [
-                { title: "Technická jistota", text: "Každé vozidlo hodnotíme systematicky – od diagnostiky až po dokumentaci, aby bylo jasné, do čeho jdete." },
-                { title: "Transparentní komunikace", text: "Vše vysvětlujeme srozumitelně: co je v pořádku, co je riziko a co doporučujeme řešit ihned." },
-                { title: "Podpora od A do Z", text: "Pomůžeme s výběrem, kontrolou, dovozem i administrativou, abyste neřešili proces po částech." }
-            ],
-            processTitle: "Jak spolupráce probíhá",
-            processSteps: [
-                "1. Upřesníme požadavky, rozpočet a preferované modely.",
-                "2. Provedeme kontrolu stavu, historie a reálné hodnoty vozidla.",
-                "3. Zpracujeme doporučení a navrhneme další konkrétní kroky.",
-                "4. V případě zájmu zajistíme dovoz, registraci a předání vozu."
-            ],
             approachTitle: "Komplexní přístup",
             approachText: "Pokrýváme celý proces od výběru modelu přes obhlídku až po dovoz a základní servis.",
             outputTitle: "Jasné výstupy",
-            outputText: "Dostanete srozumitelné informace o stavu, legislativě, výbavě i možných investicích po koupi.",
-            ctaTitle: "Chci nezávaznou konzultaci",
-            ctaText: "Popište nám, jaké vozidlo hledáte, a připravíme doporučený postup na míru."
+            outputText: "Dostanete srozumitelné informace o stavu, legislativě, výbavě i možných investicích po koupi."
         },
         about: {
             title: "O naší společnosti",
@@ -536,25 +521,10 @@ const I18N = {
             whyTitle: "Prečo si vybrať ZMR Automovité",
             whyP1: "Naším cieľom je, aby klient presne vedel, čo kupuje. Neponúkame len rýchly pohľad na vozidlo, ale detailné preverenie stavu, histórie aj legislatívy.",
             whyP2: "Spoluprácu vedieme transparentne od prvého kontaktu až po odovzdanie odporúčaní.",
-            highlightsTitle: "Čo klienti oceňujú najviac",
-            highlights: [
-                { title: "Technická istota", text: "Každé vozidlo hodnotíme systematicky – od diagnostiky po dokumentáciu, aby bolo jasné, do čoho idete." },
-                { title: "Transparentná komunikácia", text: "Všetko vysvetľujeme zrozumiteľne: čo je v poriadku, čo je riziko a čo riešiť prioritne." },
-                { title: "Podpora od A po Z", text: "Pomôžeme s výberom, kontrolou, dovozom aj administratívou, aby ste proces neriešili po častiach." }
-            ],
-            processTitle: "Ako prebieha spolupráca",
-            processSteps: [
-                "1. Spresníme požiadavky, rozpočet a preferované modely.",
-                "2. Preveríme technický stav, históriu a reálnu hodnotu vozidla.",
-                "3. Pripravíme odporúčania a navrhneme konkrétne ďalšie kroky.",
-                "4. Na požiadanie zabezpečíme dovoz, registráciu a odovzdanie vozidla."
-            ],
             approachTitle: "Komplexný prístup",
             approachText: "Pokrývame výber, obhliadku, kontrolu, dovoz aj základný servis.",
             outputTitle: "Jasné výstupy",
-            outputText: "Dostanete zrozumiteľné informácie o stave, legislatíve, výbave aj ďalších nákladoch.",
-            ctaTitle: "Chcem nezáväznú konzultáciu",
-            ctaText: "Napíšte nám, aké vozidlo hľadáte, a pripravíme vám odporúčaný postup na mieru."
+            outputText: "Dostanete zrozumiteľné informácie o stave, legislatíve, výbave aj ďalších nákladoch."
         },
         about: {
             title: "O našej spoločnosti",
@@ -602,30 +572,7 @@ const I18N = {
             contact: { title: "Kontakt", subtitle: "Wir unterstützen Sie bei Prüfung, Import und Auswahl des passenden Fahrzeugs." },
             cms: { title: "Fahrzeug-CMS", subtitle: "Interner Bereich zur Verwaltung des Fahrzeugangebots." }
         },
-        home: {
-            whyTitle: "Warum ZMR Automovité",
-            whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.",
-            whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.",
-            highlightsTitle: "Was Kunden besonders schätzen",
-            highlights: [
-                { title: "Technische Sicherheit", text: "Systematische Fahrzeugprüfung von Diagnose bis Dokumentation – klar, nachvollziehbar und praxisnah." },
-                { title: "Klare Kommunikation", text: "Wir erklären verständlich, was in Ordnung ist, wo Risiken liegen und was priorisiert werden sollte." },
-                { title: "Begleitung aus einer Hand", text: "Von Auswahl über Prüfung bis Import und Formalitäten erhalten Sie einen durchgängigen Prozess." }
-            ],
-            processTitle: "So läuft die Zusammenarbeit",
-            processSteps: [
-                "1. Anforderungen, Budget und passende Modelle definieren.",
-                "2. Zustand, Historie und Marktwert professionell prüfen.",
-                "3. Ergebnisse transparent auswerten und nächste Schritte festlegen.",
-                "4. Auf Wunsch Import, Zulassung und Übergabe organisieren."
-            ],
-            approachTitle: "Ganzheitlicher Ansatz",
-            approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.",
-            outputTitle: "Klare Ergebnisse",
-            outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung.",
-            ctaTitle: "Unverbindliche Beratung anfragen",
-            ctaText: "Teilen Sie uns Ihr Wunschfahrzeug mit und wir bereiten einen konkreten nächsten Schritt vor."
-        },
+        home: { whyTitle: "Warum ZMR Automovité", whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.", whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.", approachTitle: "Ganzheitlicher Ansatz", approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.", outputTitle: "Klare Ergebnisse", outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung." },
         about: { title: "Über unser Unternehmen", p1: "ZMR Automovité ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
         services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
@@ -649,30 +596,7 @@ const I18N = {
             contact: { title: "Contact", subtitle: "We are ready to help with inspection, import and vehicle selection." },
             cms: { title: "Vehicle CMS", subtitle: "Internal area for managing vehicle inventory." }
         },
-        home: {
-            whyTitle: "Why choose ZMR Automovité",
-            whyP1: "We provide in-depth vehicle checks, not just a quick glance.",
-            whyP2: "Transparent cooperation from first contact to final recommendation.",
-            highlightsTitle: "What clients value most",
-            highlights: [
-                { title: "Technical confidence", text: "Each vehicle is reviewed methodically, from diagnostics to documentation, so decisions are based on facts." },
-                { title: "Clear communication", text: "We explain what is fine, what is risky and what should be prioritized, in plain language." },
-                { title: "End-to-end support", text: "Selection, inspection, import and administration are handled as one coherent process." }
-            ],
-            processTitle: "How cooperation works",
-            processSteps: [
-                "1. Define requirements, budget and target models.",
-                "2. Verify condition, history and market value.",
-                "3. Deliver clear recommendations and next steps.",
-                "4. If needed, organize import, registration and handover."
-            ],
-            approachTitle: "Comprehensive approach",
-            approachText: "Selection, inspection, import and basic service in one place.",
-            outputTitle: "Clear outputs",
-            outputText: "You get clear information about condition, legal requirements and expected costs.",
-            ctaTitle: "Request a free consultation",
-            ctaText: "Tell us what vehicle you are looking for and we will prepare a practical next-step plan."
-        },
+        home: { whyTitle: "Why choose ZMR Automovité", whyP1: "We provide in-depth vehicle checks, not just a quick glance.", whyP2: "Transparent cooperation from first contact to final recommendation.", approachTitle: "Comprehensive approach", approachText: "Selection, inspection, import and basic service in one place.", outputTitle: "Clear outputs", outputText: "You get clear information about condition, legal requirements and expected costs." },
         about: { title: "About our company", p1: "ZMR Automovité specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
         services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
@@ -1528,15 +1452,78 @@ function createEquipmentChecklistFromCar(car) {
     return state;
 }
 
+function estimateDataUrlBytes(dataUrl) {
+    if (typeof dataUrl !== "string") {
+        return Infinity;
+    }
+    const commaIndex = dataUrl.indexOf(",");
+    if (commaIndex < 0) {
+        return Infinity;
+    }
+    const base64 = dataUrl.slice(commaIndex + 1);
+    return Math.floor((base64.length * 3) / 4);
+}
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error || new Error("File read failed"));
+        reader.readAsDataURL(file);
+    });
+}
+
+async function compressImageToDataUrl(file) {
+    const source = await readFileAsDataUrl(file);
+    const image = await new Promise((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = () => reject(new Error("Image decode failed"));
+        element.src = source;
+    });
+
+    const sourceWidth = Math.max(1, Number(image.naturalWidth) || Number(image.width) || 1);
+    const sourceHeight = Math.max(1, Number(image.naturalHeight) || Number(image.height) || 1);
+    const scale = Math.min(1, 1600 / sourceWidth, 1200 / sourceHeight);
+    const targetWidth = Math.max(1, Math.round(sourceWidth * scale));
+    const targetHeight = Math.max(1, Math.round(sourceHeight * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const context = canvas.getContext("2d");
+    if (!context) {
+        return source;
+    }
+    context.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+    let quality = 0.82;
+    let output = canvas.toDataURL("image/jpeg", quality);
+    while (estimateDataUrlBytes(output) > 380000 && quality > 0.5) {
+        quality = Math.max(0.5, quality - 0.08);
+        output = canvas.toDataURL("image/jpeg", quality);
+    }
+
+    return estimateDataUrlBytes(output) <= estimateDataUrlBytes(source) ? output : source;
+}
+
 function readFilesAsDataUrls(files) {
     const fileList = Array.from(files || []);
     return Promise.all(
-        fileList.map((file) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(file);
-        }))
+        fileList.map(async (file) => {
+            if (!(file instanceof File)) {
+                return "";
+            }
+            const mimeType = String(file.type || "").toLowerCase();
+            if (!mimeType.startsWith("image/")) {
+                return "";
+            }
+            try {
+                return await compressImageToDataUrl(file);
+            } catch {
+                return await readFileAsDataUrl(file);
+            }
+        })
     );
 }
 
@@ -1666,7 +1653,6 @@ function saveCars(cars) {
         console.error("Nepodarilo sa uložiť vozidlá do localStorage.", error);
     }
 }
-
 function isDataUrlImage(value) {
     return typeof value === "string" && value.trim().toLowerCase().startsWith("data:");
 }
@@ -1676,9 +1662,9 @@ function sanitizeCarForCloud(car) {
         return car;
     }
     const images = getCarImages(car).map((image) => String(image || "").trim()).filter(Boolean);
-    const cloudImages = images.filter((image) => !isDataUrlImage(image)).slice(0, 8);
-    const safeImages = cloudImages.length > 0
-        ? cloudImages
+    const normalizedImages = images.slice(0, 8);
+    const safeImages = normalizedImages.length > 0
+        ? normalizedImages
         : ["https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80"];
     const rawThumbnail = Number(car.thumbnailIndex);
     const thumbnailIndex = Number.isInteger(rawThumbnail) && rawThumbnail >= 0 && rawThumbnail < safeImages.length ? rawThumbnail : 0;
@@ -1696,7 +1682,6 @@ function sanitizeCarsForCloud(cars) {
     }
     return cars.map((car) => sanitizeCarForCloud(car));
 }
-
 async function fetchCarsFromCloud() {
     const firestoreCars = await fetchCarsFromFirestore();
     if (firestoreCars) {
@@ -1754,7 +1739,6 @@ async function saveCarsToCloud(cars) {
         return false;
     }
 }
-
 function buildFirebaseCarsUrl() {
     if (!FIREBASE_DB_URL) {
         return "";
@@ -1797,6 +1781,7 @@ async function saveCarsToFirebase(cars) {
     if (!Array.isArray(cars)) {
         return false;
     }
+    await ensureFirebaseCmsIdToken();
     const url = buildFirebaseCarsUrl();
     if (!url) {
         return false;
@@ -2146,7 +2131,7 @@ function Navigation({ activePage, texts, className = "", onNavigate }) {
         { key: "cars", label: texts.nav.cars, href: "auta.html" },
         { key: "services", label: texts.nav.services, href: "sluzby.html" },
         { key: "about", label: texts.nav.about, href: "o-nas.html" },
-        { key: "contact", label: texts.nav.contact, href: "kontakt.html" }
+        { key: "contact", label: texts.nav.contact, href: "kontakt.html" },
     ];
 
     return (
@@ -2186,15 +2171,7 @@ function LanguageSwitcher({ language, onChange, texts }) {
 
 function PageShell({ page, title, subtitle, language, onLanguageChange, texts, children }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const menuToggleRef = useRef(null);
-    const mobileMenuRef = useRef(null);
-    const menuLabel = language === "cs"
-        ? "Menu"
-        : language === "de"
-            ? "Menü"
-            : language === "en"
-                ? "Menu"
-                : "Menu";
+    const menuLabel = language === "de" ? "Menü" : "Menu";
 
     useEffect(() => {
         setIsMobileMenuOpen(false);
@@ -2210,25 +2187,6 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
         return () => window.removeEventListener("resize", closeDesktopMenu);
     }, []);
 
-    useEffect(() => {
-        if (!isMobileMenuOpen) {
-            return;
-        }
-        const handleOutsidePointer = (event) => {
-            const target = event.target;
-            if (!(target instanceof Node)) {
-                return;
-            }
-            const isInToggle = menuToggleRef.current && menuToggleRef.current.contains(target);
-            const isInMenu = mobileMenuRef.current && mobileMenuRef.current.contains(target);
-            if (!isInToggle && !isInMenu) {
-                setIsMobileMenuOpen(false);
-            }
-        };
-        document.addEventListener("pointerdown", handleOutsidePointer);
-        return () => document.removeEventListener("pointerdown", handleOutsidePointer);
-    }, [isMobileMenuOpen]);
-
     return (
         <>
             <header className="top-header">
@@ -2238,7 +2196,6 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
                     </a>
                     <div className="header-tools">
                         <button
-                            ref={menuToggleRef}
                             type="button"
                             className={isMobileMenuOpen ? "menu-toggle open" : "menu-toggle"}
                             aria-label={menuLabel}
@@ -2249,7 +2206,7 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
                             <span aria-hidden="true">{isMobileMenuOpen ? "✕" : "☰"}</span>
                             <span>{menuLabel}</span>
                         </button>
-                        <div ref={mobileMenuRef} id="primary-mobile-nav" className={isMobileMenuOpen ? "mobile-nav-wrap open" : "mobile-nav-wrap"}>
+                        <div id="primary-mobile-nav" className={isMobileMenuOpen ? "mobile-nav-wrap open" : "mobile-nav-wrap"}>
                             <Navigation activePage={page} texts={texts} className="primary-nav" onNavigate={() => setIsMobileMenuOpen(false)} />
                         </div>
                         <LanguageSwitcher language={language} onChange={onLanguageChange} texts={texts} />
@@ -2268,7 +2225,6 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
         </>
     );
 }
-
 function HomePage({ texts }) {
     return (
         <>
@@ -2276,27 +2232,6 @@ function HomePage({ texts }) {
                 <h2>{texts.home.whyTitle}</h2>
                 <p>{texts.home.whyP1}</p>
                 <p>{texts.home.whyP2}</p>
-            </section>
-
-            <section className="card">
-                <h2>{texts.home.highlightsTitle}</h2>
-                <div className="grid wide-grid">
-                    {texts.home.highlights.map((item) => (
-                        <article key={item.title} className="service-item">
-                            <h3>{item.title}</h3>
-                            <p>{item.text}</p>
-                        </article>
-                    ))}
-                </div>
-            </section>
-
-            <section className="card">
-                <h2>{texts.home.processTitle}</h2>
-                <ol>
-                    {texts.home.processSteps.map((step) => (
-                        <li key={step}>{step}</li>
-                    ))}
-                </ol>
             </section>
 
             <section className="card split-card">
@@ -2307,8 +2242,6 @@ function HomePage({ texts }) {
                 <div>
                     <h2>{texts.home.outputTitle}</h2>
                     <p>{texts.home.outputText}</p>
-                    <p className="car-meta">{texts.home.ctaText}</p>
-                    <a href="kontakt.html" className="button-link">{texts.home.ctaTitle}</a>
                 </div>
             </section>
         </>
@@ -2457,7 +2390,56 @@ function ServicesPage({ texts, language }) {
     );
 }
 
-function ContactPage({ texts }) {
+function ContactPage({ texts, language }) {
+    const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", message: "" });
+    const [contactStatus, setContactStatus] = useState("");
+    const [isContactSending, setIsContactSending] = useState(false);
+
+    const contactLabels = language === "cs"
+        ? { title: "Nezávazná poptávka", name: "Jméno", email: "E-mail", phone: "Telefon", message: "Váš dotaz", button: "Odeslat dotaz", sending: "Odesílám dotaz...", success: "Děkujeme, dotaz byl úspěšně odeslán.", error: "Dotaz se nepodařilo odeslat. Zkuste to prosím znovu." }
+        : language === "de"
+            ? { title: "Unverbindliche Anfrage", name: "Name", email: "E-Mail", phone: "Telefon", message: "Ihre Nachricht", button: "Anfrage senden", sending: "Anfrage wird gesendet...", success: "Danke, Ihre Anfrage wurde erfolgreich gesendet.", error: "Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut." }
+            : language === "en"
+                ? { title: "Non-binding inquiry", name: "Name", email: "Email", phone: "Phone", message: "Your message", button: "Send inquiry", sending: "Sending inquiry...", success: "Thank you, your inquiry was sent successfully.", error: "Inquiry could not be sent. Please try again." }
+                : { title: "Nezáväzný dopyt", name: "Meno", email: "E-mail", phone: "Telefón", message: "Vaša správa", button: "Odoslať dopyt", sending: "Odosielam dopyt...", success: "Ďakujeme, dopyt bol úspešne odoslaný.", error: "Dopyt sa nepodarilo odoslať. Skúste to prosím znova." };
+
+    const submitContactInquiry = async (event) => {
+        event.preventDefault();
+        if (isContactSending) {
+            return;
+        }
+
+        setContactStatus(contactLabels.sending);
+        setIsContactSending(true);
+
+        const payload = {
+            requestId: createRequestId("contact"),
+            language,
+            source: "contact-page",
+            campaign: "website-contact-inquiry",
+            toEmail: RESERVATION_EMAIL,
+            subject: `Kontakt dopyt (${String(language || "sk").toUpperCase()})`,
+            text: `Source: contact-page\nLanguage: ${String(language || "sk").toUpperCase()}\n\nName: ${String(contactForm.name || "")}\nEmail: ${String(contactForm.email || "")}\nPhone: ${String(contactForm.phone || "")}\n\nMessage:\n${String(contactForm.message || "")}`,
+            form: {
+                name: String(contactForm.name || ""),
+                email: String(contactForm.email || ""),
+                phone: String(contactForm.phone || ""),
+                message: String(contactForm.message || "")
+            }
+        };
+
+        const result = await sendReservationEmailViaProxy(payload);
+        if (!result.ok) {
+            setContactStatus(contactLabels.error);
+            setIsContactSending(false);
+            return;
+        }
+
+        setContactForm({ name: "", email: "", phone: "", message: "" });
+        setContactStatus(contactLabels.success);
+        setIsContactSending(false);
+    };
+
     return (
         <>
             <section className="card">
@@ -2473,6 +2455,30 @@ function ContactPage({ texts }) {
             <section className="card">
                 <h2>{texts.contact.processTitle}</h2>
                 <p>{texts.contact.processText}</p>
+            </section>
+
+            <section className="card inquiry-card">
+                <h2>{contactLabels.title}</h2>
+                <form className="form-grid inquiry-form" onSubmit={submitContactInquiry} autoComplete="off">
+                    <label>
+                        {contactLabels.name}
+                        <input type="text" value={contactForm.name} onChange={(event) => setContactForm((prev) => ({ ...prev, name: event.target.value }))} required />
+                    </label>
+                    <label>
+                        {contactLabels.email}
+                        <input type="email" value={contactForm.email} onChange={(event) => setContactForm((prev) => ({ ...prev, email: event.target.value }))} required />
+                    </label>
+                    <label>
+                        {contactLabels.phone}
+                        <input type="tel" value={contactForm.phone} onChange={(event) => setContactForm((prev) => ({ ...prev, phone: event.target.value }))} />
+                    </label>
+                    <label className="full-width">
+                        {contactLabels.message}
+                        <textarea rows={5} value={contactForm.message} onChange={(event) => setContactForm((prev) => ({ ...prev, message: event.target.value }))} required></textarea>
+                    </label>
+                    <button type="submit" className="button-link" disabled={isContactSending}>{contactLabels.button}</button>
+                </form>
+                {contactStatus && <p className="car-meta">{contactStatus}</p>}
             </section>
         </>
     );
@@ -2728,7 +2734,7 @@ function CarsPage({ cars, language, texts }) {
                                 <path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L19 21.5 21.5 19l-4.5-5zM10 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"></path>
                             </svg>
                         </span>
-                        <input type="text" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
+                        <input type="email" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
                     </div>
                 </label>
                 <div className="seats-quick-row">
@@ -2769,38 +2775,30 @@ function CarsPage({ cars, language, texts }) {
                         <DarkSelect value={drive} onChange={setDrive} options={driveSelectOptions} placeholder={texts.cars.driveAll} ariaLabel={texts.cars.drive} />
                     </label>
                     <label>
+                        {texts.cars.doors}
+                        <DarkSelect value={doors} onChange={setDoors} options={doorSelectOptions} placeholder={texts.cars.doorsAll} ariaLabel={texts.cars.doors} />
+                    </label>
+                    <label>
                         {texts.cars.transmission}
                         <DarkSelect value={transmission} onChange={setTransmission} options={transmissionSelectOptions} placeholder={texts.cars.transmissionAll} ariaLabel={texts.cars.transmission} />
                     </label>
                     <div className="hp-range-field">
-                        <span>{texts.cars.hpFrom} / {texts.cars.hpTo}</span>
+                        <span>{texts.cars.hpFrom}</span>
                         <div className="hp-range-values">
                             <strong>{horsepowerFromCurrent} {texts.common.horsepowerUnit}</strong>
-                            <strong>{horsepowerToCurrent} {texts.common.horsepowerUnit}</strong>
+                            <strong>{horsepowerMaxBound} {texts.common.horsepowerUnit}</strong>
                         </div>
                         <div className="single-range-row">
                             <span>{texts.cars.hpFrom}</span>
                             <input
                                 type="range"
                                 min={horsepowerMinBound}
-                                max={horsepowerToCurrent}
+                                max={horsepowerMaxBound}
                                 value={horsepowerFromCurrent}
                                 onChange={(event) => {
-                                    const next = Math.min(Number(event.target.value), horsepowerToCurrent);
+                                    const next = Math.min(Number(event.target.value), horsepowerMaxBound);
                                     setHorsepowerFrom(String(next));
-                                }}
-                            />
-                        </div>
-                        <div className="single-range-row">
-                            <span>{texts.cars.hpTo}</span>
-                            <input
-                                type="range"
-                                min={horsepowerFromCurrent}
-                                max={horsepowerMaxBound}
-                                value={horsepowerToCurrent}
-                                onChange={(event) => {
-                                    const next = Math.max(Number(event.target.value), horsepowerFromCurrent);
-                                    setHorsepowerTo(String(next));
+                                    setHorsepowerTo(String(horsepowerMaxBound));
                                 }}
                             />
                         </div>
@@ -2809,39 +2807,23 @@ function CarsPage({ cars, language, texts }) {
                             <span>{horsepowerMaxBound} {texts.common.horsepowerUnit}</span>
                         </div>
                     </div>
-                    <label>
-                        {texts.cars.doors}
-                        <DarkSelect value={doors} onChange={setDoors} options={doorSelectOptions} placeholder={texts.cars.doorsAll} ariaLabel={texts.cars.doors} />
-                    </label>
                     <div className="seat-range-field">
-                        <span>{texts.cars.seatsFrom} / {texts.cars.seatsTo}</span>
+                        <span>{texts.cars.seatsFrom}</span>
                         <div className="hp-range-values">
                             <strong>{seatsFromCurrent} {texts.cars.seatsUnit}</strong>
-                            <strong>{seatsToCurrent} {texts.cars.seatsUnit}</strong>
+                            <strong>{seatsMaxBound} {texts.cars.seatsUnit}</strong>
                         </div>
                         <div className="single-range-row">
                             <span>{texts.cars.seatsFrom}</span>
                             <input
                                 type="range"
                                 min={seatsMinBound}
-                                max={seatsToCurrent}
+                                max={seatsMaxBound}
                                 value={seatsFromCurrent}
                                 onChange={(event) => {
-                                    const next = Math.min(Number(event.target.value), seatsToCurrent);
+                                    const next = Math.min(Number(event.target.value), seatsMaxBound);
                                     setSeatsFrom(String(next));
-                                }}
-                            />
-                        </div>
-                        <div className="single-range-row">
-                            <span>{texts.cars.seatsTo}</span>
-                            <input
-                                type="range"
-                                min={seatsFromCurrent}
-                                max={seatsMaxBound}
-                                value={seatsToCurrent}
-                                onChange={(event) => {
-                                    const next = Math.max(Number(event.target.value), seatsFromCurrent);
-                                    setSeatsTo(String(next));
+                                    setSeatsTo(String(seatsMaxBound));
                                 }}
                             />
                         </div>
@@ -2864,11 +2846,12 @@ function CarsPage({ cars, language, texts }) {
                         <div className="car-content">
                             <h2>{localizedName}</h2>
                             <p className="car-meta">
-                                {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
+                                {car.year} • {car.mileage} • {car.fuel} • {car.drive}
                             </p>
-                            <p className="car-meta">
-                                {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
-                            </p>
+                            <div className="car-spec-grid">
+                                <p className="car-meta">{car.doors} {texts.common.doorsUnit} • {formatTransmission(car)}</p>
+                                <p className="car-meta">{car.horsepower} {texts.common.horsepowerUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"}</p>
+                            </div>
                             <p>{localizedDescription}</p>
                             <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
                                 {car.reserved ? reservationTexts.statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
@@ -3007,11 +2990,12 @@ function CarDetailPage({ cars, setCars, language, texts }) {
                 <div>
                     <h2>{localizedName}</h2>
                     <p className="car-meta">
-                        {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
-                    </p>
-                    <p className="car-meta">
-                        {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
-                    </p>
+                                {car.year} • {car.mileage} • {car.fuel} • {car.drive}
+                            </p>
+                            <div className="car-spec-grid">
+                                <p className="car-meta">{car.doors} {texts.common.doorsUnit} • {formatTransmission(car)}</p>
+                                <p className="car-meta">{car.horsepower} {texts.common.horsepowerUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"}</p>
+                            </div>
                     <p className="car-meta">👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
                     <p>{localizedDescription}</p>
                     <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
@@ -3024,8 +3008,8 @@ function CarDetailPage({ cars, setCars, language, texts }) {
                         <h3>{reservationTexts.reserveTitle}</h3>
                         {!car.reserved && car.available && (
                             <form className="reservation-form" onSubmit={submitReservation}>
-                                <input type="text" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={isReservationSending} />
-                                <input type="text" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={isReservationSending} />
+                                <input type="email" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={isReservationSending} />
+                                <input type="email" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={isReservationSending} />
                                 <input type="email" value={reservationForm.email} onChange={(e) => setReservationForm((prev) => ({ ...prev, email: e.target.value }))} placeholder={reservationTexts.email} required disabled={isReservationSending} />
                                 <input type="tel" value={reservationForm.phone} onChange={(e) => setReservationForm((prev) => ({ ...prev, phone: e.target.value }))} placeholder={reservationTexts.phone} required disabled={isReservationSending} />
                                 <button type="submit" className="button-link" disabled={isReservationSending}>{isReservationSending ? reservationTexts.reserveSending : reservationTexts.reserveButton}</button>
@@ -3110,38 +3094,6 @@ function CmsPage({ cars, setCars, language, texts }) {
     });
     const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
     const [equipmentChecklist, setEquipmentChecklist] = useState(createInitialEquipmentChecklistState);
-    const syncTexts = useMemo(() => {
-        if (language === "de") {
-            return {
-                firebaseReady: "Firebase-Anmeldung aktiv. Änderungen werden in der Datenbank gespeichert.",
-                firebaseMissing: "Firebase-Anmeldung fehlt. Anmeldung erneut durchführen.",
-                cloudSaved: "Änderungen wurden in der Datenbank gespeichert.",
-                cloudSaveFailed: "Speichern in der Datenbank fehlgeschlagen. Bitte erneut anmelden und speichern (bei hochgeladenen Fotos kleinere Bilder oder URL verwenden)."
-            };
-        }
-        if (language === "en") {
-            return {
-                firebaseReady: "Firebase login is active. Changes will be saved to the database.",
-                firebaseMissing: "Firebase login is missing. Please sign in again.",
-                cloudSaved: "Changes were saved to the database.",
-                cloudSaveFailed: "Saving to database failed. Please sign in again and retry (for uploaded photos use smaller images or URL)."
-            };
-        }
-        if (language === "cs") {
-            return {
-                firebaseReady: "Firebase přihlášení je aktivní. Změny se ukládají do databáze.",
-                firebaseMissing: "Firebase přihlášení chybí. Přihlaste se prosím znovu.",
-                cloudSaved: "Změny byly uloženy do databáze.",
-                cloudSaveFailed: "Uložení do databáze selhalo. Přihlaste se znovu a uložte znovu (u nahraných fotek použijte menší obrázky nebo URL)."
-            };
-        }
-        return {
-            firebaseReady: "Firebase prihlásenie je aktívne. Zmeny sa ukladajú do databázy.",
-            firebaseMissing: "Firebase prihlásenie chýba. Prihláste sa prosím znova.",
-            cloudSaved: "Zmeny boli uložené do databázy.",
-            cloudSaveFailed: "Uloženie do databázy zlyhalo. Prihláste sa znova a uložte ešte raz (pri nahraných fotkách použite menšie obrázky alebo URL)."
-        };
-    }, [language]);
     const cmsUiTexts = useMemo(() => {
         if (language === "de") {
             return {
@@ -3333,29 +3285,12 @@ function CmsPage({ cars, setCars, language, texts }) {
     const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: option })), []);
 
     useEffect(() => {
-        let active = true;
         if (!isLogged) {
             setRuntimeFirestoreIdToken("");
-            setSyncMessage("");
             return;
         }
-        ensureFirebaseCmsIdToken().then((isReady) => {
-            if (!active) {
-                return;
-            }
-            if (isReady) {
-                setSyncMessageType("success");
-                setSyncMessage(syncTexts.firebaseReady);
-                setError("");
-            } else {
-                setSyncMessageType("error");
-                setSyncMessage(syncTexts.firebaseMissing);
-            }
-        });
-        return () => {
-            active = false;
-        };
-    }, [isLogged, syncTexts]);
+        ensureFirebaseCmsIdToken();
+    }, [isLogged]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -3366,12 +3301,9 @@ function CmsPage({ cars, setCars, language, texts }) {
             localStorage.setItem(CMS_AUTH_KEY, "1");
             setIsLogged(true);
             setError("");
-            setSyncMessageType("success");
-            setSyncMessage(syncTexts.firebaseReady);
             return;
         }
-        setSyncMessageType("error");
-        setSyncMessage(syncTexts.firebaseMissing);
+
         setError(texts.cms.loginError);
     };
 
@@ -3550,14 +3482,10 @@ function CmsPage({ cars, setCars, language, texts }) {
         const cloudSaved = await saveCarsToCloud(updated);
         if (cloudSaved) {
             setError("");
-            setSyncMessageType("success");
-            setSyncMessage(syncTexts.cloudSaved);
             resetCmsForm();
             return;
         }
-        setSyncMessageType("error");
-        setSyncMessage(syncTexts.cloudSaveFailed);
-        setError(syncTexts.cloudSaveFailed);
+        setError("Uloženie do databázy zlyhalo. Prihláste sa znova a uložte ešte raz.");
     };
 
     const setCarStatus = (id, status) => {
@@ -3590,13 +3518,13 @@ function CmsPage({ cars, setCars, language, texts }) {
                 <h2>{texts.cms.loginTitle}</h2>
                 <p>{texts.cms.loginInfo}</p>
                 {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
-                <form className="form-grid" onSubmit={handleLogin} autoComplete="on">
+                {error && <p className="error-text">{error}</p>}
+                <form className="form-grid" onSubmit={handleLogin} autoComplete="off">
                     <label>
                         {texts.cms.username}
                         <input
                             type="email"
-                            name="cmsEmail"
-                            autoComplete="username"
+                            autoComplete="off"
                             value={credentials.email}
                             onChange={(e) => setCredentials((prev) => ({ ...prev, email: e.target.value }))}
                             required
@@ -3606,8 +3534,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                         {texts.cms.password}
                         <input
                             type="password"
-                            name="cmsPassword"
-                            autoComplete="current-password"
+                            autoComplete="new-password"
                             value={credentials.password}
                             onChange={(e) => setCredentials((prev) => ({ ...prev, password: e.target.value }))}
                             required
@@ -3890,7 +3817,7 @@ function App() {
                 return {
                     title: texts.pages.contact.title,
                     subtitle: texts.pages.contact.subtitle,
-                    content: <ContactPage texts={texts} />
+                    content: <ContactPage texts={texts} language={language} />
                 };
             case "cms":
                 return {
@@ -3916,3 +3843,33 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
