@@ -275,6 +275,108 @@ a:hover {
 	border: 1px solid var(--line);
 }
 
+.detail-accordions {
+	display: grid;
+	gap: 12px;
+}
+
+.modern-accordion {
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.03);
+	overflow: hidden;
+}
+
+.modern-accordion summary {
+	list-style: none;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 14px 16px;
+	cursor: pointer;
+	font-weight: 800;
+	color: var(--text);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+}
+
+.modern-accordion summary::-webkit-details-marker {
+	display: none;
+}
+
+.accordion-arrow {
+	transition: transform 0.2s ease;
+	color: var(--muted);
+}
+
+.modern-accordion[open] .accordion-arrow {
+	transform: rotate(180deg);
+}
+
+.accordion-content {
+	padding: 14px 16px 16px;
+	display: grid;
+	gap: 10px;
+}
+
+.technical-grid {
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 10px;
+}
+
+.technical-item {
+	display: grid;
+	grid-template-columns: 28px 1fr;
+	gap: 10px;
+	padding: 10px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.technical-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 8px;
+	background: rgba(222, 59, 59, 0.2);
+}
+
+.technical-item h4 {
+	margin: 0 0 4px;
+	font-size: 0.86rem;
+	color: var(--muted);
+	font-weight: 700;
+}
+
+.technical-item p {
+	margin: 0;
+	font-size: 0.92rem;
+	color: var(--text);
+}
+
+.equipment-grid {
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 8px;
+}
+
+.equipment-item {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 8px 10px;
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	font-size: 0.9rem;
+}
+
+.equipment-item span:first-child {
+	color: #80f7b2;
+	font-weight: 800;
+}
+
 .status {
 	font-weight: 700;
 	font-size: 0.92rem;
@@ -456,6 +558,15 @@ a:hover {
 	height: 100%;
 	display: block;
 	fill: currentColor;
+	transition: transform 0.2s ease, fill 0.2s ease;
+}
+
+.search-input-wrap:focus-within .search-icon {
+	color: rgba(255, 255, 255, 0.95);
+}
+
+.search-input-wrap:focus-within .search-icon svg {
+	transform: scale(1.08);
 }
 
 .search-row input {

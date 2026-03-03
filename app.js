@@ -132,6 +132,7 @@ const I18N = {
                 horsepower: "Výkon (k)",
                 doors: "Počet dveří",
                 seats: "Počet sedadel",
+                previousOwners: "Počet předchozích majitelů",
                 drive: "Náhon",
                 fuel: "Palivo",
                 transmission: "Převodovka",
@@ -199,7 +200,7 @@ const I18N = {
         carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava" },
         cms: {
             loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.",
-            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
+            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", previousOwners: "Počet predošlých majiteľov", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
             addButton: "Pridať vozidlo", currentCars: "Aktuálne vozidlá", toggleAvailability: "Zmeniť dostupnosť", remove: "Odstrániť"
         }
     },
@@ -223,7 +224,7 @@ const I18N = {
         carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung" },
         cms: {
             loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
-            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
+            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", previousOwners: "Anzahl Vorbesitzer", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
             addButton: "Fahrzeug hinzufügen", currentCars: "Aktuelle Fahrzeuge", toggleAvailability: "Verfügbarkeit ändern", remove: "Entfernen"
         }
     },
@@ -247,7 +248,7 @@ const I18N = {
         carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", legalTitle: "Legal information", equipmentTitle: "Equipment" },
         cms: {
             loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
-            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
+            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", previousOwners: "Number of previous owners", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
             addButton: "Add vehicle", currentCars: "Current vehicles", toggleAvailability: "Toggle availability", remove: "Remove"
         }
     }
@@ -264,6 +265,7 @@ const defaultCars = [
         horsepower: 258,
         doors: 5,
         seats: 5,
+        previousOwners: 2,
         drive: "Zadní",
         fuel: "Benzín",
         transmission: "Automat",
@@ -272,6 +274,44 @@ const defaultCars = [
         description: "Spoľahlivé a pravidelne servisované vozidlo vhodné na dlhé trasy aj každodenné používanie. Vozidlo je po technickej kontrole a má transparentnú históriu.",
         legal: "Legislatívne informácie: Vozidlo je možné prihlásiť v ČR/SR po štandardnom procese registrácie. Emisná norma EURO 6. Pri dovoze zabezpečíme kompletné podklady pre evidenciu a STK.",
         equipment: "Výbava: LED svetlomety, navigácia, parkovacia kamera, vyhrievané sedadlá, tempomat, bezkľúčové štartovanie, multifunkčný volant.",
+        technicalData: [
+            { label: "Vehicle condition", value: "Used vehicle", icon: "🚗" },
+            { label: "Category", value: "Convertible/Roadster", icon: "🏎️" },
+            { label: "Series", value: "BM 238", icon: "🧾" },
+            { label: "Equipment line", value: "E 300 (238,448)", icon: "📦" },
+            { label: "Vehicle number", value: "DI3743", icon: "🔢" },
+            { label: "Origin", value: "German version", icon: "🌍" },
+            { label: "Mileage", value: "65,500 km", icon: "📍" },
+            { label: "Displacement", value: "1.991 cm3", icon: "⚙️" },
+            { label: "Performance", value: "180 kW (245 hp)", icon: "⚡" },
+            { label: "Drive type", value: "Combustion engine", icon: "🛞" },
+            { label: "Fuel type", value: "Gasoline", icon: "⛽" },
+            { label: "Energy consumption (comb.)", value: "7.9 l/100km", icon: "📉" },
+            { label: "CO2 emissions (comb.)", value: "181 g/km", icon: "🌿" },
+            { label: "Fuel consumption", value: "7.9 l/100km (combined)", icon: "🧪" },
+            { label: "Number of seats", value: "4", icon: "💺" },
+            { label: "Number of doors", value: "2/3", icon: "🚪" },
+            { label: "Gearbox", value: "Automatic", icon: "🕹️" },
+            { label: "Pollutant class", value: "Euro6", icon: "♻️" },
+            { label: "Environmental plaque", value: "4 (Green)", icon: "🟢" },
+            { label: "First registration", value: "12/2018", icon: "📅" },
+            { label: "Number of vehicle owners", value: "2", icon: "👤" },
+            { label: "HU", value: "New", icon: "✅" },
+            { label: "Air conditioning", value: "2-zone automatic climate control", icon: "❄️" },
+            { label: "Parking assistance", value: "Rear, 360° Camera, Front", icon: "🅿️" },
+            { label: "Airbags", value: "Front, side and other airbags", icon: "🛡️" },
+            { label: "Colour (manufacturer)", value: "SELENITE GREY", icon: "🎨" },
+            { label: "Colour", value: "Grey Metallic", icon: "🩶" },
+            { label: "Interior equipment", value: "Full leather, Black", icon: "🛋️" },
+            { label: "Towbar braked", value: "1,800 kg", icon: "🔗" },
+            { label: "Towing load unchecked", value: "750 kg", icon: "⚖️" },
+            { label: "Weight", value: "1.795 kg", icon: "🏋️" },
+            { label: "Cylinder", value: "4", icon: "🧩" },
+            { label: "Tank size", value: "66 l", icon: "🛢️" }
+        ],
+        equipmentItems: [
+            "ABS", "Distance cruise control", "Distance warning", "Adaptive chassis", "Adaptive cornering light", "Alarm system", "All-weather tires", "Android Auto", "Apple CarPlay", "Armrest", "Mountain start assistant", "Bluetooth", "On-board computer", "Electric. Window lifter", "Electric. Side Mirror", "Electric. Seat setting", "Electric. Seat adjustment with memory function", "Electric. Immobiliser", "ESP", "Hands-free device", "Warranty", "Speed limiter", "Head-Up Display", "Rear-wheel drive", "Induction Charging for Smartphones", "Interior mirror automatic dimming", "Inspection new", "Isofix", "Leather steering wheel", "LED headlights", "Alloy wheels", "Light sensor", "Lordose support", "Fatigue warning", "Multifunction steering wheel", "Music streaming integrated", "Navigation system", "Navigation preparation", "Fog lights", "Non-smoking vehicle", "Emergency brake assistant", "Emergency call system", "Radio DAB", "Rain sensor", "Tire pressure control", "Shift rockers", "Headlight cleaning", "Keyless central locking (keyless)", "Power steering", "Seat ventilation", "Seat heating", "Sound system", "Sports suspension", "Sports package", "Sports seats", "Voice control", "Lane Keeping Assist", "Start/Stop automatic", "Daytime running light", "Blind Spot Assist", "Traction control", "Tuner/Radio", "TV", "Traffic Sign Recognition", "Virtual side mirrors", "Fully digital instrument cluster", "Winter package", "WiFi / Wifi Hotspot", "Central locking"
+        ],
         available: true
     },
     {
@@ -284,6 +324,7 @@ const defaultCars = [
         horsepower: 258,
         doors: 5,
         seats: 5,
+        previousOwners: 1,
         drive: "xDrive",
         fuel: "Benzín",
         transmission: "Automat",
@@ -388,10 +429,42 @@ function normalizeFuelValue(value) {
     return sanitizeOption(value, FUEL_OPTIONS, "Benzín");
 }
 
+function getEquipmentItems(car) {
+    if (Array.isArray(car.equipmentItems) && car.equipmentItems.length > 0) {
+        return car.equipmentItems;
+    }
+
+    if (typeof car.equipment === "string" && car.equipment.trim()) {
+        const cleaned = car.equipment.replace(/^Výbava:\s*/i, "");
+        return cleaned.split(",").map((item) => item.trim()).filter(Boolean);
+    }
+
+    return [];
+}
+
+function getTechnicalData(car) {
+    if (Array.isArray(car.technicalData) && car.technicalData.length > 0) {
+        return car.technicalData;
+    }
+
+    return [
+        { label: "Vehicle condition", value: car.available ? "Available" : "Unavailable", icon: "🚗" },
+        { label: "Mileage", value: car.mileage || "-", icon: "📍" },
+        { label: "Performance", value: `${car.horsepower || 0} hp`, icon: "⚡" },
+        { label: "Drive type", value: car.drive || "-", icon: "🛞" },
+        { label: "Fuel type", value: car.fuel || "-", icon: "⛽" },
+        { label: "Number of seats", value: String(car.seats || "-"), icon: "💺" },
+        { label: "Number of doors", value: String(car.doors || "-"), icon: "🚪" },
+        { label: "Gearbox", value: formatTransmission(car), icon: "🕹️" },
+        { label: "Number of vehicle owners", value: String(car.previousOwners ?? "-"), icon: "👤" }
+    ];
+}
+
 function normalizeCar(car, index) {
     const transmission = sanitizeOption(car.transmission, TRANSMISSION_OPTIONS, "Automat");
     const doors = Number.isFinite(Number(car.doors)) ? Math.max(2, Number(car.doors)) : 2;
     const seats = Number.isFinite(Number(car.seats)) ? Math.max(2, Number(car.seats)) : 2;
+    const previousOwners = Number.isFinite(Number(car.previousOwners)) ? Math.max(0, Number(car.previousOwners)) : 0;
     const manualGearsRaw = Number.isFinite(Number(car.manualGears)) ? Number(car.manualGears) : 0;
     const manualGears = transmission === "Manuál" ? Math.max(1, manualGearsRaw) : 0;
 
@@ -402,10 +475,13 @@ function normalizeCar(car, index) {
         horsepower: Number.isFinite(Number(car.horsepower)) ? Number(car.horsepower) : 0,
         doors,
         seats,
+        previousOwners,
         drive: normalizeDriveValue(car.drive),
         fuel: normalizeFuelValue(car.fuel),
         transmission,
         manualGears,
+        technicalData: Array.isArray(car.technicalData) ? car.technicalData : undefined,
+        equipmentItems: getEquipmentItems(car),
         priceCzk: parsePriceCzk(car),
         available: Boolean(car.available)
     };
@@ -700,6 +776,16 @@ function CarsPage({ cars, language, texts }) {
         const hpToValue = parseNumber(horsepowerTo);
         const seatsFromValue = parseNumber(seatsFrom);
         const seatsToValue = parseNumber(seatsTo);
+        const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !seatsFrom && !seatsTo && !horsepowerFrom && !horsepowerTo;
+
+        if (noFiltersSet) {
+            return [...cars].sort((a, b) => {
+                if (a.available === b.available) {
+                    return 0;
+                }
+                return a.available ? -1 : 1;
+            });
+        }
 
         return cars
             .filter((car) => {
@@ -986,28 +1072,67 @@ function CarDetailPage({ cars, language, texts }) {
         );
     }
 
+    const technicalRows = getTechnicalData(car);
+    const equipmentRows = getEquipmentItems(car);
+
     return (
-        <section className="card detail-card">
-            <img src={car.image} alt={car.name} className="detail-image" />
-            <div>
-                <h2>{car.name}</h2>
-                <p className="car-meta">
-                    {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
-                </p>
-                <p className="car-meta">
-                    {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
-                </p>
-                <p>{car.description}</p>
-                <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
-                <p className={car.available ? "status available" : "status unavailable"}>
-                    {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
-                </p>
-                <h3>{texts.carDetail.legalTitle}</h3>
-                <p>{car.legal}</p>
-                <h3>{texts.carDetail.equipmentTitle}</h3>
-                <p>{car.equipment}</p>
-            </div>
-        </section>
+        <>
+            <section className="card detail-card">
+                <img src={car.image} alt={car.name} className="detail-image" />
+                <div>
+                    <h2>{car.name}</h2>
+                    <p className="car-meta">
+                        {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
+                    </p>
+                    <p className="car-meta">
+                        {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
+                    </p>
+                    <p className="car-meta">👤 Previous owners: {car.previousOwners}</p>
+                    <p>{car.description}</p>
+                    <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
+                    <p className={car.available ? "status available" : "status unavailable"}>
+                        {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
+                    </p>
+                    <h3>{texts.carDetail.legalTitle}</h3>
+                    <p>{car.legal}</p>
+                </div>
+            </section>
+
+            <section className="card detail-accordions">
+                <details className="modern-accordion" open>
+                    <summary>
+                        <span>📋 Technical data</span>
+                        <span className="accordion-arrow">▾</span>
+                    </summary>
+                    <div className="accordion-content technical-grid">
+                        {technicalRows.map((row, index) => (
+                            <article key={`${row.label}-${index}`} className="technical-item">
+                                <span className="technical-icon" aria-hidden="true">{row.icon || "•"}</span>
+                                <div>
+                                    <h4>{row.label}</h4>
+                                    <p>{row.value}</p>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                </details>
+
+                <details className="modern-accordion">
+                    <summary>
+                        <span>🧰 Equipment</span>
+                        <span className="accordion-arrow">▾</span>
+                    </summary>
+                    <div className="accordion-content equipment-grid">
+                        {equipmentRows.map((item, index) => (
+                            <div key={`${item}-${index}`} className="equipment-item">
+                                <span aria-hidden="true">✔</span>
+                                <span>{item}</span>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+            </section>
+        </>
     );
 }
 
@@ -1024,6 +1149,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         horsepower: "",
         doors: "",
         seats: "",
+        previousOwners: "",
         drive: "",
         fuel: "",
         transmission: "Automat",
@@ -1083,6 +1209,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             horsepower: Math.round(parseNumber(form.horsepower) || 0),
             doors: Math.max(2, Math.round(parseNumber(form.doors) || 0)),
             seats: Math.max(2, Math.round(parseNumber(form.seats) || 0)),
+            previousOwners: Math.max(0, Math.round(parseNumber(form.previousOwners) || 0)),
             drive: normalizeDriveValue(form.drive),
             fuel: normalizeFuelValue(form.fuel),
             transmission,
@@ -1108,6 +1235,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             horsepower: "",
             doors: "",
             seats: "",
+            previousOwners: "",
             drive: "",
             fuel: "",
             transmission: "Automat",
@@ -1180,6 +1308,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label>{texts.cms.fields.horsepower}<input type="number" min="0" value={form.horsepower} onChange={(e) => setForm((prev) => ({ ...prev, horsepower: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.doors}<input type="number" min="2" max="6" value={form.doors} onChange={(e) => setForm((prev) => ({ ...prev, doors: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.seats || "Počet sedadiel"}<input type="number" min="2" max="9" value={form.seats} onChange={(e) => setForm((prev) => ({ ...prev, seats: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.previousOwners || "Počet predošlých majiteľov"}<input type="number" min="0" value={form.previousOwners} onChange={(e) => setForm((prev) => ({ ...prev, previousOwners: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.drive}
                         <select value={form.drive} onChange={(e) => setForm((prev) => ({ ...prev, drive: e.target.value }))} required>
                             <option value="">-</option>
@@ -1225,6 +1354,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 <h3>{car.name}</h3>
                                 <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
                                 <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive} • {formatTransmission(car)}</p>
+                                <p>👤 Previous owners: {car.previousOwners}</p>
                                 <p className={car.available ? "status available" : "status unavailable"}>
                                     {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
                                 </p>
