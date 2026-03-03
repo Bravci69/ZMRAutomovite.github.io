@@ -2889,6 +2889,8 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [isLogged, setIsLogged] = useState(localStorage.getItem(CMS_AUTH_KEY) === "1");
     const [credentials, setCredentials] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
+    const [syncMessage, setSyncMessage] = useState("");
+    const [syncMessageType, setSyncMessageType] = useState("info");
     const [editingCarId, setEditingCarId] = useState(null);
     const [dragImageIndex, setDragImageIndex] = useState(null);
     const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
@@ -2918,6 +2920,38 @@ function CmsPage({ cars, setCars, language, texts }) {
     });
     const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
     const [equipmentChecklist, setEquipmentChecklist] = useState(createInitialEquipmentChecklistState);
+    const syncTexts = useMemo(() => {
+        if (language === "de") {
+            return {
+                firebaseReady: "Firebase-Anmeldung aktiv. Änderungen werden in der Datenbank gespeichert.",
+                firebaseMissing: "Firebase-Anmeldung fehlt. Anmeldung erneut durchführen.",
+                cloudSaved: "Änderungen wurden in der Datenbank gespeichert.",
+                cloudSaveFailed: "Speichern in der Datenbank fehlgeschlagen. Bitte erneut anmelden und speichern."
+            };
+        }
+        if (language === "en") {
+            return {
+                firebaseReady: "Firebase login is active. Changes will be saved to the database.",
+                firebaseMissing: "Firebase login is missing. Please sign in again.",
+                cloudSaved: "Changes were saved to the database.",
+                cloudSaveFailed: "Saving to database failed. Please sign in again and retry."
+            };
+        }
+        if (language === "cs") {
+            return {
+                firebaseReady: "Firebase přihlášení je aktivní. Změny se ukládají do databáze.",
+                firebaseMissing: "Firebase přihlášení chybí. Přihlaste se prosím znovu.",
+                cloudSaved: "Změny byly uloženy do databáze.",
+                cloudSaveFailed: "Uložení do databáze selhalo. Přihlaste se znovu a uložte znovu."
+            };
+        }
+        return {
+            firebaseReady: "Firebase prihlásenie je aktívne. Zmeny sa ukladajú do databázy.",
+            firebaseMissing: "Firebase prihlásenie chýba. Prihláste sa prosím znova.",
+            cloudSaved: "Zmeny boli uložené do databázy.",
+            cloudSaveFailed: "Uloženie do databázy zlyhalo. Prihláste sa znova a uložte ešte raz."
+        };
+    }, [language]);
     const cmsUiTexts = useMemo(() => {
         if (language === "de") {
             return {
@@ -3109,12 +3143,29 @@ function CmsPage({ cars, setCars, language, texts }) {
     const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: option })), []);
 
     useEffect(() => {
+        let active = true;
         if (!isLogged) {
             setRuntimeFirestoreIdToken("");
+            setSyncMessage("");
             return;
         }
-        ensureFirebaseCmsIdToken();
-    }, [isLogged]);
+        ensureFirebaseCmsIdToken().then((isReady) => {
+            if (!active) {
+                return;
+            }
+            if (isReady) {
+                setSyncMessageType("success");
+                setSyncMessage(syncTexts.firebaseReady);
+                setError("");
+            } else {
+                setSyncMessageType("error");
+                setSyncMessage(syncTexts.firebaseMissing);
+            }
+        });
+        return () => {
+            active = false;
+        };
+    }, [isLogged, syncTexts]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -3125,8 +3176,12 @@ function CmsPage({ cars, setCars, language, texts }) {
             localStorage.setItem(CMS_AUTH_KEY, "1");
             setIsLogged(true);
             setError("");
+            setSyncMessageType("success");
+            setSyncMessage(syncTexts.firebaseReady);
             return;
         }
+        setSyncMessageType("error");
+        setSyncMessage(syncTexts.firebaseMissing);
         setError(texts.cms.loginError);
     };
 
@@ -3302,8 +3357,17 @@ function CmsPage({ cars, setCars, language, texts }) {
             : [carWithStatus, ...cars];
         setCars(updated);
         saveCars(updated);
-        setError("");
-        resetCmsForm();
+        const cloudSaved = await saveCarsToCloud(updated);
+        if (cloudSaved) {
+            setError("");
+            setSyncMessageType("success");
+            setSyncMessage(syncTexts.cloudSaved);
+            resetCmsForm();
+            return;
+        }
+        setSyncMessageType("error");
+        setSyncMessage(syncTexts.cloudSaveFailed);
+        setError(syncTexts.cloudSaveFailed);
     };
 
     const setCarStatus = (id, status) => {
@@ -3335,6 +3399,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             <section className="card cms-card">
                 <h2>{texts.cms.loginTitle}</h2>
                 <p>{texts.cms.loginInfo}</p>
+                {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
                 <form className="form-grid" onSubmit={handleLogin}>
                     <label>
                         {texts.cms.username}
@@ -3369,6 +3434,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <button className="button-link button-secondary" onClick={handleLogout}>{texts.cms.logoutButton}</button>
                 </div>
                 <p>{texts.cms.intro}</p>
+                {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
                 <form className="form-grid" onSubmit={addCar}>
                     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMessage}</p>
                     <label>{texts.cms.fields.name}<input type="text" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
