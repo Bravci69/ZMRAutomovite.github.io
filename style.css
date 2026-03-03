@@ -452,7 +452,32 @@ a:hover {
 	color: var(--text);
 	font-family: inherit;
 	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.2;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 	transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.filters-grid select,
+.form-grid select {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	padding-right: 38px;
+	background-image:
+		linear-gradient(45deg, transparent 50%, rgba(238, 244, 255, 0.72) 50%),
+		linear-gradient(135deg, rgba(238, 244, 255, 0.72) 50%, transparent 50%);
+	background-position:
+		calc(100% - 18px) calc(50% - 2px),
+		calc(100% - 12px) calc(50% - 2px);
+	background-size: 6px 6px, 6px 6px;
+	background-repeat: no-repeat;
+}
+
+.filters-grid select option,
+.form-grid select option {
+	color: #0f172a;
+	background: #f8fafc;
 }
 
 .filters-grid input:focus,

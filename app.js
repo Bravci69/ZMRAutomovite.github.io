@@ -26,6 +26,42 @@ const RESULTS_LABELS = {
     en: "results"
 };
 
+const TECHNICAL_LABEL_TRANSLATIONS = {
+    "Vehicle condition": { cs: "Stav vozidla", sk: "Stav vozidla", de: "Fahrzeugzustand", en: "Vehicle condition" },
+    "Category": { cs: "Kategorie", sk: "Kategória", de: "Kategorie", en: "Category" },
+    "Series": { cs: "Řada", sk: "Séria", de: "Baureihe", en: "Series" },
+    "Equipment line": { cs: "Výbavová linie", sk: "Výbavová línia", de: "Ausstattungslinie", en: "Equipment line" },
+    "Vehicle number": { cs: "Číslo vozidla", sk: "Číslo vozidla", de: "Fahrzeugnummer", en: "Vehicle number" },
+    "Origin": { cs: "Původ", sk: "Pôvod", de: "Herkunft", en: "Origin" },
+    "Mileage": { cs: "Nájezd", sk: "Nájazd", de: "Kilometerstand", en: "Mileage" },
+    "Displacement": { cs: "Objem", sk: "Objem", de: "Hubraum", en: "Displacement" },
+    "Performance": { cs: "Výkon", sk: "Výkon", de: "Leistung", en: "Performance" },
+    "Drive type": { cs: "Typ pohonu", sk: "Typ pohonu", de: "Antriebsart", en: "Drive type" },
+    "Fuel type": { cs: "Palivo", sk: "Palivo", de: "Kraftstoffart", en: "Fuel type" },
+    "Energy consumption (comb.)": { cs: "Spotřeba energie (komb.)", sk: "Spotreba energie (komb.)", de: "Energieverbrauch (komb.)", en: "Energy consumption (comb.)" },
+    "CO2 emissions (comb.)": { cs: "Emise CO2 (komb.)", sk: "Emisie CO2 (komb.)", de: "CO2-Emissionen (komb.)", en: "CO2 emissions (comb.)" },
+    "Fuel consumption": { cs: "Spotřeba paliva", sk: "Spotreba paliva", de: "Kraftstoffverbrauch", en: "Fuel consumption" },
+    "Number of seats": { cs: "Počet sedadel", sk: "Počet sedadiel", de: "Anzahl Sitze", en: "Number of seats" },
+    "Number of doors": { cs: "Počet dveří", sk: "Počet dverí", de: "Anzahl Türen", en: "Number of doors" },
+    "Gearbox": { cs: "Převodovka", sk: "Prevodovka", de: "Getriebe", en: "Gearbox" },
+    "Pollutant class": { cs: "Emisní třída", sk: "Emisná trieda", de: "Schadstoffklasse", en: "Pollutant class" },
+    "Environmental plaque": { cs: "Ekologická plaketa", sk: "Ekologická plaketa", de: "Umweltplakette", en: "Environmental plaque" },
+    "First registration": { cs: "První registrace", sk: "Prvá registrácia", de: "Erstzulassung", en: "First registration" },
+    "Number of vehicle owners": { cs: "Počet majitelů", sk: "Počet majiteľov", de: "Anzahl Fahrzeughalter", en: "Number of vehicle owners" },
+    "HU": { cs: "STK", sk: "STK", de: "HU", en: "HU" },
+    "Air conditioning": { cs: "Klimatizace", sk: "Klimatizácia", de: "Klimaanlage", en: "Air conditioning" },
+    "Parking assistance": { cs: "Parkovací asistence", sk: "Parkovacia asistencia", de: "Einparkhilfe", en: "Parking assistance" },
+    "Airbags": { cs: "Airbagy", sk: "Airbagy", de: "Airbags", en: "Airbags" },
+    "Colour (manufacturer)": { cs: "Barva (výrobce)", sk: "Farba (výrobca)", de: "Farbe (Hersteller)", en: "Colour (manufacturer)" },
+    "Colour": { cs: "Barva", sk: "Farba", de: "Farbe", en: "Colour" },
+    "Interior equipment": { cs: "Interiér", sk: "Interiér", de: "Innenausstattung", en: "Interior equipment" },
+    "Towbar braked": { cs: "Tažné (brzděné)", sk: "Ťažné (brzdené)", de: "Anhängelast gebremst", en: "Towbar braked" },
+    "Towing load unchecked": { cs: "Tažné (nebrzděné)", sk: "Ťažné (nebrzdené)", de: "Anhängelast ungebremst", en: "Towing load unchecked" },
+    "Weight": { cs: "Hmotnost", sk: "Hmotnosť", de: "Gewicht", en: "Weight" },
+    "Cylinder": { cs: "Počet válců", sk: "Počet valcov", de: "Zylinder", en: "Cylinder" },
+    "Tank size": { cs: "Objem nádrže", sk: "Objem nádrže", de: "Tankvolumen", en: "Tank size" }
+};
+
 const I18N = {
     cs: {
         nav: { home: "Domů", about: "O nás", services: "Služby", cars: "Vozidla", contact: "Kontakt", cms: "CMS" },
@@ -109,8 +145,10 @@ const I18N = {
         carDetail: {
             notFoundTitle: "Vozidlo nebylo nalezeno",
             notFoundText: "Momentálně není dostupné žádné vozidlo. Zkuste to prosím později.",
+            technicalTitle: "Technické údaje",
             legalTitle: "Legislativní informace",
-            equipmentTitle: "Výbava"
+            equipmentTitle: "Výbava",
+            previousOwners: "Počet předchozích majitelů"
         },
         cms: {
             loginTitle: "CMS přihlášení",
@@ -197,7 +235,7 @@ const I18N = {
         cars: {
             filterTitle: "Vyhľadávanie a filtre", search: "Vyhľadávanie", searchPlaceholder: "Model, značka, náhon...", fuel: "Palivo", fuelAll: "Všetky palivá", brand: "Značka", brandAll: "Všetky značky", drive: "Náhon", driveAll: "Všetky náhony", transmission: "Prevodovka", transmissionAll: "Všetky prevodovky", hpFrom: "Výkon od (k)", hpTo: "Výkon do (k)", doors: "Dvere", doorsAll: "Všetky", seats: "Sedadlá", seatsAll: "Všetky", seatsFrom: "Sedadlá od", seatsTo: "Sedadlá do", quickSeats: "Rýchle sedadlá", seatsUnit: "sedadiel", activeFilters: "Aktívne filtre", clearAll: "Zrušiť všetko", detailButton: "Detail vozidla", noResults: "Pre zadané filtre sa nenašli žiadne vozidlá."
         },
-        carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava" },
+        carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", technicalTitle: "Technické údaje", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava", previousOwners: "Počet predošlých majiteľov" },
         cms: {
             loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.",
             fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", previousOwners: "Počet predošlých majiteľov", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
@@ -221,7 +259,7 @@ const I18N = {
         services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
         cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", transmission: "Getriebe", transmissionAll: "Alle Getriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", seats: "Sitze", seatsAll: "Alle", seatsFrom: "Sitze ab", seatsTo: "Sitze bis", quickSeats: "Schnellauswahl", seatsUnit: "Sitze", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
-        carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung" },
+        carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", technicalTitle: "Technische Daten", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung", previousOwners: "Anzahl Vorbesitzer" },
         cms: {
             loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
             fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", previousOwners: "Anzahl Vorbesitzer", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
@@ -245,7 +283,7 @@ const I18N = {
         services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
         cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", transmission: "Transmission", transmissionAll: "All transmissions", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", seats: "Seats", seatsAll: "All", seatsFrom: "Seats from", seatsTo: "Seats to", quickSeats: "Quick seats", seatsUnit: "seats", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
-        carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", legalTitle: "Legal information", equipmentTitle: "Equipment" },
+        carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", technicalTitle: "Technical data", legalTitle: "Legal information", equipmentTitle: "Equipment", previousOwners: "Number of previous owners" },
         cms: {
             loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
             fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", previousOwners: "Number of previous owners", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
@@ -492,6 +530,14 @@ function formatTransmission(car) {
         return `${car.transmission} (${car.manualGears})`;
     }
     return car.transmission;
+}
+
+function translateTechnicalLabel(label, language) {
+    const translation = TECHNICAL_LABEL_TRANSLATIONS[label];
+    if (!translation) {
+        return label;
+    }
+    return translation[language] || translation.en || label;
 }
 
 function getCars() {
@@ -1087,7 +1133,7 @@ function CarDetailPage({ cars, language, texts }) {
                     <p className="car-meta">
                         {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
                     </p>
-                    <p className="car-meta">👤 Previous owners: {car.previousOwners}</p>
+                    <p className="car-meta">👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
                     <p>{car.description}</p>
                     <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
                     <p className={car.available ? "status available" : "status unavailable"}>
@@ -1101,7 +1147,7 @@ function CarDetailPage({ cars, language, texts }) {
             <section className="card detail-accordions">
                 <details className="modern-accordion" open>
                     <summary>
-                        <span>📋 Technical data</span>
+                        <span>📋 {texts.carDetail.technicalTitle}</span>
                         <span className="accordion-arrow">▾</span>
                     </summary>
                     <div className="accordion-content technical-grid">
@@ -1109,7 +1155,7 @@ function CarDetailPage({ cars, language, texts }) {
                             <article key={`${row.label}-${index}`} className="technical-item">
                                 <span className="technical-icon" aria-hidden="true">{row.icon || "•"}</span>
                                 <div>
-                                    <h4>{row.label}</h4>
+                                    <h4>{translateTechnicalLabel(row.label, language)}</h4>
                                     <p>{row.value}</p>
                                 </div>
                             </article>
@@ -1119,7 +1165,7 @@ function CarDetailPage({ cars, language, texts }) {
 
                 <details className="modern-accordion">
                     <summary>
-                        <span>🧰 Equipment</span>
+                        <span>🧰 {texts.carDetail.equipmentTitle}</span>
                         <span className="accordion-arrow">▾</span>
                     </summary>
                     <div className="accordion-content equipment-grid">
@@ -1354,7 +1400,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 <h3>{car.name}</h3>
                                 <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
                                 <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive} • {formatTransmission(car)}</p>
-                                <p>👤 Previous owners: {car.previousOwners}</p>
+                                <p>👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
                                 <p className={car.available ? "status available" : "status unavailable"}>
                                     {car.available ? texts.common.statusAvailable : texts.common.statusUnavailable}
                                 </p>
