@@ -328,6 +328,12 @@ a:hover {
 	justify-self: start;
 }
 
+.services-cta-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
 .services-variants-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));

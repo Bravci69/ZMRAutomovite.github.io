@@ -53,10 +53,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP handling požadavku", "Prioritní termíny obhlídek", "Prémiová fotodokumentace", "Osobní konzultant po celou dobu"],
         luxuryButton: "Mám zájem o Luxury",
         luxurySubject: "Poptávka: Luxury varianta",
+        luxuryBody: "Dobrý den,%0D%0A%0D%0Amám zájem o Luxury variantu služeb ZMR Automovité.%0D%0AProsím o kontakt a návrh dalšího postupu.%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0APreferovaný termín:%0D%0A",
         technicalTitle: "Technical varianta",
         technicalPoints: ["Měření a diagnostika řídicích jednotek", "Kontrola kritických komponent", "Detailní risk-score report", "Návrh servisního plánu po koupi"],
         technicalButton: "Mám zájem o Technical",
         technicalSubject: "Poptávka: Technical varianta",
+        technicalBody: "Dobrý den,%0D%0A%0D%0Amám zájem o Technical variantu služeb ZMR Automovité.%0D%0AProsím o kontakt a návrh technického postupu.%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0ATyp vozidla / VIN (volitelné):%0D%0A",
+        customButton: "Chci individuální nabídku",
+        customSubject: "Poptávka: Individuální nabídka",
+        customBody: "Dobrý den,%0D%0A%0D%0Aprosím o individuální nabídku služeb ZMR Automovité podle mých požadavků.%0D%0A%0D%0APopis požadavku:%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0A",
         ctaTitle: "Potřebujete konzultaci k vozu?",
         ctaText: "Pošlete poptávku a připravíme konkrétní postup podle vaší situace.",
         ctaButton: "Kontaktovat nás"
@@ -82,10 +87,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP vybavenie dopytu", "Prioritné termíny obhliadok", "Prémiová fotodokumentácia", "Osobný konzultant počas celého procesu"],
         luxuryButton: "Mám záujem o Luxury",
         luxurySubject: "Dopyt: Luxury variant",
+        luxuryBody: "Dobrý deň,%0D%0A%0D%0Amám záujem o Luxury variant služieb ZMR Automovité.%0D%0AProsím o kontakt a návrh ďalšieho postupu.%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0APreferovaný termín:%0D%0A",
         technicalTitle: "Technical variant",
         technicalPoints: ["Merania a diagnostika riadiacich jednotiek", "Kontrola kritických komponentov", "Detailný risk-score report", "Návrh servisného plánu po kúpe"],
         technicalButton: "Mám záujem o Technical",
         technicalSubject: "Dopyt: Technical variant",
+        technicalBody: "Dobrý deň,%0D%0A%0D%0Amám záujem o Technical variant služieb ZMR Automovité.%0D%0AProsím o kontakt a návrh technického postupu.%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0ATyp vozidla / VIN (voliteľné):%0D%0A",
+        customButton: "Chcem individuálnu ponuku",
+        customSubject: "Dopyt: Individuálna ponuka",
+        customBody: "Dobrý deň,%0D%0A%0D%0Aprosím o individuálnu ponuku služieb ZMR Automovité podľa mojich požiadaviek.%0D%0A%0D%0APopis požiadavky:%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0A",
         ctaTitle: "Potrebujete konzultáciu k vozidlu?",
         ctaText: "Pošlite dopyt a pripravíme konkrétny postup podľa vašej situácie.",
         ctaButton: "Kontaktovať nás"
@@ -111,10 +121,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP-Betreuung der Anfrage", "Priorisierte Besichtigungstermine", "Premium-Fotodokumentation", "Persönlicher Berater im gesamten Prozess"],
         luxuryButton: "Interesse an Luxury",
         luxurySubject: "Anfrage: Luxury-Variante",
+        luxuryBody: "Guten Tag,%0D%0A%0D%0Aich habe Interesse an der Luxury-Variante von ZMR Automovité.%0D%0ABitte kontaktieren Sie mich mit einem Vorschlag für die nächsten Schritte.%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0ABevorzugter Termin:%0D%0A",
         technicalTitle: "Technical-Variante",
         technicalPoints: ["Steuergeräte-Diagnose und Messwerte", "Prüfung kritischer Komponenten", "Detaillierter Risk-Score-Report", "Serviceplan-Empfehlung nach Kauf"],
         technicalButton: "Interesse an Technical",
         technicalSubject: "Anfrage: Technical-Variante",
+        technicalBody: "Guten Tag,%0D%0A%0D%0Aich habe Interesse an der Technical-Variante von ZMR Automovité.%0D%0ABitte kontaktieren Sie mich mit einem technischen Vorgehensvorschlag.%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0AFahrzeugtyp / VIN (optional):%0D%0A",
+        customButton: "Individuelles Angebot",
+        customSubject: "Anfrage: Individuelles Angebot",
+        customBody: "Guten Tag,%0D%0A%0D%0Aich bitte um ein individuelles Angebot von ZMR Automovité entsprechend meiner Anforderungen.%0D%0A%0D%0ABeschreibung der Anfrage:%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0A",
         ctaTitle: "Benötigen Sie eine Fahrzeugberatung?",
         ctaText: "Senden Sie uns Ihre Anfrage und wir erstellen einen klaren nächsten Schritt.",
         ctaButton: "Kontakt aufnehmen"
@@ -140,10 +155,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP request handling", "Priority inspection slots", "Premium photo documentation", "Dedicated consultant throughout the process"],
         luxuryButton: "I want Luxury",
         luxurySubject: "Inquiry: Luxury variant",
+        luxuryBody: "Hello,%0D%0A%0D%0AI am interested in the Luxury variant of ZMR Automovité services.%0D%0APlease contact me with the next-step proposal.%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0APreferred date:%0D%0A",
         technicalTitle: "Technical variant",
         technicalPoints: ["ECU diagnostics and measurements", "Critical-component checks", "Detailed risk-score reporting", "Post-purchase service-plan recommendation"],
         technicalButton: "I want Technical",
         technicalSubject: "Inquiry: Technical variant",
+        technicalBody: "Hello,%0D%0A%0D%0AI am interested in the Technical variant of ZMR Automovité services.%0D%0APlease contact me with a technical next-step proposal.%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0AVehicle type / VIN (optional):%0D%0A",
+        customButton: "I want a custom offer",
+        customSubject: "Inquiry: Custom offer",
+        customBody: "Hello,%0D%0A%0D%0APlease prepare a custom service offer from ZMR Automovité based on my requirements.%0D%0A%0D%0ARequest details:%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0A",
         ctaTitle: "Need advice for a specific car?",
         ctaText: "Send us your request and we will prepare a concrete next-step plan.",
         ctaButton: "Contact us"
@@ -805,15 +825,29 @@ function getLocalizedCarText(car, field, language) {
     return car?.[field] || "";
 }
 
+function createRequestId(prefix = "req") {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return `${prefix}-${window.crypto.randomUUID()}`;
+    }
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 async function translateTextsForLanguage(texts, targetLanguage) {
     if (!TRANSLATE_PROXY_URL || !Array.isArray(texts) || texts.length === 0) {
         return {};
     }
     try {
+        const requestId = createRequestId("tr");
         const response = await fetch(TRANSLATE_PROXY_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ texts, target: targetLanguage })
+            body: JSON.stringify({
+                texts,
+                target: targetLanguage,
+                source: "cms-localization",
+                campaign: "website-translate",
+                requestId
+            })
         });
         if (!response.ok) {
             return {};
@@ -1105,10 +1139,17 @@ async function fetchTechnicalValueTranslations(values, language) {
         return { ...localResults, ...pending };
     }
 
+    const requestId = createRequestId("tr-tech");
     const requestPromise = fetch(TRANSLATE_PROXY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texts: toRequest, target })
+        body: JSON.stringify({
+            texts: toRequest,
+            target,
+            source: "technical-value-translation",
+            campaign: "website-translate",
+            requestId
+        })
     })
         .then(async (response) => {
             if (!response.ok) {
@@ -1480,7 +1521,7 @@ function getReservationTexts(language) {
             reserveSending: "Reservierung wird gesendet...",
             alreadyReserved: "Dieses Fahrzeug ist bereits reserviert.",
             reservationSubject: (carName) => `Reservierung Fahrzeug: ${carName}`,
-            reservationBody: (car, form) => `Fahrzeug: ${car.name}\nID: ${car.id}\nJahr: ${car.year}\nPreis: ${car.priceCzk} CZK\n\nReservierungsanfrage von:\nVorname: ${form.firstName}\nNachname: ${form.lastName}\nE-Mail: ${form.email}\nTelefon: ${form.phone}`
+            reservationBody: (car, form) => `Fahrzeug: ${car.name}\nID: ${car.id}\nJahr: ${car.year}\nPreis: ${car.priceCzk} CZK\n\nReservierungsanfrage von:\nVorname: ${form.firstName}\nNachname: ${form.lastName}\nE-Mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: DE\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
     if (language === "en") {
@@ -1500,7 +1541,7 @@ function getReservationTexts(language) {
             reserveSending: "Sending reservation...",
             alreadyReserved: "This vehicle is already reserved.",
             reservationSubject: (carName) => `Vehicle reservation: ${carName}`,
-            reservationBody: (car, form) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}`
+            reservationBody: (car, form) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}\n\nLanguage: EN\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
     if (language === "cs") {
@@ -1520,7 +1561,7 @@ function getReservationTexts(language) {
             reserveSending: "Odesílám rezervaci...",
             alreadyReserved: "Toto vozidlo je už rezervované.",
             reservationSubject: (carName) => `Rezervace vozidla: ${carName}`,
-            reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}`
+            reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: CS\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
     return {
@@ -1539,7 +1580,7 @@ function getReservationTexts(language) {
         reserveSending: "Odosielam rezerváciu...",
         alreadyReserved: "Toto vozidlo je už rezervované.",
         reservationSubject: (carName) => `Rezervácia vozidla: ${carName}`,
-        reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}`
+        reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}\n\nLanguage: SK\nSource: Vehicle detail page\nCampaign: website-reservation`
     };
 }
 
@@ -1675,6 +1716,8 @@ function AboutPage({ texts }) {
 function ServicesPage({ texts, language }) {
     const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.sk;
     const serviceIcons = ["🔍", "🧪", "🚢", "🛠️", "✅"];
+    const languageContextSuffix = `%0D%0A%0D%0ALanguage:%20${encodeURIComponent(String(language || "sk").toUpperCase())}%0D%0ASource:%20Services%20page%0D%0ACampaign:%20website-services`;
+    const withLanguageContext = (encodedBody) => `${String(encodedBody || "")}${languageContextSuffix}`;
 
     return (
         <>
@@ -1747,7 +1790,7 @@ function ServicesPage({ texts, language }) {
                             ))}
                         </ul>
                         <a
-                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.luxurySubject)}`}
+                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.luxurySubject)}&body=${withLanguageContext(serviceContent.luxuryBody)}`}
                             className="button-link button-secondary"
                         >
                             {serviceContent.luxuryButton}
@@ -1761,7 +1804,7 @@ function ServicesPage({ texts, language }) {
                             ))}
                         </ul>
                         <a
-                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.technicalSubject)}`}
+                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.technicalSubject)}&body=${withLanguageContext(serviceContent.technicalBody)}`}
                             className="button-link button-secondary"
                         >
                             {serviceContent.technicalButton}
@@ -1773,7 +1816,15 @@ function ServicesPage({ texts, language }) {
             <section className="card services-cta">
                 <h2>{serviceContent.ctaTitle}</h2>
                 <p>{serviceContent.ctaText}</p>
-                <a href="kontakt.html" className="button-link">{serviceContent.ctaButton}</a>
+                <div className="services-cta-actions">
+                    <a href="kontakt.html" className="button-link">{serviceContent.ctaButton}</a>
+                    <a
+                        href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.customSubject)}&body=${withLanguageContext(serviceContent.customBody)}`}
+                        className="button-link button-secondary"
+                    >
+                        {serviceContent.customButton}
+                    </a>
+                </div>
             </section>
         </>
     );
@@ -2249,7 +2300,10 @@ function CarDetailPage({ cars, setCars, language, texts }) {
         setIsReservationSending(true);
 
         const reservationPayload = {
+            requestId: createRequestId("res"),
             language,
+            source: "vehicle-detail-page",
+            campaign: "website-reservation",
             toEmail: RESERVATION_EMAIL,
             subject: reservationTexts.reservationSubject(car.name),
             text: reservationTexts.reservationBody(car, reservationForm),

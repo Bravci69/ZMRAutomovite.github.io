@@ -40,9 +40,21 @@ async function handleTranslate(request, env) {
     ? payload.texts.map((item) => String(item || "").trim()).filter(Boolean)
     : [];
   const target = String(payload?.target || "").trim().toLowerCase();
+  const source = String(payload?.source || "unknown").trim();
+  const campaign = String(payload?.campaign || "unknown").trim();
+  const requestId = String(payload?.requestId || "unknown").trim();
   const allowedTargets = new Set(["cs", "sk", "de", "en"]);
 
+  console.log("translate_request_received", {
+    requestId,
+    campaign,
+    source,
+    target,
+    textCount: texts.length,
+  });
+
   if (!allowedTargets.has(target)) {
+    console.error("translate_request_invalid_target", { requestId, campaign, source, target });
     return jsonResponse({ error: "Unsupported target language" }, 400);
   }
 
@@ -69,6 +81,13 @@ async function handleTranslate(request, env) {
 
   if (!googleResponse.ok) {
     const errorText = await googleResponse.text();
+    console.error("translate_provider_failed", {
+      requestId,
+      campaign,
+      source,
+      target,
+      status: googleResponse.status,
+    });
     return jsonResponse(
       { error: "Google translation request failed", detail: errorText.slice(0, 500) },
       502
@@ -78,6 +97,7 @@ async function handleTranslate(request, env) {
   const data = await googleResponse.json();
   const translated = data?.data?.translations;
   if (!Array.isArray(translated)) {
+    console.error("translate_provider_invalid_response", { requestId, campaign, source, target });
     return jsonResponse({ error: "Invalid response from translation provider" }, 502);
   }
 
@@ -89,7 +109,16 @@ async function handleTranslate(request, env) {
     }
   });
 
-  return jsonResponse({ translations }, 200);
+  console.log("translate_request_completed", {
+    requestId,
+    campaign,
+    source,
+    target,
+    requested: uniqueTexts.length,
+    translated: Object.keys(translations).length,
+  });
+
+  return jsonResponse({ translations, requestId }, 200);
 }
 
 async function handleReservation(request, env) {
@@ -115,6 +144,20 @@ async function handleReservation(request, env) {
 
   const requesterEmail = String(payload?.form?.email || "").trim();
   const requesterName = [payload?.form?.firstName, payload?.form?.lastName].filter(Boolean).join(" ").trim();
+  const requestId = String(payload?.requestId || "unknown").trim();
+  const source = String(payload?.source || "unknown").trim();
+  const campaign = String(payload?.campaign || "unknown").trim();
+  const language = String(payload?.language || "unknown").trim().toLowerCase();
+  const carId = String(payload?.car?.id || "unknown").trim();
+
+  console.log("reservation_request_received", {
+    requestId,
+    campaign,
+    source,
+    language,
+    carId,
+    requesterEmail,
+  });
 
   const resendResponse = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -134,11 +177,27 @@ async function handleReservation(request, env) {
 
   if (!resendResponse.ok) {
     const errorText = await resendResponse.text();
+    console.error("reservation_email_failed", {
+      requestId,
+      campaign,
+      source,
+      language,
+      carId,
+      status: resendResponse.status,
+    });
     return jsonResponse({ error: "Reservation email provider failed", detail: errorText.slice(0, 500) }, 502);
   }
 
   const providerResponse = await resendResponse.json().catch(() => ({}));
-  return jsonResponse({ ok: true, provider: providerResponse }, 200);
+  console.log("reservation_email_sent", {
+    requestId,
+    campaign,
+    source,
+    language,
+    carId,
+    providerId: providerResponse?.id || null,
+  });
+  return jsonResponse({ ok: true, provider: providerResponse, requestId }, 200);
 }
 
 function corsHeaders() {
