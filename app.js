@@ -1,4 +1,4 @@
-const { useEffect, useMemo, useState } = React;
+const { useEffect, useMemo, useRef, useState } = React;
 
 const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
@@ -61,6 +61,59 @@ const TECHNICAL_LABEL_TRANSLATIONS = {
     "Cylinder": { cs: "Počet válců", sk: "Počet valcov", de: "Zylinder", en: "Cylinder" },
     "Tank size": { cs: "Objem nádrže", sk: "Objem nádrže", de: "Tankvolumen", en: "Tank size" }
 };
+
+const TECHNICAL_VALUE_TRANSLATIONS = {
+    "Used vehicle": { cs: "Ojeté vozidlo", sk: "Jazdené vozidlo", de: "Gebrauchtfahrzeug", en: "Used vehicle" },
+    "Demonstration vehicle": { cs: "Předváděcí vozidlo", sk: "Predvádzacie vozidlo", de: "Vorführfahrzeug", en: "Demonstration vehicle" },
+    "Accident-free": { cs: "Nehavarované", sk: "Nehavarované", de: "Unfallfrei", en: "Accident-free" },
+    "Service book": { cs: "Servisní knížka", sk: "Servisná knižka", de: "Scheckheft", en: "Service book" },
+    "First owner": { cs: "První majitel", sk: "Prvý majiteľ", de: "Erstbesitz", en: "First owner" },
+    "Second owner": { cs: "Druhý majitel", sk: "Druhý majiteľ", de: "Zweitbesitz", en: "Second owner" },
+    "German version": { cs: "Německá verze", sk: "Nemecká verzia", de: "Deutsche Version", en: "German version" },
+    "EU version": { cs: "EU verze", sk: "EU verzia", de: "EU-Version", en: "EU version" },
+    "Imported": { cs: "Dovezené", sk: "Dovezené", de: "Importiert", en: "Imported" },
+    "Domestic": { cs: "Tuzemské", sk: "Tuzemské", de: "Inland", en: "Domestic" },
+    "Combustion engine": { cs: "Spalovací motor", sk: "Spaľovací motor", de: "Verbrennungsmotor", en: "Combustion engine" },
+    "Hybrid": { cs: "Hybrid", sk: "Hybrid", de: "Hybrid", en: "Hybrid" },
+    "Plug-in hybrid": { cs: "Plug-in hybrid", sk: "Plug-in hybrid", de: "Plug-in-Hybrid", en: "Plug-in hybrid" },
+    "Available": { cs: "Dostupné", sk: "Dostupné", de: "Verfügbar", en: "Available" },
+    "Unavailable": { cs: "Nedostupné", sk: "Nedostupné", de: "Nicht verfügbar", en: "Unavailable" },
+    "Yes": { cs: "Ano", sk: "Áno", de: "Ja", en: "Yes" },
+    "No": { cs: "Ne", sk: "Nie", de: "Nein", en: "No" },
+    "Gasoline": { cs: "Benzín", sk: "Benzín", de: "Benzin", en: "Gasoline" },
+    "Petrol": { cs: "Benzín", sk: "Benzín", de: "Benzin", en: "Petrol" },
+    "Diesel": { cs: "Nafta", sk: "Nafta", de: "Diesel", en: "Diesel" },
+    "Electric": { cs: "Elektřina", sk: "Elektrina", de: "Elektrisch", en: "Electric" },
+    "Plug in hybrid": { cs: "Plug-in hybrid", sk: "Plug-in hybrid", de: "Plug-in-Hybrid", en: "Plug in hybrid" },
+    "LPG": { cs: "Plyn", sk: "Plyn", de: "Gas", en: "LPG" },
+    "CNG": { cs: "CNG", sk: "CNG", de: "CNG", en: "CNG" },
+    "All-wheel drive": { cs: "Všechny 4", sk: "Všetky 4", de: "Allrad", en: "All-wheel drive" },
+    "4x4": { cs: "Všechny 4", sk: "Všetky 4", de: "Allrad", en: "4x4" },
+    "Front-wheel drive": { cs: "Přední", sk: "Predný", de: "Frontantrieb", en: "Front-wheel drive" },
+    "Front": { cs: "Přední", sk: "Predný", de: "Front", en: "Front" },
+    "Rear-wheel drive": { cs: "Zadní", sk: "Zadný", de: "Heckantrieb", en: "Rear-wheel drive" },
+    "Rear": { cs: "Zadní", sk: "Zadný", de: "Heck", en: "Rear" },
+    "Automatic": { cs: "Automat", sk: "Automat", de: "Automatik", en: "Automatic" },
+    "Automatic transmission": { cs: "Automatická převodovka", sk: "Automatická prevodovka", de: "Automatikgetriebe", en: "Automatic transmission" },
+    "Manual": { cs: "Manuál", sk: "Manuál", de: "Manuell", en: "Manual" },
+    "Manual transmission": { cs: "Manuální převodovka", sk: "Manuálna prevodovka", de: "Schaltgetriebe", en: "Manual transmission" },
+    "New": { cs: "Nová", sk: "Nová", de: "Neu", en: "New" },
+    "Euro 5": { cs: "Euro 5", sk: "Euro 5", de: "Euro 5", en: "Euro 5" },
+    "Euro 6": { cs: "Euro 6", sk: "Euro 6", de: "Euro 6", en: "Euro 6" },
+    "Euro 6d": { cs: "Euro 6d", sk: "Euro 6d", de: "Euro 6d", en: "Euro 6d" },
+    "Green": { cs: "Zelená", sk: "Zelená", de: "Grün", en: "Green" },
+    "Red": { cs: "Červená", sk: "Červená", de: "Rot", en: "Red" },
+    "Black": { cs: "Černá", sk: "Čierna", de: "Schwarz", en: "Black" },
+    "White": { cs: "Bílá", sk: "Biela", de: "Weiß", en: "White" },
+    "Blue": { cs: "Modrá", sk: "Modrá", de: "Blau", en: "Blue" },
+    "Silver": { cs: "Stříbrná", sk: "Strieborná", de: "Silber", en: "Silver" },
+    "Grey Metallic": { cs: "Šedá metalíza", sk: "Sivá metalíza", de: "Grau Metallic", en: "Grey Metallic" },
+    "Full leather, Black": { cs: "Plná kůže, černá", sk: "Plná koža, čierna", de: "Vollleder, Schwarz", en: "Full leather, Black" }
+};
+
+const TECHNICAL_VALUE_TRANSLATIONS_BY_KEY = Object.fromEntries(
+    Object.entries(TECHNICAL_VALUE_TRANSLATIONS).map(([key, translation]) => [String(key).trim().toLowerCase(), translation])
+);
 
 const I18N = {
     cs: {
@@ -157,10 +210,13 @@ const I18N = {
             password: "Heslo",
             loginButton: "Přihlásit se",
             loginError: "Nesprávné přihlašovací údaje.",
+            requiredDriveFuel: "Palivo a náhon jsou povinné.",
             manualGearsRequired: "U manuálu je povinné zadat počet převodů.",
             manageTitle: "Správa vozidel",
             logoutButton: "Odhlásit se",
             intro: "Můžete přidávat nová vozidla, nahrát fotku, vyplnit popis, legislativní informace i výbavu.",
+            technicalHelp: "Formát: každý řádek jako Název: Hodnota",
+            equipmentHelp: "Každý řádek = 1 položka výbavy",
             fields: {
                 name: "Model vozidla",
                 brand: "Značka",
@@ -179,6 +235,8 @@ const I18N = {
                 description: "Základní popis",
                 legal: "Legislativní informace",
                 equipment: "Výbava",
+                technicalDataRaw: "Technická data (Název: Hodnota)",
+                equipmentItemsRaw: "Výbava (1 položka na řádek)",
                 available: "Vozidlo je dostupné"
             },
             addButton: "Přidat vozidlo",
@@ -237,8 +295,8 @@ const I18N = {
         },
         carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", technicalTitle: "Technické údaje", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava", previousOwners: "Počet predošlých majiteľov" },
         cms: {
-            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.",
-            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", previousOwners: "Počet predošlých majiteľov", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", available: "Vozidlo je dostupné" },
+            loginTitle: "CMS prihlásenie", loginInfo: "Prístup pre zamestnancov. Testovacie údaje: admin / admin.", username: "Prihlasovacie meno", password: "Heslo", loginButton: "Prihlásiť sa", loginError: "Nesprávne prihlasovacie údaje.", requiredDriveFuel: "Palivo a náhon sú povinné.", manualGearsRequired: "Pri manuáli je povinné zadať počet prevodov.", manageTitle: "Správa vozidiel", logoutButton: "Odhlásiť sa", intro: "Tu môžete pridávať nové autá, nahrávať fotku, vyplniť popis, legislatívne informácie a výbavu.", technicalHelp: "Formát: každý riadok ako Názov: Hodnota", equipmentHelp: "Každý riadok = 1 položka výbavy",
+            fields: { name: "Model vozidla", brand: "Značka", year: "Rok výroby", priceCzk: "Cena (v Kč)", mileage: "Nájazd", horsepower: "Výkon (k)", doors: "Počet dverí", seats: "Počet sedadiel", previousOwners: "Počet predošlých majiteľov", drive: "Náhon", fuel: "Palivo", transmission: "Prevodovka", manualGears: "Počet prevodov", image: "Fotka vozidla", description: "Základný popis", legal: "Legislatívne informácie", equipment: "Výbava", technicalDataRaw: "Technické údaje (Názov: Hodnota)", equipmentItemsRaw: "Výbava (1 položka na riadok)", available: "Vozidlo je dostupné" },
             addButton: "Pridať vozidlo", currentCars: "Aktuálne vozidlá", toggleAvailability: "Zmeniť dostupnosť", remove: "Odstrániť"
         }
     },
@@ -261,8 +319,8 @@ const I18N = {
         cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", transmission: "Getriebe", transmissionAll: "Alle Getriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", seats: "Sitze", seatsAll: "Alle", seatsFrom: "Sitze ab", seatsTo: "Sitze bis", quickSeats: "Schnellauswahl", seatsUnit: "Sitze", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
         carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", technicalTitle: "Technische Daten", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung", previousOwners: "Anzahl Vorbesitzer" },
         cms: {
-            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
-            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", previousOwners: "Anzahl Vorbesitzer", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", available: "Fahrzeug ist verfügbar" },
+            loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", requiredDriveFuel: "Kraftstoff und Antrieb sind Pflichtfelder.", manualGearsRequired: "Bei manuellem Getriebe ist die Anzahl der Gänge erforderlich.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.", technicalHelp: "Format: jede Zeile als Bezeichnung: Wert", equipmentHelp: "Jede Zeile = 1 Ausstattungsmerkmal",
+            fields: { name: "Modell", brand: "Marke", year: "Baujahr", priceCzk: "Preis (in CZK)", mileage: "Kilometerstand", horsepower: "Leistung (PS)", doors: "Anzahl Türen", seats: "Anzahl Sitze", previousOwners: "Anzahl Vorbesitzer", drive: "Antrieb", fuel: "Kraftstoff", transmission: "Getriebe", manualGears: "Anzahl Gänge", image: "Fahrzeugfoto", description: "Kurzbeschreibung", legal: "Rechtliche Informationen", equipment: "Ausstattung", technicalDataRaw: "Technische Daten (Bezeichnung: Wert)", equipmentItemsRaw: "Ausstattung (1 Punkt pro Zeile)", available: "Fahrzeug ist verfügbar" },
             addButton: "Fahrzeug hinzufügen", currentCars: "Aktuelle Fahrzeuge", toggleAvailability: "Verfügbarkeit ändern", remove: "Entfernen"
         }
     },
@@ -285,8 +343,8 @@ const I18N = {
         cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", transmission: "Transmission", transmissionAll: "All transmissions", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", seats: "Seats", seatsAll: "All", seatsFrom: "Seats from", seatsTo: "Seats to", quickSeats: "Quick seats", seatsUnit: "seats", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
         carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", technicalTitle: "Technical data", legalTitle: "Legal information", equipmentTitle: "Equipment", previousOwners: "Number of previous owners" },
         cms: {
-            loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
-            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", previousOwners: "Number of previous owners", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", available: "Vehicle is available" },
+            loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", requiredDriveFuel: "Fuel and drive are required.", manualGearsRequired: "Manual transmission requires the number of gears.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.", technicalHelp: "Format: each line as Label: Value", equipmentHelp: "Each line = 1 equipment item",
+            fields: { name: "Vehicle model", brand: "Brand", year: "Year", priceCzk: "Price (in CZK)", mileage: "Mileage", horsepower: "Power (hp)", doors: "Number of doors", seats: "Number of seats", previousOwners: "Number of previous owners", drive: "Drive", fuel: "Fuel", transmission: "Transmission", manualGears: "Number of gears", image: "Vehicle photo", description: "Basic description", legal: "Legal information", equipment: "Equipment", technicalDataRaw: "Technical data (Label: Value)", equipmentItemsRaw: "Equipment (1 item per line)", available: "Vehicle is available" },
             addButton: "Add vehicle", currentCars: "Current vehicles", toggleAvailability: "Toggle availability", remove: "Remove"
         }
     }
@@ -538,6 +596,111 @@ function translateTechnicalLabel(label, language) {
         return label;
     }
     return translation[language] || translation.en || label;
+}
+
+function translateTechnicalValue(value, language) {
+    if (typeof value !== "string") {
+        return value;
+    }
+    const normalizedValue = value.trim().replace(/\s+/g, " ").toLowerCase();
+    const translation = TECHNICAL_VALUE_TRANSLATIONS[value] || TECHNICAL_VALUE_TRANSLATIONS_BY_KEY[normalizedValue];
+    if (!translation) {
+        return value;
+    }
+    return translation[language] || translation.en || value;
+}
+
+function parseTechnicalDataRaw(raw) {
+    if (!raw || !raw.trim()) {
+        return undefined;
+    }
+
+    return raw
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+            const separatorIndex = line.indexOf(":");
+            if (separatorIndex < 0) {
+                return null;
+            }
+
+            const label = line.slice(0, separatorIndex).trim();
+            const value = line.slice(separatorIndex + 1).trim();
+            if (!label || !value) {
+                return null;
+            }
+
+            return { label, value, icon: "🧾" };
+        })
+        .filter(Boolean);
+}
+
+function parseEquipmentItemsRaw(raw) {
+    if (!raw || !raw.trim()) {
+        return [];
+    }
+
+    return raw
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+}
+
+function DarkSelect({ value, onChange, options, placeholder, ariaLabel }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const rootRef = useRef(null);
+    const selected = options.find((option) => option.value === value);
+
+    useEffect(() => {
+        const handleOutside = (event) => {
+            if (!rootRef.current?.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleOutside);
+        };
+    }, []);
+
+    const handlePick = (nextValue) => {
+        onChange(nextValue);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="dark-select" ref={rootRef}>
+            <button
+                type="button"
+                className={isOpen ? "dark-select-trigger open" : "dark-select-trigger"}
+                onClick={() => setIsOpen((prev) => !prev)}
+                aria-label={ariaLabel}
+                aria-expanded={isOpen}
+            >
+                <span>{selected ? selected.label : placeholder}</span>
+                <span className="dark-select-caret" aria-hidden="true">▾</span>
+            </button>
+            {isOpen && (
+                <div className="dark-select-menu">
+                    {placeholder && (
+                        <button type="button" className={!value ? "dark-select-option active" : "dark-select-option"} onClick={() => handlePick("")}>{placeholder}</button>
+                    )}
+                    {options.map((option) => (
+                        <button
+                            key={option.value}
+                            type="button"
+                            className={option.value === value ? "dark-select-option active" : "dark-select-option"}
+                            onClick={() => handlePick(option.value)}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 }
 
 function getCars() {
@@ -816,6 +979,11 @@ function CarsPage({ cars, language, texts }) {
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
     const driveOptions = useMemo(() => DRIVE_OPTIONS, []);
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
+    const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
+    const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
+    const driveSelectOptions = useMemo(() => driveOptions.map((option) => ({ value: option, label: option })), [driveOptions]);
+    const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: option })), []);
+    const doorSelectOptions = useMemo(() => doorOptions.map((option) => ({ value: String(option), label: String(option) })), [doorOptions]);
     const filteredCars = useMemo(() => {
         const query = debouncedSearch.trim().toLowerCase();
         const hpFromValue = parseNumber(horsepowerFrom);
@@ -1009,39 +1177,19 @@ function CarsPage({ cars, language, texts }) {
                 <div className="filters-grid">
                     <label>
                         {texts.cars.fuel}
-                        <select value={fuel} onChange={(event) => setFuel(event.target.value)}>
-                            <option value="">{texts.cars.fuelAll}</option>
-                            {fuelOptions.map((option) => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <DarkSelect value={fuel} onChange={setFuel} options={fuelSelectOptions} placeholder={texts.cars.fuelAll} ariaLabel={texts.cars.fuel} />
                     </label>
                     <label>
                         {texts.cars.brand}
-                        <select value={brand} onChange={(event) => setBrand(event.target.value)}>
-                            <option value="">{texts.cars.brandAll}</option>
-                            {brandOptions.map((option) => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <DarkSelect value={brand} onChange={setBrand} options={brandSelectOptions} placeholder={texts.cars.brandAll} ariaLabel={texts.cars.brand} />
                     </label>
                     <label>
                         {texts.cars.drive}
-                        <select value={drive} onChange={(event) => setDrive(event.target.value)}>
-                            <option value="">{texts.cars.driveAll}</option>
-                            {driveOptions.map((option) => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <DarkSelect value={drive} onChange={setDrive} options={driveSelectOptions} placeholder={texts.cars.driveAll} ariaLabel={texts.cars.drive} />
                     </label>
                     <label>
                         {texts.cars.transmission}
-                        <select value={transmission} onChange={(event) => setTransmission(event.target.value)}>
-                            <option value="">{texts.cars.transmissionAll}</option>
-                            {TRANSMISSION_OPTIONS.map((option) => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <DarkSelect value={transmission} onChange={setTransmission} options={transmissionSelectOptions} placeholder={texts.cars.transmissionAll} ariaLabel={texts.cars.transmission} />
                     </label>
                     <label>
                         {texts.cars.hpFrom}
@@ -1053,12 +1201,7 @@ function CarsPage({ cars, language, texts }) {
                     </label>
                     <label>
                         {texts.cars.doors}
-                        <select value={doors} onChange={(event) => setDoors(event.target.value)}>
-                            <option value="">{texts.cars.doorsAll}</option>
-                            {doorOptions.map((option) => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <DarkSelect value={doors} onChange={setDoors} options={doorSelectOptions} placeholder={texts.cars.doorsAll} ariaLabel={texts.cars.doors} />
                     </label>
                     <label>
                         {texts.cars.seatsFrom}
@@ -1156,7 +1299,7 @@ function CarDetailPage({ cars, language, texts }) {
                                 <span className="technical-icon" aria-hidden="true">{row.icon || "•"}</span>
                                 <div>
                                     <h4>{translateTechnicalLabel(row.label, language)}</h4>
-                                    <p>{row.value}</p>
+                                    <p>{translateTechnicalValue(row.value, language)}</p>
                                 </div>
                             </article>
                         ))}
@@ -1203,9 +1346,15 @@ function CmsPage({ cars, setCars, language, texts }) {
         image: "",
         description: "",
         legal: "",
+        technicalDataRaw: "",
+        equipmentItemsRaw: "",
         equipment: "",
         available: true
     });
+
+    const driveSelectOptions = useMemo(() => DRIVE_OPTIONS.map((option) => ({ value: option, label: option })), []);
+    const fuelSelectOptions = useMemo(() => FUEL_OPTIONS.map((option) => ({ value: option, label: option })), []);
+    const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: option })), []);
 
     const handleLogin = (event) => {
         event.preventDefault();
@@ -1240,6 +1389,12 @@ function CmsPage({ cars, setCars, language, texts }) {
 
         const transmission = sanitizeOption(form.transmission, TRANSMISSION_OPTIONS, "Automat");
         const manualGears = transmission === "Manuál" ? Math.max(1, Math.round(parseNumber(form.manualGears) || 0)) : 0;
+        const technicalData = parseTechnicalDataRaw(form.technicalDataRaw);
+        const equipmentItems = parseEquipmentItemsRaw(form.equipmentItemsRaw);
+        if (!form.drive || !form.fuel) {
+            setError(texts.cms.requiredDriveFuel || "Palivo a náhon sú povinné.");
+            return;
+        }
         if (transmission === "Manuál" && manualGears < 1) {
             setError(texts.cms.manualGearsRequired || "Pri manuáli je povinné zadať počet prevodov.");
             return;
@@ -1263,7 +1418,9 @@ function CmsPage({ cars, setCars, language, texts }) {
             image: form.image || "https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80",
             description: form.description,
             legal: form.legal,
-            equipment: form.equipment,
+            technicalData,
+            equipmentItems,
+            equipment: equipmentItems.length > 0 ? `Výbava: ${equipmentItems.slice(0, 8).join(", ")}` : form.equipment,
             available: form.available
         };
 
@@ -1289,6 +1446,8 @@ function CmsPage({ cars, setCars, language, texts }) {
             image: "",
             description: "",
             legal: "",
+            technicalDataRaw: "",
+            equipmentItemsRaw: "",
             equipment: "",
             available: true
         });
@@ -1356,21 +1515,13 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label>{texts.cms.fields.seats || "Počet sedadiel"}<input type="number" min="2" max="9" value={form.seats} onChange={(e) => setForm((prev) => ({ ...prev, seats: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.previousOwners || "Počet predošlých majiteľov"}<input type="number" min="0" value={form.previousOwners} onChange={(e) => setForm((prev) => ({ ...prev, previousOwners: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.drive}
-                        <select value={form.drive} onChange={(e) => setForm((prev) => ({ ...prev, drive: e.target.value }))} required>
-                            <option value="">-</option>
-                            {DRIVE_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                        </select>
+                        <DarkSelect value={form.drive} onChange={(value) => setForm((prev) => ({ ...prev, drive: value }))} options={driveSelectOptions} placeholder="-" ariaLabel={texts.cms.fields.drive} />
                     </label>
                     <label>{texts.cms.fields.fuel}
-                        <select value={form.fuel} onChange={(e) => setForm((prev) => ({ ...prev, fuel: e.target.value }))} required>
-                            <option value="">-</option>
-                            {FUEL_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                        </select>
+                        <DarkSelect value={form.fuel} onChange={(value) => setForm((prev) => ({ ...prev, fuel: value }))} options={fuelSelectOptions} placeholder="-" ariaLabel={texts.cms.fields.fuel} />
                     </label>
                     <label>{texts.cms.fields.transmission}
-                        <select value={form.transmission} onChange={(e) => setForm((prev) => ({ ...prev, transmission: e.target.value }))} required>
-                            {TRANSMISSION_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
-                        </select>
+                        <DarkSelect value={form.transmission} onChange={(value) => setForm((prev) => ({ ...prev, transmission: value || "Automat" }))} options={transmissionSelectOptions} ariaLabel={texts.cms.fields.transmission} />
                     </label>
                     {form.transmission === "Manuál" && (
                         <label>{texts.cms.fields.manualGears || "Počet prevodov"}<input type="number" min="1" max="10" value={form.manualGears} onChange={(e) => setForm((prev) => ({ ...prev, manualGears: e.target.value }))} required /></label>
@@ -1378,6 +1529,14 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label className="full-width">{texts.cms.fields.image}<input type="file" accept="image/*" onChange={handleImageUpload} /></label>
                     <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
                     <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
+                    <label className="full-width">{texts.cms.fields.technicalDataRaw}
+                        <textarea value={form.technicalDataRaw} onChange={(e) => setForm((prev) => ({ ...prev, technicalDataRaw: e.target.value }))} placeholder="Vehicle condition: Used vehicle&#10;Origin: German version"></textarea>
+                        <small>{texts.cms.technicalHelp}</small>
+                    </label>
+                    <label className="full-width">{texts.cms.fields.equipmentItemsRaw}
+                        <textarea value={form.equipmentItemsRaw} onChange={(e) => setForm((prev) => ({ ...prev, equipmentItemsRaw: e.target.value }))} placeholder="ABS&#10;Navigation system&#10;Bluetooth"></textarea>
+                        <small>{texts.cms.equipmentHelp}</small>
+                    </label>
                     <label className="full-width">{texts.cms.fields.equipment}<textarea value={form.equipment} onChange={(e) => setForm((prev) => ({ ...prev, equipment: e.target.value }))} required /></label>
                     <label className="checkbox-row full-width">
                         <input
