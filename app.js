@@ -49,6 +49,14 @@ const SERVICES_PAGE_CONTENT = {
         ],
         deliverablesTitle: "Výstupy služby",
         deliverables: ["Kontrolní report vozidla", "Doporučení oprav podle priority", "Ověření historie a právního stavu", "Podpora při registraci a STK"],
+        luxuryTitle: "Luxury varianta",
+        luxuryPoints: ["VIP handling požadavku", "Prioritní termíny obhlídek", "Prémiová fotodokumentace", "Osobní konzultant po celou dobu"],
+        luxuryButton: "Mám zájem o Luxury",
+        luxurySubject: "Poptávka: Luxury varianta",
+        technicalTitle: "Technical varianta",
+        technicalPoints: ["Měření a diagnostika řídicích jednotek", "Kontrola kritických komponent", "Detailní risk-score report", "Návrh servisního plánu po koupi"],
+        technicalButton: "Mám zájem o Technical",
+        technicalSubject: "Poptávka: Technical varianta",
         ctaTitle: "Potřebujete konzultaci k vozu?",
         ctaText: "Pošlete poptávku a připravíme konkrétní postup podle vaší situace.",
         ctaButton: "Kontaktovat nás"
@@ -70,6 +78,14 @@ const SERVICES_PAGE_CONTENT = {
         ],
         deliverablesTitle: "Výstupy služby",
         deliverables: ["Kontrolný report vozidla", "Odporúčanie opráv podľa priority", "Overenie histórie a právneho stavu", "Podpora pri registrácii a STK"],
+        luxuryTitle: "Luxury variant",
+        luxuryPoints: ["VIP vybavenie dopytu", "Prioritné termíny obhliadok", "Prémiová fotodokumentácia", "Osobný konzultant počas celého procesu"],
+        luxuryButton: "Mám záujem o Luxury",
+        luxurySubject: "Dopyt: Luxury variant",
+        technicalTitle: "Technical variant",
+        technicalPoints: ["Merania a diagnostika riadiacich jednotiek", "Kontrola kritických komponentov", "Detailný risk-score report", "Návrh servisného plánu po kúpe"],
+        technicalButton: "Mám záujem o Technical",
+        technicalSubject: "Dopyt: Technical variant",
         ctaTitle: "Potrebujete konzultáciu k vozidlu?",
         ctaText: "Pošlite dopyt a pripravíme konkrétny postup podľa vašej situácie.",
         ctaButton: "Kontaktovať nás"
@@ -91,6 +107,14 @@ const SERVICES_PAGE_CONTENT = {
         ],
         deliverablesTitle: "Leistungsumfang im Ergebnis",
         deliverables: ["Detaillierter Prüfbericht", "Empfehlung von Reparaturen nach Priorität", "Prüfung von Historie und Rechtsstatus", "Unterstützung bei Zulassung und HU/STK"],
+        luxuryTitle: "Luxury-Variante",
+        luxuryPoints: ["VIP-Betreuung der Anfrage", "Priorisierte Besichtigungstermine", "Premium-Fotodokumentation", "Persönlicher Berater im gesamten Prozess"],
+        luxuryButton: "Interesse an Luxury",
+        luxurySubject: "Anfrage: Luxury-Variante",
+        technicalTitle: "Technical-Variante",
+        technicalPoints: ["Steuergeräte-Diagnose und Messwerte", "Prüfung kritischer Komponenten", "Detaillierter Risk-Score-Report", "Serviceplan-Empfehlung nach Kauf"],
+        technicalButton: "Interesse an Technical",
+        technicalSubject: "Anfrage: Technical-Variante",
         ctaTitle: "Benötigen Sie eine Fahrzeugberatung?",
         ctaText: "Senden Sie uns Ihre Anfrage und wir erstellen einen klaren nächsten Schritt.",
         ctaButton: "Kontakt aufnehmen"
@@ -112,6 +136,14 @@ const SERVICES_PAGE_CONTENT = {
         ],
         deliverablesTitle: "Service deliverables",
         deliverables: ["Vehicle inspection report", "Priority-based repair recommendations", "History and legal-status verification", "Support for registration and STK/TÜV readiness"],
+        luxuryTitle: "Luxury variant",
+        luxuryPoints: ["VIP request handling", "Priority inspection slots", "Premium photo documentation", "Dedicated consultant throughout the process"],
+        luxuryButton: "I want Luxury",
+        luxurySubject: "Inquiry: Luxury variant",
+        technicalTitle: "Technical variant",
+        technicalPoints: ["ECU diagnostics and measurements", "Critical-component checks", "Detailed risk-score reporting", "Post-purchase service-plan recommendation"],
+        technicalButton: "I want Technical",
+        technicalSubject: "Inquiry: Technical variant",
         ctaTitle: "Need advice for a specific car?",
         ctaText: "Send us your request and we will prepare a concrete next-step plan.",
         ctaButton: "Contact us"
@@ -1705,6 +1737,39 @@ function ServicesPage({ texts, language }) {
                 </div>
             </section>
 
+            <section className="card services-section">
+                <div className="services-variants-grid">
+                    <article className="services-variant-card luxury">
+                        <h3>{serviceContent.luxuryTitle}</h3>
+                        <ul>
+                            {serviceContent.luxuryPoints.map((point) => (
+                                <li key={point}>{point}</li>
+                            ))}
+                        </ul>
+                        <a
+                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.luxurySubject)}`}
+                            className="button-link button-secondary"
+                        >
+                            {serviceContent.luxuryButton}
+                        </a>
+                    </article>
+                    <article className="services-variant-card technical">
+                        <h3>{serviceContent.technicalTitle}</h3>
+                        <ul>
+                            {serviceContent.technicalPoints.map((point) => (
+                                <li key={point}>{point}</li>
+                            ))}
+                        </ul>
+                        <a
+                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.technicalSubject)}`}
+                            className="button-link button-secondary"
+                        >
+                            {serviceContent.technicalButton}
+                        </a>
+                    </article>
+                </div>
+            </section>
+
             <section className="card services-cta">
                 <h2>{serviceContent.ctaTitle}</h2>
                 <p>{serviceContent.ctaText}</p>
@@ -1772,13 +1837,6 @@ function CarsPage({ cars, language, texts }) {
     const horsepowerRangeFrom = Math.min(horsepowerFromCurrent, horsepowerToCurrent);
     const horsepowerRangeTo = Math.max(horsepowerFromCurrent, horsepowerToCurrent);
     const hasHorsepowerFilter = horsepowerFromCurrent > horsepowerMinBound || horsepowerToCurrent < horsepowerMaxBound;
-    const seatsRangeStartPercent = seatsMaxBound > seatsMinBound ? ((seatsRangeFrom - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 0;
-    const seatsRangeEndPercent = seatsMaxBound > seatsMinBound ? ((seatsRangeTo - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 100;
-    const horsepowerRangeStartPercent = horsepowerMaxBound > horsepowerMinBound ? ((horsepowerRangeFrom - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 0;
-    const horsepowerRangeEndPercent = horsepowerMaxBound > horsepowerMinBound ? ((horsepowerRangeTo - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 100;
-    const bubbleOverlapThreshold = window.innerWidth <= 640 ? 18 : 14;
-    const seatsBubbleTooClose = Math.abs(seatsRangeEndPercent - seatsRangeStartPercent) < bubbleOverlapThreshold;
-    const horsepowerBubbleTooClose = Math.abs(horsepowerRangeEndPercent - horsepowerRangeStartPercent) < bubbleOverlapThreshold;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
     const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
     const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
@@ -1816,6 +1874,15 @@ function CarsPage({ cars, language, texts }) {
             })
             .sort((a, b) => getCarAvailabilityRank(a) - getCarAvailabilityRank(b));
     }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsRangeFrom, seatsRangeTo, hasHorsepowerFilter, horsepowerRangeFrom, horsepowerRangeTo]);
+    const carsForRender = useMemo(() => {
+        if (filteredCars.length > 0) {
+            return filteredCars;
+        }
+        if (cars.length > 0) {
+            return [...cars].sort((a, b) => getCarAvailabilityRank(a) - getCarAvailabilityRank(b));
+        }
+        return [];
+    }, [filteredCars, cars]);
 
     const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || hasSeatsFilter || doors || brand || drive || transmission);
     const activeFilterChips = [];
@@ -1968,7 +2035,7 @@ function CarsPage({ cars, language, texts }) {
                 <div className="filters-head">
                     <h2>{texts.cars.filterTitle}</h2>
                     <div className="filters-tools">
-                        <span className="results-badge">{filteredCars.length} {resultsLabel}</span>
+                        <span className="results-badge">{carsForRender.length} {resultsLabel}</span>
                         <button type="button" className="filters-reset" onClick={clearFilters} disabled={!hasActiveFilters}>
                             ↺ {resetFiltersLabel}
                         </button>
@@ -2033,40 +2100,24 @@ function CarsPage({ cars, language, texts }) {
                             <strong>{horsepowerFromCurrent} {texts.common.horsepowerUnit}</strong>
                             <strong>{horsepowerToCurrent} {texts.common.horsepowerUnit}</strong>
                         </div>
-                        <div
-                            className="range-thumb-bubbles"
-                            style={{
-                                "--from-pos": `${horsepowerRangeStartPercent}%`,
-                                "--to-pos": `${horsepowerRangeEndPercent}%`
-                            }}
-                            aria-hidden="true"
-                        >
-                            <span className={horsepowerBubbleTooClose ? "range-bubble from shift-left" : "range-bubble from"}>{horsepowerFromCurrent}</span>
-                            <span className={horsepowerBubbleTooClose ? "range-bubble to shift-right" : "range-bubble to"}>{horsepowerToCurrent}</span>
-                        </div>
-                        <div
-                            className="range-fill-track"
-                            style={{
-                                "--range-start": `${horsepowerRangeStartPercent}%`,
-                                "--range-end": `${horsepowerRangeEndPercent}%`
-                            }}
-                        ></div>
-                        <div className="hp-range-sliders">
+                        <div className="single-range-row">
+                            <span>{texts.cars.hpFrom}</span>
                             <input
-                                className="range-input-from"
                                 type="range"
                                 min={horsepowerMinBound}
-                                max={horsepowerMaxBound}
+                                max={horsepowerToCurrent}
                                 value={horsepowerFromCurrent}
                                 onChange={(event) => {
                                     const next = Math.min(Number(event.target.value), horsepowerToCurrent);
                                     setHorsepowerFrom(String(next));
                                 }}
                             />
+                        </div>
+                        <div className="single-range-row">
+                            <span>{texts.cars.hpTo}</span>
                             <input
-                                className="range-input-to"
                                 type="range"
-                                min={horsepowerMinBound}
+                                min={horsepowerFromCurrent}
                                 max={horsepowerMaxBound}
                                 value={horsepowerToCurrent}
                                 onChange={(event) => {
@@ -2090,40 +2141,24 @@ function CarsPage({ cars, language, texts }) {
                             <strong>{seatsFromCurrent} {texts.cars.seatsUnit}</strong>
                             <strong>{seatsToCurrent} {texts.cars.seatsUnit}</strong>
                         </div>
-                        <div
-                            className="range-thumb-bubbles"
-                            style={{
-                                "--from-pos": `${seatsRangeStartPercent}%`,
-                                "--to-pos": `${seatsRangeEndPercent}%`
-                            }}
-                            aria-hidden="true"
-                        >
-                            <span className={seatsBubbleTooClose ? "range-bubble from shift-left" : "range-bubble from"}>{seatsFromCurrent}</span>
-                            <span className={seatsBubbleTooClose ? "range-bubble to shift-right" : "range-bubble to"}>{seatsToCurrent}</span>
-                        </div>
-                        <div
-                            className="range-fill-track"
-                            style={{
-                                "--range-start": `${seatsRangeStartPercent}%`,
-                                "--range-end": `${seatsRangeEndPercent}%`
-                            }}
-                        ></div>
-                        <div className="hp-range-sliders">
+                        <div className="single-range-row">
+                            <span>{texts.cars.seatsFrom}</span>
                             <input
-                                className="range-input-from"
                                 type="range"
                                 min={seatsMinBound}
-                                max={seatsMaxBound}
+                                max={seatsToCurrent}
                                 value={seatsFromCurrent}
                                 onChange={(event) => {
                                     const next = Math.min(Number(event.target.value), seatsToCurrent);
                                     setSeatsFrom(String(next));
                                 }}
                             />
+                        </div>
+                        <div className="single-range-row">
+                            <span>{texts.cars.seatsTo}</span>
                             <input
-                                className="range-input-to"
                                 type="range"
-                                min={seatsMinBound}
+                                min={seatsFromCurrent}
                                 max={seatsMaxBound}
                                 value={seatsToCurrent}
                                 onChange={(event) => {
@@ -2141,7 +2176,7 @@ function CarsPage({ cars, language, texts }) {
             </section>
 
             <section className="grid wide-grid">
-                {filteredCars.map((car) => (
+                {carsForRender.map((car) => (
                     <article key={car.id} className="car-card">
                         <img src={getCarThumbnail(car)} alt={car.name} className="car-image" />
                         <div className="car-content">
@@ -2165,7 +2200,7 @@ function CarsPage({ cars, language, texts }) {
                 ))}
             </section>
 
-            {filteredCars.length === 0 && (
+            {carsForRender.length === 0 && (
                 <section className="card">
                     <p>{texts.cars.noResults}</p>
                 </section>
