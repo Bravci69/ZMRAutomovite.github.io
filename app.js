@@ -4,6 +4,24 @@ const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
 const LANGUAGE_STORAGE_KEY = "zmrLanguage";
 const CZK_TO_EUR_RATE = 25;
+const LANGUAGE_OPTIONS = [
+    { code: "cs", flag: "🇨🇿", label: "Čeština" },
+    { code: "sk", flag: "🇸🇰", label: "Slovenčina" },
+    { code: "de", flag: "🇩🇪", label: "Deutsch" },
+    { code: "en", flag: "🇬🇧", label: "English" }
+];
+const RESET_LABELS = {
+    cs: "Vymazat filtry",
+    sk: "Vymazať filtre",
+    de: "Filter zurücksetzen",
+    en: "Reset filters"
+};
+const RESULTS_LABELS = {
+    cs: "výsledků",
+    sk: "výsledkov",
+    de: "Ergebnisse",
+    en: "results"
+};
 
 const I18N = {
     cs: {
@@ -72,6 +90,8 @@ const I18N = {
             hpTo: "Výkon do (k)",
             doors: "Dveře",
             doorsAll: "Všechny",
+            activeFilters: "Aktivní filtry",
+            clearAll: "Zrušit vše",
             detailButton: "Detail vozidla",
             noResults: "Pro zadané filtry nebyla nalezena žádná vozidla."
         },
@@ -160,7 +180,7 @@ const I18N = {
             processText: "Po prijatí dopytu pripravíme plán, realizujeme kontrolu alebo dovoz a odovzdáme odporúčania."
         },
         cars: {
-            filterTitle: "Vyhľadávanie a filtre", search: "Vyhľadávanie", searchPlaceholder: "Model, značka, náhon...", fuel: "Palivo", fuelAll: "Všetky palivá", brand: "Značka", brandAll: "Všetky značky", drive: "Náhon", driveAll: "Všetky náhony", hpFrom: "Výkon od (k)", hpTo: "Výkon do (k)", doors: "Dvere", doorsAll: "Všetky", detailButton: "Detail vozidla", noResults: "Pre zadané filtre sa nenašli žiadne vozidlá."
+            filterTitle: "Vyhľadávanie a filtre", search: "Vyhľadávanie", searchPlaceholder: "Model, značka, náhon...", fuel: "Palivo", fuelAll: "Všetky palivá", brand: "Značka", brandAll: "Všetky značky", drive: "Náhon", driveAll: "Všetky náhony", hpFrom: "Výkon od (k)", hpTo: "Výkon do (k)", doors: "Dvere", doorsAll: "Všetky", activeFilters: "Aktívne filtre", clearAll: "Zrušiť všetko", detailButton: "Detail vozidla", noResults: "Pre zadané filtre sa nenašli žiadne vozidlá."
         },
         carDetail: { notFoundTitle: "Vozidlo sa nenašlo", notFoundText: "Momentálne nie je dostupné žiadne vozidlo. Skúste to prosím neskôr.", legalTitle: "Legislatívne informácie", equipmentTitle: "Výbava" },
         cms: {
@@ -185,7 +205,7 @@ const I18N = {
         about: { title: "Über unser Unternehmen", p1: "ZMR Automovité ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
         services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
-        cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
+        cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
         carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung" },
         cms: {
             loginTitle: "CMS-Anmeldung", loginInfo: "Mitarbeiterzugang. Testdaten: admin / admin.", username: "Benutzername", password: "Passwort", loginButton: "Anmelden", loginError: "Falsche Anmeldedaten.", manageTitle: "Fahrzeugverwaltung", logoutButton: "Abmelden", intro: "Hier können Sie Fahrzeuge hinzufügen und bearbeiten.",
@@ -209,7 +229,7 @@ const I18N = {
         about: { title: "About our company", p1: "ZMR Automovité specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
         services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
-        cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
+        cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
         carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", legalTitle: "Legal information", equipmentTitle: "Equipment" },
         cms: {
             loginTitle: "CMS login", loginInfo: "Staff access. Test credentials: admin / admin.", username: "Username", password: "Password", loginButton: "Sign in", loginError: "Invalid login credentials.", manageTitle: "Vehicle management", logoutButton: "Sign out", intro: "You can add new cars, upload photos and fill in details.",
@@ -358,6 +378,44 @@ function readCarIdFromQuery() {
     return params.get("id");
 }
 
+function readCarFiltersFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        search: params.get("q") || "",
+        fuel: params.get("fuel") || "",
+        brand: params.get("brand") || "",
+        drive: params.get("drive") || "",
+        doors: params.get("doors") || "",
+        horsepowerFrom: params.get("hpFrom") || "",
+        horsepowerTo: params.get("hpTo") || ""
+    };
+}
+
+function syncCarFiltersToQuery(filters) {
+    const params = new URLSearchParams(window.location.search);
+    const mapping = {
+        q: filters.search,
+        fuel: filters.fuel,
+        brand: filters.brand,
+        drive: filters.drive,
+        doors: filters.doors,
+        hpFrom: filters.horsepowerFrom,
+        hpTo: filters.horsepowerTo
+    };
+
+    Object.entries(mapping).forEach(([key, value]) => {
+        if (value) {
+            params.set(key, value);
+        } else {
+            params.delete(key);
+        }
+    });
+
+    const nextQuery = params.toString();
+    const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`;
+    window.history.replaceState(null, "", nextUrl);
+}
+
 function getCurrencyForLanguage(language) {
     return language === "cs" ? "CZK" : "EUR";
 }
@@ -401,15 +459,20 @@ function Navigation({ activePage, texts }) {
 
 function LanguageSwitcher({ language, onChange, texts }) {
     return (
-        <label className="language-switcher">
-            {texts.common.language}
-            <select className="language-select" value={language} onChange={(event) => onChange(event.target.value)}>
-                <option value="cs">Čeština</option>
-                <option value="sk">Slovenčina</option>
-                <option value="de">Deutsch</option>
-                <option value="en">English</option>
-            </select>
-        </label>
+        <div className="language-switcher" role="group" aria-label={texts.common.language}>
+            {LANGUAGE_OPTIONS.map((item) => (
+                <button
+                    key={item.code}
+                    type="button"
+                    className={item.code === language ? "flag-button active" : "flag-button"}
+                    onClick={() => onChange(item.code)}
+                    aria-label={item.label}
+                    title={item.label}
+                >
+                    <span aria-hidden="true">{item.flag}</span>
+                </button>
+            ))}
+        </div>
     );
 }
 
@@ -530,13 +593,16 @@ function ContactPage({ texts }) {
 }
 
 function CarsPage({ cars, language, texts }) {
-    const [search, setSearch] = useState("");
-    const [fuel, setFuel] = useState("");
-    const [horsepowerFrom, setHorsepowerFrom] = useState("");
-    const [horsepowerTo, setHorsepowerTo] = useState("");
-    const [doors, setDoors] = useState("");
-    const [brand, setBrand] = useState("");
-    const [drive, setDrive] = useState("");
+    const [search, setSearch] = useState(() => readCarFiltersFromQuery().search);
+    const [debouncedSearch, setDebouncedSearch] = useState(() => readCarFiltersFromQuery().search);
+    const [fuel, setFuel] = useState(() => readCarFiltersFromQuery().fuel);
+    const [horsepowerFrom, setHorsepowerFrom] = useState(() => readCarFiltersFromQuery().horsepowerFrom);
+    const [horsepowerTo, setHorsepowerTo] = useState(() => readCarFiltersFromQuery().horsepowerTo);
+    const [doors, setDoors] = useState(() => readCarFiltersFromQuery().doors);
+    const [brand, setBrand] = useState(() => readCarFiltersFromQuery().brand);
+    const [drive, setDrive] = useState(() => readCarFiltersFromQuery().drive);
+    const resetFiltersLabel = RESET_LABELS[language] || RESET_LABELS.cs;
+    const resultsLabel = RESULTS_LABELS[language] || RESULTS_LABELS.cs;
 
     const fuelOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.fuel).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
@@ -544,7 +610,7 @@ function CarsPage({ cars, language, texts }) {
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
 
     const filteredCars = useMemo(() => {
-        const query = search.trim().toLowerCase();
+        const query = debouncedSearch.trim().toLowerCase();
         const hpFromValue = parseNumber(horsepowerFrom);
         const hpToValue = parseNumber(horsepowerTo);
 
@@ -567,17 +633,116 @@ function CarsPage({ cars, language, texts }) {
                 }
                 return a.available ? -1 : 1;
             });
-    }, [cars, search, fuel, brand, drive, doors, horsepowerFrom, horsepowerTo]);
+    }, [cars, debouncedSearch, fuel, brand, drive, doors, horsepowerFrom, horsepowerTo]);
+
+    const hasActiveFilters = Boolean(search || fuel || horsepowerFrom || horsepowerTo || doors || brand || drive);
+    const activeFilterChips = [];
+
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 150);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [search]);
+
+    useEffect(() => {
+        const handlePopState = () => {
+            const nextFilters = readCarFiltersFromQuery();
+            setSearch(nextFilters.search);
+            setDebouncedSearch(nextFilters.search);
+            setFuel(nextFilters.fuel);
+            setBrand(nextFilters.brand);
+            setDrive(nextFilters.drive);
+            setDoors(nextFilters.doors);
+            setHorsepowerFrom(nextFilters.horsepowerFrom);
+            setHorsepowerTo(nextFilters.horsepowerTo);
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, []);
+
+    useEffect(() => {
+        syncCarFiltersToQuery({
+            search: debouncedSearch,
+            fuel,
+            brand,
+            drive,
+            doors,
+            horsepowerFrom,
+            horsepowerTo
+        });
+    }, [debouncedSearch, fuel, brand, drive, doors, horsepowerFrom, horsepowerTo]);
+
+    if (search) {
+        activeFilterChips.push({ key: "search", label: `${texts.cars.search}: ${search}`, clear: () => setSearch("") });
+    }
+    if (fuel) {
+        activeFilterChips.push({ key: "fuel", label: `${texts.cars.fuel}: ${fuel}`, clear: () => setFuel("") });
+    }
+    if (brand) {
+        activeFilterChips.push({ key: "brand", label: `${texts.cars.brand}: ${brand}`, clear: () => setBrand("") });
+    }
+    if (drive) {
+        activeFilterChips.push({ key: "drive", label: `${texts.cars.drive}: ${drive}`, clear: () => setDrive("") });
+    }
+    if (doors) {
+        activeFilterChips.push({ key: "doors", label: `${texts.cars.doors}: ${doors}`, clear: () => setDoors("") });
+    }
+    if (horsepowerFrom) {
+        activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerFrom}`, clear: () => setHorsepowerFrom("") });
+    }
+    if (horsepowerTo) {
+        activeFilterChips.push({ key: "hpTo", label: `${texts.cars.hpTo}: ${horsepowerTo}`, clear: () => setHorsepowerTo("") });
+    }
+
+    const clearFilters = () => {
+        setSearch("");
+        setFuel("");
+        setHorsepowerFrom("");
+        setHorsepowerTo("");
+        setDoors("");
+        setBrand("");
+        setDrive("");
+    };
 
     return (
         <>
-            <section className="card">
-                <h2>{texts.cars.filterTitle}</h2>
+            <section className="card filters-card">
+                <div className="filters-head">
+                    <h2>{texts.cars.filterTitle}</h2>
+                    <div className="filters-tools">
+                        <span className="results-badge">{filteredCars.length} {resultsLabel}</span>
+                        <button type="button" className="filters-reset" onClick={clearFilters} disabled={!hasActiveFilters}>
+                            ↺ {resetFiltersLabel}
+                        </button>
+                    </div>
+                </div>
+                <div className="search-row">
+                    <input type="text" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
+                </div>
+                {activeFilterChips.length > 0 && (
+                    <div className="active-filters-wrap">
+                        <span className="active-filters-label">{texts.cars.activeFilters}</span>
+                        <div className="active-filters-list">
+                            {activeFilterChips.map((chip) => (
+                                <button key={chip.key} type="button" className="filter-chip" onClick={chip.clear}>
+                                    <span>{chip.label}</span>
+                                    <span aria-hidden="true">✕</span>
+                                </button>
+                            ))}
+                            <button type="button" className="filter-chip clear-all" onClick={clearFilters}>
+                                {texts.cars.clearAll}
+                            </button>
+                        </div>
+                    </div>
+                )}
                 <div className="filters-grid">
-                    <label>
-                        {texts.cars.search}
-                        <input type="text" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
-                    </label>
                     <label>
                         {texts.cars.fuel}
                         <select value={fuel} onChange={(event) => setFuel(event.target.value)}>
