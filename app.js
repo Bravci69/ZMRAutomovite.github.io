@@ -8,6 +8,7 @@ const HORSEPOWER_MIN_FILTER = 256;
 const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
 const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || "/api/reservation";
+const CARS_API_URL = window.ZMR_CARS_API_URL || "/api/cars";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
@@ -825,6 +826,41 @@ function getLocalizedCarText(car, field, language) {
     return car?.[field] || "";
 }
 
+function getCarUpdatedAt(car) {
+    const value = Number(car?.updatedAt);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function mergeCarsByLatest(localCars, cloudCars) {
+    const mergedById = new Map();
+
+    const upsert = (car) => {
+        if (!car || !car.id) {
+            return;
+        }
+        const current = mergedById.get(car.id);
+        if (!current || getCarUpdatedAt(car) >= getCarUpdatedAt(current)) {
+            mergedById.set(car.id, car);
+        }
+    };
+
+    (Array.isArray(localCars) ? localCars : []).forEach(upsert);
+    (Array.isArray(cloudCars) ? cloudCars : []).forEach(upsert);
+
+    return [...mergedById.values()];
+}
+
+function touchCarForUpdate(car, nextFields) {
+    const now = Date.now();
+    const createdAt = Number.isFinite(Number(car?.createdAt)) && Number(car.createdAt) > 0 ? Number(car.createdAt) : now;
+    return {
+        ...car,
+        ...nextFields,
+        createdAt,
+        updatedAt: now
+    };
+}
+
 function createRequestId(prefix = "req") {
     if (window.crypto && typeof window.crypto.randomUUID === "function") {
         return `${prefix}-${window.crypto.randomUUID()}`;
@@ -945,6 +981,8 @@ function normalizeCar(car, index) {
     const primaryName = nameI18n.sk || nameI18n.cs || nameI18n.en || car.name || "";
     const primaryDescription = descriptionI18n.sk || descriptionI18n.cs || descriptionI18n.en || car.description || "";
     const primaryLegal = legalI18n.sk || legalI18n.cs || legalI18n.en || car.legal || "";
+    const createdAt = Number.isFinite(Number(car.createdAt)) && Number(car.createdAt) > 0 ? Number(car.createdAt) : 0;
+    const updatedAt = Number.isFinite(Number(car.updatedAt)) && Number(car.updatedAt) > 0 ? Number(car.updatedAt) : createdAt;
 
     return {
         ...car,
@@ -971,7 +1009,9 @@ function normalizeCar(car, index) {
         technicalData: Array.isArray(car.technicalData) ? car.technicalData : undefined,
         equipmentItems: getEquipmentItems(car),
         priceCzk: parsePriceCzk(car),
-        available: Boolean(car.available)
+        available: Boolean(car.available),
+        createdAt,
+        updatedAt
     };
 }
 
@@ -1407,6 +1447,44 @@ function saveCars(cars) {
         localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(cars));
     } catch (error) {
         console.error("Nepodarilo sa uložiť vozidlá do localStorage.", error);
+    }
+}
+
+async function fetchCarsFromCloud() {
+    if (!CARS_API_URL) {
+        return null;
+    }
+    try {
+        const response = await fetch(CARS_API_URL, { method: "GET" });
+        if (!response.ok) {
+            return null;
+        }
+        const payload = await response.json();
+        const list = Array.isArray(payload?.cars) ? payload.cars : [];
+        return list.length > 0 ? list : null;
+    } catch {
+        return null;
+    }
+}
+
+async function saveCarsToCloud(cars) {
+    if (!CARS_API_URL || !Array.isArray(cars)) {
+        return false;
+    }
+    try {
+        const response = await fetch(CARS_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                requestId: createRequestId("cars"),
+                source: "cars-sync",
+                campaign: "website-cars-sync",
+                cars
+            })
+        });
+        return response.ok;
+    } catch {
+        return false;
     }
 }
 
@@ -2228,17 +2306,21 @@ function CarsPage({ cars, language, texts }) {
 
             <section className="grid wide-grid">
                 {carsForRender.map((car) => (
+                    (() => {
+                        const localizedName = getLocalizedCarText(car, "name", language);
+                        const localizedDescription = getLocalizedCarText(car, "description", language);
+                        return (
                     <article key={car.id} className="car-card">
-                        <img src={getCarThumbnail(car)} alt={car.name} className="car-image" />
+                        <img src={getCarThumbnail(car)} alt={localizedName} className="car-image" />
                         <div className="car-content">
-                            <h2>{car.name}</h2>
+                            <h2>{localizedName}</h2>
                             <p className="car-meta">
                                 {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
                             </p>
                             <p className="car-meta">
                                 {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
                             </p>
-                            <p>{car.description}</p>
+                            <p>{localizedDescription}</p>
                             <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
                                 {car.reserved ? reservationTexts.statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
                             </p>
@@ -2248,6 +2330,8 @@ function CarsPage({ cars, language, texts }) {
                             </div>
                         </div>
                     </article>
+                        );
+                    })()
                 ))}
             </section>
 
@@ -2283,6 +2367,9 @@ function CarDetailPage({ cars, setCars, language, texts }) {
     const equipmentRows = getEquipmentItems(car);
     const detailImages = getCarImages(car);
     const detailMainImage = detailImages[Math.min(selectedImageIndex, detailImages.length - 1)] || detailImages[0];
+    const localizedName = getLocalizedCarText(car, "name", language);
+    const localizedDescription = getLocalizedCarText(car, "description", language);
+    const localizedLegal = getLocalizedCarText(car, "legal", language);
 
     useEffect(() => {
         setSelectedImageIndex(Number.isInteger(car?.thumbnailIndex) ? car.thumbnailIndex : 0);
@@ -2305,11 +2392,11 @@ function CarDetailPage({ cars, setCars, language, texts }) {
             source: "vehicle-detail-page",
             campaign: "website-reservation",
             toEmail: RESERVATION_EMAIL,
-            subject: reservationTexts.reservationSubject(car.name),
+            subject: reservationTexts.reservationSubject(localizedName),
             text: reservationTexts.reservationBody(car, reservationForm),
             car: {
                 id: car.id,
-                name: car.name,
+                name: localizedName,
                 year: car.year,
                 priceCzk: car.priceCzk
             },
@@ -2328,7 +2415,7 @@ function CarDetailPage({ cars, setCars, language, texts }) {
             return;
         }
 
-        const updatedCars = cars.map((item) => item.id === car.id ? { ...item, reserved: true } : item);
+        const updatedCars = cars.map((item) => item.id === car.id ? touchCarForUpdate(item, { reserved: true }) : item);
         setCars(updatedCars);
         saveCars(updatedCars);
 
@@ -2357,19 +2444,19 @@ function CarDetailPage({ cars, setCars, language, texts }) {
         <>
             <section className="card detail-card">
                 <div>
-                    <img src={detailMainImage} alt={car.name} className="detail-image" />
+                    <img src={detailMainImage} alt={localizedName} className="detail-image" />
                     {detailImages.length > 1 && (
                         <div className="detail-gallery-thumbs">
                             {detailImages.map((src, index) => (
                                 <button key={`${src}-${index}`} type="button" className={index === selectedImageIndex ? "detail-thumb active" : "detail-thumb"} onClick={() => setSelectedImageIndex(index)}>
-                                    <img src={src} alt={`${car.name} ${index + 1}`} />
+                                    <img src={src} alt={`${localizedName} ${index + 1}`} />
                                 </button>
                             ))}
                         </div>
                     )}
                 </div>
                 <div>
-                    <h2>{car.name}</h2>
+                    <h2>{localizedName}</h2>
                     <p className="car-meta">
                         {car.year} • {car.mileage} • {car.fuel} • {formatTransmission(car)}
                     </p>
@@ -2377,13 +2464,13 @@ function CarDetailPage({ cars, setCars, language, texts }) {
                         {car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive}
                     </p>
                     <p className="car-meta">👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
-                    <p>{car.description}</p>
+                    <p>{localizedDescription}</p>
                     <p><strong>{texts.common.price}:</strong> {formatPrice(car.priceCzk, language)}</p>
                     <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
                         {car.reserved ? reservationTexts.statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
                     </p>
                     <h3>{texts.carDetail.legalTitle}</h3>
-                    <p>{car.legal}</p>
+                    <p>{localizedLegal}</p>
                     <div className="reservation-box">
                         <h3>{reservationTexts.reserveTitle}</h3>
                         {!car.reserved && car.available && (
@@ -2776,7 +2863,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         });
     };
 
-    const addCar = (event) => {
+    const addCar = async (event) => {
         event.preventDefault();
 
         const transmission = sanitizeOption(form.transmission, TRANSMISSION_OPTIONS, "Automat");
@@ -2794,6 +2881,15 @@ function CmsPage({ cars, setCars, language, texts }) {
 
         const images = form.images.length > 0 ? form.images : ["https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80"];
         const thumbnailIndex = Math.max(0, Math.min(Number(form.thumbnailIndex) || 0, images.length - 1));
+
+        const localizedCmsFields = await buildLocalizedCmsFields({
+            name: form.name,
+            description: form.description,
+            legal: form.legal
+        }, language);
+
+        const existingCar = editingCarId ? cars.find((car) => car.id === editingCarId) : null;
+        const now = Date.now();
 
         const baseCar = {
             id: editingCarId || `zmr-${Date.now()}`,
@@ -2815,17 +2911,22 @@ function CmsPage({ cars, setCars, language, texts }) {
             image: images[thumbnailIndex] || images[0],
             description: form.description,
             legal: form.legal,
+            nameI18n: localizedCmsFields.nameI18n,
+            descriptionI18n: localizedCmsFields.descriptionI18n,
+            legalI18n: localizedCmsFields.legalI18n,
             technicalData,
             equipmentItems,
             equipment: equipmentItems.length > 0 ? `Výbava: ${equipmentItems.slice(0, 8).join(", ")}` : form.equipment,
             reserved: false,
-            available: true
+            available: true,
+            createdAt: Number.isFinite(Number(existingCar?.createdAt)) && Number(existingCar.createdAt) > 0 ? Number(existingCar.createdAt) : now,
+            updatedAt: now
         };
 
         const carWithStatus = applyStatusToCar(baseCar, form.status);
 
         const updated = editingCarId
-            ? cars.map((car) => (car.id === editingCarId ? { ...car, ...carWithStatus } : car))
+            ? cars.map((car) => (car.id === editingCarId ? touchCarForUpdate(car, carWithStatus) : car))
             : [carWithStatus, ...cars];
         setCars(updated);
         saveCars(updated);
@@ -2834,19 +2935,19 @@ function CmsPage({ cars, setCars, language, texts }) {
     };
 
     const setCarStatus = (id, status) => {
-        const updated = cars.map((car) => car.id === id ? applyStatusToCar(car, status) : car);
+        const updated = cars.map((car) => car.id === id ? touchCarForUpdate(car, applyStatusToCar(car, status)) : car);
         setCars(updated);
         saveCars(updated);
     };
 
     const toggleAvailability = (id) => {
-        const updated = cars.map((car) => car.id === id ? { ...car, available: !car.available } : car);
+        const updated = cars.map((car) => car.id === id ? touchCarForUpdate(car, { available: !car.available }) : car);
         setCars(updated);
         saveCars(updated);
     };
 
     const toggleReserved = (id) => {
-        const updated = cars.map((car) => car.id === id ? { ...car, reserved: !car.reserved } : car);
+        const updated = cars.map((car) => car.id === id ? touchCarForUpdate(car, { reserved: !car.reserved }) : car);
         setCars(updated);
         saveCars(updated);
     };
@@ -3046,9 +3147,12 @@ function CmsPage({ cars, setCars, language, texts }) {
                 <h2>{texts.cms.currentCars}</h2>
                 <div className="cms-list">
                     {cars.map((car) => (
+                        (() => {
+                            const localizedName = getLocalizedCarText(car, "name", language);
+                            return (
                         <article key={car.id} className="cms-item">
                             <div>
-                                <h3>{car.name}</h3>
+                                <h3>{localizedName}</h3>
                                 <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
                                 <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive} • {formatTransmission(car)}</p>
                                 <p>👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
@@ -3073,6 +3177,8 @@ function CmsPage({ cars, setCars, language, texts }) {
                                 </button>
                             </div>
                         </article>
+                            );
+                        })()
                     ))}
                 </div>
             </section>
@@ -3083,13 +3189,38 @@ function CmsPage({ cars, setCars, language, texts }) {
 function App() {
     const rootElement = document.getElementById("root");
     const page = rootElement?.dataset?.page || "home";
-    const [cars, setCars] = useState(getCars);
+    const [cars, setCars] = useState(() => getCars());
     const [language, setLanguage] = useState(getLanguagePreference);
+    const [isCloudSyncReady, setIsCloudSyncReady] = useState(false);
     const texts = useMemo(() => I18N[language] || I18N.cs, [language]);
 
     useEffect(() => {
+        let active = true;
+        const localCars = getCars();
+
+        fetchCarsFromCloud().then((cloudCars) => {
+            if (!active) {
+                return;
+            }
+            const normalizedCloudCars = Array.isArray(cloudCars) ? cloudCars.map((car, index) => normalizeCar(car, index)) : [];
+            const mergedCars = mergeCarsByLatest(localCars, normalizedCloudCars);
+            const normalizedMergedCars = mergedCars.map((car, index) => normalizeCar(car, index));
+            setCars(normalizedMergedCars);
+            saveCars(normalizedMergedCars);
+            setIsCloudSyncReady(true);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    useEffect(() => {
         saveCars(cars);
-    }, [cars]);
+        if (isCloudSyncReady) {
+            saveCarsToCloud(cars);
+        }
+    }, [cars, isCloudSyncReady]);
 
     useEffect(() => {
         saveLanguagePreference(language);

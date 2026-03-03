@@ -8,6 +8,10 @@ export default {
     }
 
     const url = new URL(request.url);
+    if (url.pathname === "/api/cars") {
+      return handleCars(request, env);
+    }
+
     if (request.method !== "POST") {
       return jsonResponse({ error: "Method not allowed" }, 405);
     }
@@ -23,6 +27,95 @@ export default {
     return jsonResponse({ error: "Not found" }, 404);
   },
 };
+
+async function handleCars(request, env) {
+  if (!env.CARS_KV) {
+    return jsonResponse({ error: "Missing CARS_KV binding" }, 500);
+  }
+
+  if (request.method === "GET") {
+    const raw = await env.CARS_KV.get("cars");
+    if (!raw) {
+      return jsonResponse({ cars: [] }, 200);
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      return jsonResponse({ cars: Array.isArray(parsed?.cars) ? parsed.cars : [] }, 200);
+    } catch {
+      return jsonResponse({ cars: [] }, 200);
+    }
+  }
+
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+
+  const cars = Array.isArray(payload?.cars) ? payload.cars : null;
+  if (!cars) {
+    return jsonResponse({ error: "Missing cars array" }, 400);
+  }
+
+  const requestId = String(payload?.requestId || "unknown").trim();
+  const source = String(payload?.source || "unknown").trim();
+  const campaign = String(payload?.campaign || "unknown").trim();
+
+  const readUpdatedAt = (car) => {
+    const value = Number(car?.updatedAt);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  };
+
+  let existingCars = [];
+  try {
+    const raw = await env.CARS_KV.get("cars");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      existingCars = Array.isArray(parsed?.cars) ? parsed.cars : [];
+    }
+  } catch {
+    existingCars = [];
+  }
+
+  const mergedById = new Map();
+  const upsert = (car) => {
+    if (!car || !car.id) {
+      return;
+    }
+    const current = mergedById.get(car.id);
+    if (!current || readUpdatedAt(car) >= readUpdatedAt(current)) {
+      mergedById.set(car.id, car);
+    }
+  };
+
+  existingCars.forEach(upsert);
+  cars.forEach(upsert);
+  const mergedCars = [...mergedById.values()];
+
+  console.log("cars_sync_received", {
+    requestId,
+    source,
+    campaign,
+    count: cars.length,
+    existingCount: existingCars.length,
+  });
+
+  await env.CARS_KV.put("cars", JSON.stringify({ cars: mergedCars, updatedAt: Date.now() }));
+
+  console.log("cars_sync_saved", {
+    requestId,
+    source,
+    campaign,
+    count: mergedCars.length,
+  });
+
+  return jsonResponse({ ok: true, requestId, count: mergedCars.length }, 200);
+}
 
 async function handleTranslate(request, env) {
   if (!env.GOOGLE_TRANSLATE_API_KEY) {
@@ -203,7 +296,7 @@ async function handleReservation(request, env) {
 function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 }

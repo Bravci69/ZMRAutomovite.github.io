@@ -87,3 +87,23 @@ Use a server-side proxy (Cloudflare Worker) and keep the key in Worker secrets.
 		window.ZMR_RESERVATION_PROXY_URL = "https://zmr-translate.<subdomain>.workers.dev/api/reservation";
 	</script>
 	```
+
+		## Cross-device cars sync (server-side)
+
+		To share newly added cars across devices, use Worker endpoint `/api/cars` with Cloudflare KV.
+
+		### 1) Create KV binding
+
+		Create KV namespace and bind it to Worker as:
+
+		- `CARS_KV`
+
+		### 2) Frontend config (optional)
+
+		If needed, set custom API URL before loading `app.js`:
+
+		```html
+		<script>
+			window.ZMR_CARS_API_URL = "https://zmr-translate.<subdomain>.workers.dev/api/cars";
+		</script>
+		```
