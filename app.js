@@ -2734,7 +2734,7 @@ function CarsPage({ cars, language, texts }) {
                                 <path d="M15.5 14h-.79l-.28-.27A6.5 6.5 0 1 0 14 15.5l.27.28v.79L19 21.5 21.5 19l-4.5-5zM10 15a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"></path>
                             </svg>
                         </span>
-                        <input type="email" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
+                        <input type="text" autoComplete="off" placeholder={texts.cars.searchPlaceholder} value={search} onChange={(event) => setSearch(event.target.value)} />
                     </div>
                 </label>
                 <div className="seats-quick-row">
@@ -3749,38 +3749,64 @@ function CmsPage({ cars, setCars, language, texts }) {
 function App() {
     const rootElement = document.getElementById("root");
     const page = rootElement?.dataset?.page || "home";
-    const [cars, setCars] = useState(() => getCars());
+    const isCarsDataPage = page === "cars" || page === "car-detail" || page === "cms";
+    const [cars, setCars] = useState(() => (isCarsDataPage ? getCars() : []));
     const [language, setLanguage] = useState(getLanguagePreference);
     const [isCloudSyncReady, setIsCloudSyncReady] = useState(false);
     const texts = useMemo(() => I18N[language] || I18N.cs, [language]);
 
     useEffect(() => {
+        if (!isCarsDataPage) {
+            setIsCloudSyncReady(false);
+            return;
+        }
+
         let active = true;
         const localCars = getCars();
+        setCars(localCars);
 
-        fetchCarsFromCloud().then((cloudCars) => {
-            if (!active) {
-                return;
-            }
-            const normalizedCloudCars = Array.isArray(cloudCars) ? cloudCars.map((car, index) => normalizeCar(car, index)) : [];
-            const mergedCars = mergeCarsByLatest(localCars, normalizedCloudCars);
-            const normalizedMergedCars = mergedCars.map((car, index) => normalizeCar(car, index));
-            setCars(normalizedMergedCars);
-            saveCars(normalizedMergedCars);
-            setIsCloudSyncReady(true);
-        });
+        const runCloudSync = () => {
+            fetchCarsFromCloud().then((cloudCars) => {
+                if (!active) {
+                    return;
+                }
+                const normalizedCloudCars = Array.isArray(cloudCars) ? cloudCars.map((car, index) => normalizeCar(car, index)) : [];
+                const mergedCars = mergeCarsByLatest(localCars, normalizedCloudCars);
+                const normalizedMergedCars = mergedCars.map((car, index) => normalizeCar(car, index));
+                setCars(normalizedMergedCars);
+                saveCars(normalizedMergedCars);
+                setIsCloudSyncReady(true);
+            });
+        };
+
+        let idleCallbackId = null;
+        let timeoutId = null;
+        if (typeof window.requestIdleCallback === "function") {
+            idleCallbackId = window.requestIdleCallback(runCloudSync, { timeout: 1200 });
+        } else {
+            timeoutId = window.setTimeout(runCloudSync, 0);
+        }
 
         return () => {
             active = false;
+            if (idleCallbackId !== null && typeof window.cancelIdleCallback === "function") {
+                window.cancelIdleCallback(idleCallbackId);
+            }
+            if (timeoutId !== null) {
+                window.clearTimeout(timeoutId);
+            }
         };
-    }, []);
+    }, [isCarsDataPage]);
 
     useEffect(() => {
+        if (!isCarsDataPage) {
+            return;
+        }
         saveCars(cars);
         if (isCloudSyncReady) {
             saveCarsToCloud(cars);
         }
-    }, [cars, isCloudSyncReady]);
+    }, [cars, isCloudSyncReady, isCarsDataPage]);
 
     useEffect(() => {
         saveLanguagePreference(language);
@@ -3793,7 +3819,7 @@ function App() {
                 return {
                     title: texts.pages.about.title,
                     subtitle: texts.pages.about.subtitle,
-                    content: <AboutPage texts={texts} />
+                    content: <AboutPage texts={texts} language={language} />
                 };
             case "services":
                 return {
@@ -3830,7 +3856,7 @@ function App() {
                 return {
                     title: texts.pages.home.title,
                     subtitle: texts.pages.home.subtitle,
-                    content: <HomePage texts={texts} />
+                    content: <HomePage texts={texts} language={language} />
                 };
         }
     }, [page, cars, language, texts]);
@@ -3843,6 +3869,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
 
 
 
