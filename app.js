@@ -4,6 +4,8 @@ const CARS_STORAGE_KEY = "zmrCars";
 const CMS_AUTH_KEY = "zmrCmsAuth";
 const LANGUAGE_STORAGE_KEY = "zmrLanguage";
 const CZK_TO_EUR_RATE = 25;
+const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
+const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
@@ -25,6 +27,44 @@ const RESULTS_LABELS = {
     de: "Ergebnisse",
     en: "results"
 };
+
+const TECHNICAL_CHECKLIST_FIELDS = [
+    { label: "Vehicle condition", defaultValue: "Used vehicle", defaultIcon: "🚗" },
+    { label: "Origin", defaultValue: "German version", defaultIcon: "🌍" },
+    { label: "Mileage", defaultValue: "", defaultIcon: "📍" },
+    { label: "Performance", defaultValue: "", defaultIcon: "⚡" },
+    { label: "Drive type", defaultValue: "", defaultIcon: "🛞" },
+    { label: "Fuel type", defaultValue: "", defaultIcon: "⛽" },
+    { label: "Number of seats", defaultValue: "", defaultIcon: "💺" },
+    { label: "Number of doors", defaultValue: "", defaultIcon: "🚪" },
+    { label: "Gearbox", defaultValue: "", defaultIcon: "🕹️" },
+    { label: "Number of vehicle owners", defaultValue: "", defaultIcon: "👤" }
+];
+
+const TECHNICAL_ICON_OPTIONS = ["🚗", "🌍", "📍", "⚡", "🛞", "⛽", "💺", "🚪", "🕹️", "👤", "🧾", "🔧", "📊", "🛡️"];
+
+const EQUIPMENT_CHECKLIST_ITEMS = [
+    "ABS",
+    "ESP",
+    "ASR",
+    "Airbags",
+    "Isofix",
+    "Navigation system",
+    "Bluetooth",
+    "Apple CarPlay",
+    "Android Auto",
+    "Cruise control",
+    "Parking sensors",
+    "Rear camera",
+    "LED headlights",
+    "Automatic climate control",
+    "Heated seats",
+    "Leather seats",
+    "Electric windows",
+    "Keyless entry",
+    "Sunroof",
+    "Towbar"
+];
 
 const TECHNICAL_LABEL_TRANSLATIONS = {
     "Vehicle condition": { cs: "Stav vozidla", sk: "Stav vozidla", de: "Fahrzeugzustand", en: "Vehicle condition" },
@@ -114,6 +154,8 @@ const TECHNICAL_VALUE_TRANSLATIONS = {
 const TECHNICAL_VALUE_TRANSLATIONS_BY_KEY = Object.fromEntries(
     Object.entries(TECHNICAL_VALUE_TRANSLATIONS).map(([key, translation]) => [String(key).trim().toLowerCase(), translation])
 );
+
+const pendingTechnicalTranslationRequests = new Map();
 
 const I18N = {
     cs: {
@@ -610,6 +652,146 @@ function translateTechnicalValue(value, language) {
     return translation[language] || translation.en || value;
 }
 
+function normalizeTranslationValueKey(value) {
+    return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function isLikelyTranslatableValue(value) {
+    if (typeof value !== "string") {
+        return false;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+        return false;
+    }
+    if (/^[\d\s.,:/()%+-]+$/.test(trimmed)) {
+        return false;
+    }
+    return true;
+}
+
+function getStoredTranslationCache() {
+    try {
+        const raw = localStorage.getItem(TRANSLATION_CACHE_KEY);
+        if (!raw) {
+            return {};
+        }
+        const parsed = JSON.parse(raw);
+        return typeof parsed === "object" && parsed ? parsed : {};
+    } catch {
+        return {};
+    }
+}
+
+function saveStoredTranslationCache(cache) {
+    try {
+        localStorage.setItem(TRANSLATION_CACHE_KEY, JSON.stringify(cache));
+    } catch {
+        // ignore cache write issues
+    }
+}
+
+function getCachedTranslation(value, language) {
+    const key = normalizeTranslationValueKey(value);
+    if (!key) {
+        return "";
+    }
+    const cache = getStoredTranslationCache();
+    return cache?.[language]?.[key] || "";
+}
+
+function setCachedTranslations(language, translationsByKey) {
+    if (!translationsByKey || Object.keys(translationsByKey).length === 0) {
+        return;
+    }
+    const cache = getStoredTranslationCache();
+    const languageBucket = { ...(cache[language] || {}) };
+    Object.entries(translationsByKey).forEach(([key, translated]) => {
+        if (key && translated) {
+            languageBucket[key] = translated;
+        }
+    });
+    cache[language] = languageBucket;
+    saveStoredTranslationCache(cache);
+}
+
+async function fetchTechnicalValueTranslations(values, language) {
+    const target = (language || "en").toLowerCase();
+    if (!TRANSLATE_PROXY_URL || target === "en") {
+        return {};
+    }
+
+    const uniqueValues = [...new Set(
+        (Array.isArray(values) ? values : [])
+            .map((value) => (typeof value === "string" ? value.trim() : ""))
+            .filter(Boolean)
+            .filter(isLikelyTranslatableValue)
+    )];
+
+    if (uniqueValues.length === 0) {
+        return {};
+    }
+
+    const localResults = {};
+    const toRequest = [];
+
+    uniqueValues.forEach((value) => {
+        const key = normalizeTranslationValueKey(value);
+        const localTranslated = translateTechnicalValue(value, target);
+        if (localTranslated !== value) {
+            localResults[key] = localTranslated;
+            return;
+        }
+
+        const cached = getCachedTranslation(value, target);
+        if (cached) {
+            localResults[key] = cached;
+            return;
+        }
+
+        toRequest.push(value);
+    });
+
+    if (toRequest.length === 0) {
+        return localResults;
+    }
+
+    const requestKey = `${target}::${toRequest.join("||")}`;
+    if (pendingTechnicalTranslationRequests.has(requestKey)) {
+        const pending = await pendingTechnicalTranslationRequests.get(requestKey);
+        return { ...localResults, ...pending };
+    }
+
+    const requestPromise = fetch(TRANSLATE_PROXY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: toRequest, target })
+    })
+        .then(async (response) => {
+            if (!response.ok) {
+                return {};
+            }
+            const data = await response.json();
+            const entries = data?.translations && typeof data.translations === "object" ? data.translations : {};
+            const normalized = {};
+            Object.entries(entries).forEach(([original, translated]) => {
+                const key = normalizeTranslationValueKey(original);
+                if (key && translated) {
+                    normalized[key] = String(translated);
+                }
+            });
+            setCachedTranslations(target, normalized);
+            return normalized;
+        })
+        .catch(() => ({}));
+
+    pendingTechnicalTranslationRequests.set(requestKey, requestPromise);
+    const remoteResults = await requestPromise;
+    pendingTechnicalTranslationRequests.delete(requestKey);
+
+    return { ...localResults, ...remoteResults };
+}
+
 function parseTechnicalDataRaw(raw) {
     if (!raw || !raw.trim()) {
         return undefined;
@@ -645,6 +827,60 @@ function parseEquipmentItemsRaw(raw) {
         .split(/\r?\n/)
         .map((line) => line.trim())
         .filter(Boolean);
+}
+
+function createInitialTechnicalChecklistState() {
+    const state = {};
+    TECHNICAL_CHECKLIST_FIELDS.forEach((field) => {
+        state[field.label] = {
+            enabled: true,
+            value: field.defaultValue,
+            icon: field.defaultIcon
+        };
+    });
+    return state;
+}
+
+function createInitialEquipmentChecklistState() {
+    const state = {};
+    EQUIPMENT_CHECKLIST_ITEMS.forEach((item) => {
+        state[item] = false;
+    });
+    return state;
+}
+
+function buildTechnicalDataFromChecklist(checklist, baseForm, transmission, manualGears) {
+    const fallbackByLabel = {
+        "Vehicle condition": baseForm.available ? "Available" : "Unavailable",
+        "Mileage": baseForm.mileage,
+        "Performance": `${Math.round(parseNumber(baseForm.horsepower) || 0)} hp`,
+        "Drive type": baseForm.drive,
+        "Fuel type": baseForm.fuel,
+        "Number of seats": String(Math.max(2, Math.round(parseNumber(baseForm.seats) || 0))),
+        "Number of doors": String(Math.max(2, Math.round(parseNumber(baseForm.doors) || 0))),
+        "Gearbox": transmission === "Manuál" && manualGears > 0 ? `${transmission} (${manualGears})` : transmission,
+        "Number of vehicle owners": String(Math.max(0, Math.round(parseNumber(baseForm.previousOwners) || 0)))
+    };
+
+    const rows = TECHNICAL_CHECKLIST_FIELDS
+        .map((field) => {
+            const selected = checklist[field.label];
+            if (!selected?.enabled) {
+                return null;
+            }
+            const rawValue = selected.value?.trim() || fallbackByLabel[field.label] || "";
+            if (!rawValue) {
+                return null;
+            }
+            return {
+                label: field.label,
+                value: rawValue,
+                icon: selected.icon || field.defaultIcon || "🧾"
+            };
+        })
+        .filter(Boolean);
+
+    return rows.length > 0 ? rows : undefined;
 }
 
 function DarkSelect({ value, onChange, options, placeholder, ariaLabel }) {
@@ -978,6 +1214,12 @@ function CarsPage({ cars, language, texts }) {
     const fuelOptions = useMemo(() => FUEL_OPTIONS, []);
     const brandOptions = useMemo(() => Array.from(new Set(cars.map((car) => car.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)), [cars, language]);
     const driveOptions = useMemo(() => DRIVE_OPTIONS, []);
+    const horsepowerValues = useMemo(() => cars.map((car) => Number(car.horsepower)).filter((count) => Number.isFinite(count) && count >= 0), [cars]);
+    const horsepowerMinBound = horsepowerValues.length > 0 ? Math.min(...horsepowerValues) : 0;
+    const horsepowerMaxBound = horsepowerValues.length > 0 ? Math.max(...horsepowerValues) : 500;
+    const horsepowerFromCurrent = Number.isFinite(parseNumber(horsepowerFrom)) ? Math.max(horsepowerMinBound, parseNumber(horsepowerFrom)) : horsepowerMinBound;
+    const horsepowerToCurrent = Number.isFinite(parseNumber(horsepowerTo)) ? Math.min(horsepowerMaxBound, parseNumber(horsepowerTo)) : horsepowerMaxBound;
+    const hasHorsepowerFilter = horsepowerFromCurrent > horsepowerMinBound || horsepowerToCurrent < horsepowerMaxBound;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
     const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
     const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
@@ -986,11 +1228,11 @@ function CarsPage({ cars, language, texts }) {
     const doorSelectOptions = useMemo(() => doorOptions.map((option) => ({ value: String(option), label: String(option) })), [doorOptions]);
     const filteredCars = useMemo(() => {
         const query = debouncedSearch.trim().toLowerCase();
-        const hpFromValue = parseNumber(horsepowerFrom);
-        const hpToValue = parseNumber(horsepowerTo);
+        const hpFromValue = hasHorsepowerFilter ? horsepowerFromCurrent : undefined;
+        const hpToValue = hasHorsepowerFilter ? horsepowerToCurrent : undefined;
         const seatsFromValue = parseNumber(seatsFrom);
         const seatsToValue = parseNumber(seatsTo);
-        const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !seatsFrom && !seatsTo && !horsepowerFrom && !horsepowerTo;
+        const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !seatsFrom && !seatsTo && !hasHorsepowerFilter;
 
         if (noFiltersSet) {
             return [...cars].sort((a, b) => {
@@ -1024,9 +1266,9 @@ function CarsPage({ cars, language, texts }) {
                 }
                 return a.available ? -1 : 1;
             });
-    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, horsepowerFrom, horsepowerTo]);
+    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
 
-    const hasActiveFilters = Boolean(search || fuel || horsepowerFrom || horsepowerTo || doors || seatsFrom || seatsTo || brand || drive || transmission);
+    const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || doors || seatsFrom || seatsTo || brand || drive || transmission);
     const activeFilterChips = [];
 
     useEffect(() => {
@@ -1071,10 +1313,10 @@ function CarsPage({ cars, language, texts }) {
             doors,
             seatsFrom,
             seatsTo,
-            horsepowerFrom,
-            horsepowerTo
+            horsepowerFrom: hasHorsepowerFilter ? String(horsepowerFromCurrent) : "",
+            horsepowerTo: hasHorsepowerFilter ? String(horsepowerToCurrent) : ""
         });
-    }, [debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, horsepowerFrom, horsepowerTo]);
+    }, [debouncedSearch, fuel, brand, drive, transmission, doors, seatsFrom, seatsTo, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
 
     if (search) {
         activeFilterChips.push({ key: "search", label: `${texts.cars.search}: ${search}`, clear: () => setSearch("") });
@@ -1100,11 +1342,9 @@ function CarsPage({ cars, language, texts }) {
     if (seatsTo) {
         activeFilterChips.push({ key: "seatsTo", label: `${texts.cars.seatsTo}: ${seatsTo}`, clear: () => setSeatsTo("") });
     }
-    if (horsepowerFrom) {
-        activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerFrom}`, clear: () => setHorsepowerFrom("") });
-    }
-    if (horsepowerTo) {
-        activeFilterChips.push({ key: "hpTo", label: `${texts.cars.hpTo}: ${horsepowerTo}`, clear: () => setHorsepowerTo("") });
+    if (hasHorsepowerFilter) {
+        activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerFromCurrent}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
+        activeFilterChips.push({ key: "hpTo", label: `${texts.cars.hpTo}: ${horsepowerToCurrent}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
     }
 
     const clearFilters = () => {
@@ -1191,14 +1431,35 @@ function CarsPage({ cars, language, texts }) {
                         {texts.cars.transmission}
                         <DarkSelect value={transmission} onChange={setTransmission} options={transmissionSelectOptions} placeholder={texts.cars.transmissionAll} ariaLabel={texts.cars.transmission} />
                     </label>
-                    <label>
-                        {texts.cars.hpFrom}
-                        <input type="number" min="0" value={horsepowerFrom} onChange={(event) => setHorsepowerFrom(event.target.value)} />
-                    </label>
-                    <label>
-                        {texts.cars.hpTo}
-                        <input type="number" min="0" value={horsepowerTo} onChange={(event) => setHorsepowerTo(event.target.value)} />
-                    </label>
+                    <div className="hp-range-field">
+                        <span>{texts.cars.hpFrom} / {texts.cars.hpTo}</span>
+                        <div className="hp-range-values">
+                            <strong>{horsepowerFromCurrent} {texts.common.horsepowerUnit}</strong>
+                            <strong>{horsepowerToCurrent} {texts.common.horsepowerUnit}</strong>
+                        </div>
+                        <div className="hp-range-sliders">
+                            <input
+                                type="range"
+                                min={horsepowerMinBound}
+                                max={horsepowerMaxBound}
+                                value={horsepowerFromCurrent}
+                                onChange={(event) => {
+                                    const next = Math.min(Number(event.target.value), horsepowerToCurrent);
+                                    setHorsepowerFrom(String(next));
+                                }}
+                            />
+                            <input
+                                type="range"
+                                min={horsepowerMinBound}
+                                max={horsepowerMaxBound}
+                                value={horsepowerToCurrent}
+                                onChange={(event) => {
+                                    const next = Math.max(Number(event.target.value), horsepowerFromCurrent);
+                                    setHorsepowerTo(String(next));
+                                }}
+                            />
+                        </div>
+                    </div>
                     <label>
                         {texts.cars.doors}
                         <DarkSelect value={doors} onChange={setDoors} options={doorSelectOptions} placeholder={texts.cars.doorsAll} ariaLabel={texts.cars.doors} />
@@ -1251,6 +1512,7 @@ function CarsPage({ cars, language, texts }) {
 function CarDetailPage({ cars, language, texts }) {
     const carId = readCarIdFromQuery();
     const car = cars.find((item) => item.id === carId) || cars[0];
+    const [dynamicTechnicalValues, setDynamicTechnicalValues] = useState({});
 
     if (!car) {
         return (
@@ -1263,6 +1525,23 @@ function CarDetailPage({ cars, language, texts }) {
 
     const technicalRows = getTechnicalData(car);
     const equipmentRows = getEquipmentItems(car);
+
+    useEffect(() => {
+        let active = true;
+        setDynamicTechnicalValues({});
+
+        const values = technicalRows.map((row) => row?.value).filter(Boolean);
+        fetchTechnicalValueTranslations(values, language).then((translations) => {
+            if (!active || !translations || Object.keys(translations).length === 0) {
+                return;
+            }
+            setDynamicTechnicalValues(translations);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, [car?.id, language]);
 
     return (
         <>
@@ -1299,7 +1578,7 @@ function CarDetailPage({ cars, language, texts }) {
                                 <span className="technical-icon" aria-hidden="true">{row.icon || "•"}</span>
                                 <div>
                                     <h4>{translateTechnicalLabel(row.label, language)}</h4>
-                                    <p>{translateTechnicalValue(row.value, language)}</p>
+                                    <p>{dynamicTechnicalValues[normalizeTranslationValueKey(row.value)] || translateTechnicalValue(row.value, language)}</p>
                                 </div>
                             </article>
                         ))}
@@ -1346,11 +1625,11 @@ function CmsPage({ cars, setCars, language, texts }) {
         image: "",
         description: "",
         legal: "",
-        technicalDataRaw: "",
-        equipmentItemsRaw: "",
         equipment: "",
         available: true
     });
+    const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
+    const [equipmentChecklist, setEquipmentChecklist] = useState(createInitialEquipmentChecklistState);
 
     const driveSelectOptions = useMemo(() => DRIVE_OPTIONS.map((option) => ({ value: option, label: option })), []);
     const fuelSelectOptions = useMemo(() => FUEL_OPTIONS.map((option) => ({ value: option, label: option })), []);
@@ -1389,8 +1668,8 @@ function CmsPage({ cars, setCars, language, texts }) {
 
         const transmission = sanitizeOption(form.transmission, TRANSMISSION_OPTIONS, "Automat");
         const manualGears = transmission === "Manuál" ? Math.max(1, Math.round(parseNumber(form.manualGears) || 0)) : 0;
-        const technicalData = parseTechnicalDataRaw(form.technicalDataRaw);
-        const equipmentItems = parseEquipmentItemsRaw(form.equipmentItemsRaw);
+        const technicalData = buildTechnicalDataFromChecklist(technicalChecklist, form, transmission, manualGears);
+        const equipmentItems = EQUIPMENT_CHECKLIST_ITEMS.filter((item) => equipmentChecklist[item]);
         if (!form.drive || !form.fuel) {
             setError(texts.cms.requiredDriveFuel || "Palivo a náhon sú povinné.");
             return;
@@ -1446,11 +1725,11 @@ function CmsPage({ cars, setCars, language, texts }) {
             image: "",
             description: "",
             legal: "",
-            technicalDataRaw: "",
-            equipmentItemsRaw: "",
             equipment: "",
             available: true
         });
+        setTechnicalChecklist(createInitialTechnicalChecklistState());
+        setEquipmentChecklist(createInitialEquipmentChecklistState());
     };
 
     const toggleAvailability = (id) => {
@@ -1529,14 +1808,64 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label className="full-width">{texts.cms.fields.image}<input type="file" accept="image/*" onChange={handleImageUpload} /></label>
                     <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
                     <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
-                    <label className="full-width">{texts.cms.fields.technicalDataRaw}
-                        <textarea value={form.technicalDataRaw} onChange={(e) => setForm((prev) => ({ ...prev, technicalDataRaw: e.target.value }))} placeholder="Vehicle condition: Used vehicle&#10;Origin: German version"></textarea>
+                    <div className="full-width checklist-block">
+                        <p className="checklist-title">{texts.cms.fields.technicalDataRaw}</p>
                         <small>{texts.cms.technicalHelp}</small>
-                    </label>
-                    <label className="full-width">{texts.cms.fields.equipmentItemsRaw}
-                        <textarea value={form.equipmentItemsRaw} onChange={(e) => setForm((prev) => ({ ...prev, equipmentItemsRaw: e.target.value }))} placeholder="ABS&#10;Navigation system&#10;Bluetooth"></textarea>
+                        <div className="checklist-grid technical-grid-cms">
+                            {TECHNICAL_CHECKLIST_FIELDS.map((field) => {
+                                const row = technicalChecklist[field.label] || { enabled: false, value: "", icon: field.defaultIcon };
+                                return (
+                                    <div key={field.label} className="checklist-item technical-check-item">
+                                        <label className="checkbox-row">
+                                            <input
+                                                type="checkbox"
+                                                checked={Boolean(row.enabled)}
+                                                onChange={(e) => setTechnicalChecklist((prev) => ({
+                                                    ...prev,
+                                                    [field.label]: { ...row, enabled: e.target.checked }
+                                                }))}
+                                            />
+                                            {translateTechnicalLabel(field.label, language)}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={row.value}
+                                            onChange={(e) => setTechnicalChecklist((prev) => ({
+                                                ...prev,
+                                                [field.label]: { ...row, value: e.target.value }
+                                            }))}
+                                            disabled={!row.enabled}
+                                        />
+                                        <DarkSelect
+                                            value={row.icon}
+                                            onChange={(value) => setTechnicalChecklist((prev) => ({
+                                                ...prev,
+                                                [field.label]: { ...row, icon: value || field.defaultIcon }
+                                            }))}
+                                            options={TECHNICAL_ICON_OPTIONS.map((icon) => ({ value: icon, label: icon }))}
+                                            ariaLabel={field.label}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <div className="full-width checklist-block">
+                        <p className="checklist-title">{texts.cms.fields.equipmentItemsRaw}</p>
                         <small>{texts.cms.equipmentHelp}</small>
-                    </label>
+                        <div className="checklist-grid equipment-grid-cms">
+                            {EQUIPMENT_CHECKLIST_ITEMS.map((item) => (
+                                <label key={item} className="checkbox-row checklist-item">
+                                    <input
+                                        type="checkbox"
+                                        checked={Boolean(equipmentChecklist[item])}
+                                        onChange={(e) => setEquipmentChecklist((prev) => ({ ...prev, [item]: e.target.checked }))}
+                                    />
+                                    {item}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
                     <label className="full-width">{texts.cms.fields.equipment}<textarea value={form.equipment} onChange={(e) => setForm((prev) => ({ ...prev, equipment: e.target.value }))} required /></label>
                     <label className="checkbox-row full-width">
                         <input
