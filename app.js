@@ -3439,6 +3439,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                 </div>
                 <p>{texts.cms.intro}</p>
                 {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
+                {error && <p className="error-text">{error}</p>}
                 <form className="form-grid" onSubmit={addCar} autoComplete="off">
                     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMessage}</p>
                     <label>{texts.cms.fields.name}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
