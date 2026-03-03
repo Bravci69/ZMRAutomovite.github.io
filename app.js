@@ -1395,17 +1395,21 @@ function CarsPage({ cars, language, texts }) {
     const seatsMaxBound = seatValues.length > 0 ? Math.max(...seatValues) : 9;
     const seatsFromCurrent = Number.isFinite(parseNumber(seatsFrom)) ? Math.min(seatsMaxBound, Math.max(seatsMinBound, parseNumber(seatsFrom))) : seatsMinBound;
     const seatsToCurrent = Number.isFinite(parseNumber(seatsTo)) ? Math.max(seatsMinBound, Math.min(seatsMaxBound, parseNumber(seatsTo))) : seatsMaxBound;
+    const seatsRangeFrom = Math.min(seatsFromCurrent, seatsToCurrent);
+    const seatsRangeTo = Math.max(seatsFromCurrent, seatsToCurrent);
     const hasSeatsFilter = seatsFromCurrent > seatsMinBound || seatsToCurrent < seatsMaxBound;
     const horsepowerValues = useMemo(() => cars.map((car) => Number(car.horsepower)).filter((count) => Number.isFinite(count) && count >= 0), [cars]);
     const horsepowerMinBound = horsepowerValues.length > 0 ? Math.min(...horsepowerValues) : 0;
     const horsepowerMaxBound = horsepowerValues.length > 0 ? Math.max(...horsepowerValues) : 500;
     const horsepowerFromCurrent = Number.isFinite(parseNumber(horsepowerFrom)) ? Math.min(horsepowerMaxBound, Math.max(horsepowerMinBound, parseNumber(horsepowerFrom))) : horsepowerMinBound;
     const horsepowerToCurrent = Number.isFinite(parseNumber(horsepowerTo)) ? Math.max(horsepowerMinBound, Math.min(horsepowerMaxBound, parseNumber(horsepowerTo))) : horsepowerMaxBound;
+    const horsepowerRangeFrom = Math.min(horsepowerFromCurrent, horsepowerToCurrent);
+    const horsepowerRangeTo = Math.max(horsepowerFromCurrent, horsepowerToCurrent);
     const hasHorsepowerFilter = horsepowerFromCurrent > horsepowerMinBound || horsepowerToCurrent < horsepowerMaxBound;
-    const seatsRangeStartPercent = seatsMaxBound > seatsMinBound ? ((Math.min(seatsFromCurrent, seatsToCurrent) - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 0;
-    const seatsRangeEndPercent = seatsMaxBound > seatsMinBound ? ((Math.max(seatsFromCurrent, seatsToCurrent) - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 100;
-    const horsepowerRangeStartPercent = horsepowerMaxBound > horsepowerMinBound ? ((Math.min(horsepowerFromCurrent, horsepowerToCurrent) - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 0;
-    const horsepowerRangeEndPercent = horsepowerMaxBound > horsepowerMinBound ? ((Math.max(horsepowerFromCurrent, horsepowerToCurrent) - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 100;
+    const seatsRangeStartPercent = seatsMaxBound > seatsMinBound ? ((seatsRangeFrom - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 0;
+    const seatsRangeEndPercent = seatsMaxBound > seatsMinBound ? ((seatsRangeTo - seatsMinBound) / (seatsMaxBound - seatsMinBound)) * 100 : 100;
+    const horsepowerRangeStartPercent = horsepowerMaxBound > horsepowerMinBound ? ((horsepowerRangeFrom - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 0;
+    const horsepowerRangeEndPercent = horsepowerMaxBound > horsepowerMinBound ? ((horsepowerRangeTo - horsepowerMinBound) / (horsepowerMaxBound - horsepowerMinBound)) * 100 : 100;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
     const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
     const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
@@ -1414,10 +1418,10 @@ function CarsPage({ cars, language, texts }) {
     const doorSelectOptions = useMemo(() => doorOptions.map((option) => ({ value: String(option), label: String(option) })), [doorOptions]);
     const filteredCars = useMemo(() => {
         const query = debouncedSearch.trim().toLowerCase();
-        const hpFromValue = hasHorsepowerFilter ? horsepowerFromCurrent : undefined;
-        const hpToValue = hasHorsepowerFilter ? horsepowerToCurrent : undefined;
-        const seatsFromValue = hasSeatsFilter ? seatsFromCurrent : undefined;
-        const seatsToValue = hasSeatsFilter ? seatsToCurrent : undefined;
+        const hpFromValue = hasHorsepowerFilter ? horsepowerRangeFrom : undefined;
+        const hpToValue = hasHorsepowerFilter ? horsepowerRangeTo : undefined;
+        const seatsFromValue = hasSeatsFilter ? seatsRangeFrom : undefined;
+        const seatsToValue = hasSeatsFilter ? seatsRangeTo : undefined;
         const noFiltersSet = !query && !fuel && !brand && !drive && !transmission && !doors && !hasSeatsFilter && !hasHorsepowerFilter;
 
         if (noFiltersSet) {
@@ -1452,7 +1456,7 @@ function CarsPage({ cars, language, texts }) {
                 }
                 return a.available ? -1 : 1;
             });
-    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsFromCurrent, seatsToCurrent, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
+    }, [cars, debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsRangeFrom, seatsRangeTo, hasHorsepowerFilter, horsepowerRangeFrom, horsepowerRangeTo]);
 
     const hasActiveFilters = Boolean(search || fuel || hasHorsepowerFilter || hasSeatsFilter || doors || brand || drive || transmission);
     const activeFilterChips = [];
@@ -1497,12 +1501,12 @@ function CarsPage({ cars, language, texts }) {
             drive,
             transmission,
             doors,
-            seatsFrom: hasSeatsFilter ? String(seatsFromCurrent) : "",
-            seatsTo: hasSeatsFilter ? String(seatsToCurrent) : "",
-            horsepowerFrom: hasHorsepowerFilter ? String(horsepowerFromCurrent) : "",
-            horsepowerTo: hasHorsepowerFilter ? String(horsepowerToCurrent) : ""
+            seatsFrom: hasSeatsFilter ? String(seatsRangeFrom) : "",
+            seatsTo: hasSeatsFilter ? String(seatsRangeTo) : "",
+            horsepowerFrom: hasHorsepowerFilter ? String(horsepowerRangeFrom) : "",
+            horsepowerTo: hasHorsepowerFilter ? String(horsepowerRangeTo) : ""
         });
-    }, [debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsFromCurrent, seatsToCurrent, hasHorsepowerFilter, horsepowerFromCurrent, horsepowerToCurrent]);
+    }, [debouncedSearch, fuel, brand, drive, transmission, doors, hasSeatsFilter, seatsRangeFrom, seatsRangeTo, hasHorsepowerFilter, horsepowerRangeFrom, horsepowerRangeTo]);
 
     if (search) {
         activeFilterChips.push({ key: "search", label: `${texts.cars.search}: ${search}`, clear: () => setSearch("") });
@@ -1523,12 +1527,12 @@ function CarsPage({ cars, language, texts }) {
         activeFilterChips.push({ key: "doors", label: `${texts.cars.doors}: ${doors}`, clear: () => setDoors("") });
     }
     if (hasSeatsFilter) {
-        activeFilterChips.push({ key: "seatsFrom", label: `${texts.cars.seatsFrom}: ${seatsFromCurrent}`, clear: () => { setSeatsFrom(""); setSeatsTo(""); } });
-        activeFilterChips.push({ key: "seatsTo", label: `${texts.cars.seatsTo}: ${seatsToCurrent}`, clear: () => { setSeatsFrom(""); setSeatsTo(""); } });
+        activeFilterChips.push({ key: "seatsFrom", label: `${texts.cars.seatsFrom}: ${seatsRangeFrom}`, clear: () => { setSeatsFrom(""); setSeatsTo(""); } });
+        activeFilterChips.push({ key: "seatsTo", label: `${texts.cars.seatsTo}: ${seatsRangeTo}`, clear: () => { setSeatsFrom(""); setSeatsTo(""); } });
     }
     if (hasHorsepowerFilter) {
-        activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerFromCurrent}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
-        activeFilterChips.push({ key: "hpTo", label: `${texts.cars.hpTo}: ${horsepowerToCurrent}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
+        activeFilterChips.push({ key: "hpFrom", label: `${texts.cars.hpFrom}: ${horsepowerRangeFrom}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
+        activeFilterChips.push({ key: "hpTo", label: `${texts.cars.hpTo}: ${horsepowerRangeTo}`, clear: () => { setHorsepowerFrom(""); setHorsepowerTo(""); } });
     }
 
     const clearFilters = () => {
