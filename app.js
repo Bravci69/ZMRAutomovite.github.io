@@ -12,6 +12,10 @@ const CARS_API_URL = window.ZMR_CARS_API_URL || "/api/cars";
 const FIREBASE_DB_URL = window.ZMR_FIREBASE_DB_URL || "";
 const FIREBASE_CARS_PATH = window.ZMR_FIREBASE_CARS_PATH || "zmrCars";
 const FIREBASE_AUTH_TOKEN = window.ZMR_FIREBASE_AUTH_TOKEN || "";
+const FIRESTORE_PROJECT_ID = window.ZMR_FIRESTORE_PROJECT_ID || "";
+const FIRESTORE_API_KEY = window.ZMR_FIRESTORE_API_KEY || "";
+const FIRESTORE_DOCUMENT_PATH = window.ZMR_FIRESTORE_DOCUMENT_PATH || "zmrSync/cars";
+const FIRESTORE_ID_TOKEN = window.ZMR_FIRESTORE_ID_TOKEN || "";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug inhybrid", "Plyn"];
@@ -1454,6 +1458,10 @@ function saveCars(cars) {
 }
 
 async function fetchCarsFromCloud() {
+    const firestoreCars = await fetchCarsFromFirestore();
+    if (firestoreCars) {
+        return firestoreCars;
+    }
     const firebaseCars = await fetchCarsFromFirebase();
     if (firebaseCars) {
         return firebaseCars;
@@ -1475,6 +1483,10 @@ async function fetchCarsFromCloud() {
 }
 
 async function saveCarsToCloud(cars) {
+    const firestoreSaved = await saveCarsToFirestore(cars);
+    if (firestoreSaved) {
+        return true;
+    }
     const firebaseSaved = await saveCarsToFirebase(cars);
     if (firebaseSaved) {
         return true;
@@ -1557,6 +1569,142 @@ async function saveCarsToFirebase(cars) {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(carMap)
+        });
+        return response.ok;
+    } catch {
+        return false;
+    }
+}
+
+function encodeFirestoreValue(value) {
+    if (value === null || typeof value === "undefined") {
+        return { nullValue: null };
+    }
+    if (typeof value === "string") {
+        return { stringValue: value };
+    }
+    if (typeof value === "boolean") {
+        return { booleanValue: value };
+    }
+    if (typeof value === "number") {
+        if (Number.isInteger(value)) {
+            return { integerValue: String(value) };
+        }
+        return { doubleValue: value };
+    }
+    if (Array.isArray(value)) {
+        return {
+            arrayValue: {
+                values: value.map((item) => encodeFirestoreValue(item))
+            }
+        };
+    }
+    if (typeof value === "object") {
+        const fields = Object.entries(value).reduce((accumulator, [key, item]) => {
+            accumulator[key] = encodeFirestoreValue(item);
+            return accumulator;
+        }, {});
+        return { mapValue: { fields } };
+    }
+    return { stringValue: String(value) };
+}
+
+function decodeFirestoreValue(value) {
+    if (!value || typeof value !== "object") {
+        return null;
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "stringValue")) {
+        return value.stringValue;
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "booleanValue")) {
+        return Boolean(value.booleanValue);
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "integerValue")) {
+        const parsed = Number(value.integerValue);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "doubleValue")) {
+        const parsed = Number(value.doubleValue);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "nullValue")) {
+        return null;
+    }
+    if (value.arrayValue) {
+        const values = Array.isArray(value.arrayValue.values) ? value.arrayValue.values : [];
+        return values.map((item) => decodeFirestoreValue(item));
+    }
+    if (value.mapValue) {
+        const fields = value.mapValue.fields && typeof value.mapValue.fields === "object" ? value.mapValue.fields : {};
+        return Object.entries(fields).reduce((accumulator, [key, item]) => {
+            accumulator[key] = decodeFirestoreValue(item);
+            return accumulator;
+        }, {});
+    }
+    return null;
+}
+
+function buildFirestoreDocumentUrl() {
+    if (!FIRESTORE_PROJECT_ID || !FIRESTORE_API_KEY) {
+        return "";
+    }
+    const projectId = encodeURIComponent(String(FIRESTORE_PROJECT_ID).trim());
+    const key = encodeURIComponent(String(FIRESTORE_API_KEY).trim());
+    const path = String(FIRESTORE_DOCUMENT_PATH || "zmrSync/cars").replace(/^\/+/, "").replace(/\/+$/, "");
+    if (!path) {
+        return "";
+    }
+    return `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${path}?key=${key}`;
+}
+
+function getFirestoreHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    if (FIRESTORE_ID_TOKEN) {
+        headers.Authorization = `Bearer ${FIRESTORE_ID_TOKEN}`;
+    }
+    return headers;
+}
+
+async function fetchCarsFromFirestore() {
+    const url = buildFirestoreDocumentUrl();
+    if (!url) {
+        return null;
+    }
+    try {
+        const response = await fetch(url, { method: "GET", headers: getFirestoreHeaders() });
+        if (!response.ok) {
+            return null;
+        }
+        const payload = await response.json();
+        const fields = payload?.fields && typeof payload.fields === "object" ? payload.fields : {};
+        const carsValue = fields.cars ? decodeFirestoreValue(fields.cars) : null;
+        if (Array.isArray(carsValue) && carsValue.length > 0) {
+            return carsValue;
+        }
+        return null;
+    } catch {
+        return null;
+    }
+}
+
+async function saveCarsToFirestore(cars) {
+    if (!Array.isArray(cars)) {
+        return false;
+    }
+    const url = buildFirestoreDocumentUrl();
+    if (!url) {
+        return false;
+    }
+    try {
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: getFirestoreHeaders(),
+            body: JSON.stringify({
+                fields: {
+                    cars: encodeFirestoreValue(cars),
+                    updatedAt: encodeFirestoreValue(Date.now())
+                }
+            })
         });
         return response.ok;
     } catch {

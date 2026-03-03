@@ -195,3 +195,41 @@ To znamená, že pre produkčné bezpečné zapisovanie odporúčam:
 - doplniť Firebase Auth (napr. anonymné/prihlásenie) a zapisovať s ID tokenom používateľa, ktorý má claim `cms`.
 
 Kým nie je doplnený Auth tok, nechaj `window.ZMR_FIREBASE_AUTH_TOKEN` prázdne a používaj zápis cez fallback API.
+
+## Firestore (projekt `zmrautomovite`)
+
+Je doplnená aj priama podpora pre Cloud Firestore cez REST API (bez SDK), takže autá sa môžu synchronizovať aj cez Firestore dokument.
+
+### Konfigurácia v HTML (pred `app.js`)
+
+Použi tieto premenné:
+
+- `window.ZMR_FIRESTORE_PROJECT_ID` (pre teba: `zmrautomovite`)
+- `window.ZMR_FIRESTORE_API_KEY` (Web API key z Firebase configu)
+- `window.ZMR_FIRESTORE_DOCUMENT_PATH` (predvolené: `zmrSync/cars`)
+- `window.ZMR_FIRESTORE_ID_TOKEN` (voliteľné; vyplň iba ak budeš mať write pravidlá viazané na prihlásenie)
+
+Synchronizácia v aplikácii ide v poradí:
+
+1. Firestore
+2. Realtime Database
+3. Worker fallback (`/api/cars`)
+
+### Firestore Security Rules (odporúčané minimum)
+
+V Firestore Rules môžeš použiť model: verejné čítanie, zápis iba pre CMS/Admin používateľov.
+
+```txt
+rules_version = '2';
+service cloud.firestore {
+	match /databases/{database}/documents {
+		match /zmrSync/{document=**} {
+			allow read: if true;
+			allow write: if request.auth != null
+									 && (request.auth.token.cms == true || request.auth.token.admin == true);
+		}
+	}
+}
+```
+
+Ak zatiaľ nemáš Firebase Auth vo fronte, nechaj write pravidlá dočasne otvorené iba počas testu a potom ich uzamkni.
