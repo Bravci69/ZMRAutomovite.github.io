@@ -3888,6 +3888,8 @@ function CmsPage({ cars, setCars, language, texts }) {
             reserved: false,
             available: true
         });
+        setLocalizedCmsDraftFields(createLocalizedCmsFieldMaps({ name: "", description: "", legal: "" }, language).localized);
+        setIsCmsAutoTranslating(false);
         setTechnicalChecklist(createInitialTechnicalChecklistState());
         setEquipmentChecklist(createInitialEquipmentChecklistState());
     };
@@ -3920,6 +3922,12 @@ function CmsPage({ cars, setCars, language, texts }) {
             reserved: Boolean(car.reserved),
             available: Boolean(car.available)
         });
+        setLocalizedCmsDraftFields({
+            nameI18n: createLocalizedMap(car.nameI18n, car.name || ""),
+            descriptionI18n: createLocalizedMap(car.descriptionI18n, car.description || ""),
+            legalI18n: createLocalizedMap(car.legalI18n, car.legal || "")
+        });
+        setIsCmsAutoTranslating(false);
         setTechnicalChecklist(createTechnicalChecklistFromCar(car));
         setEquipmentChecklist(createEquipmentChecklistFromCar(car));
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3993,11 +4001,18 @@ function CmsPage({ cars, setCars, language, texts }) {
         const images = form.images.length > 0 ? form.images : ["https://images.unsplash.com/photo-1494905998402-395d579af36f?auto=format&fit=crop&w=1200&q=80"];
         const thumbnailIndex = Math.max(0, Math.min(Number(form.thumbnailIndex) || 0, images.length - 1));
 
-        const localizedCmsFields = await buildLocalizedCmsFields({
+        const sourceCmsFields = {
             name: form.name,
             description: form.description,
             legal: form.legal
-        }, language);
+        };
+        const isDraftUpToDate = !isCmsAutoTranslating
+            && String(localizedCmsDraftFields?.nameI18n?.[language] || "") === String(sourceCmsFields.name || "")
+            && String(localizedCmsDraftFields?.descriptionI18n?.[language] || "") === String(sourceCmsFields.description || "")
+            && String(localizedCmsDraftFields?.legalI18n?.[language] || "") === String(sourceCmsFields.legal || "");
+        const localizedCmsFields = isDraftUpToDate
+            ? localizedCmsDraftFields
+            : await buildLocalizedCmsFields(sourceCmsFields, language);
 
         const existingCar = editingCarId ? cars.find((car) => car.id === editingCarId) : null;
         const now = Date.now();
@@ -4118,6 +4133,13 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <button className="button-link button-secondary" onClick={handleLogout}>{texts.cms.logoutButton}</button>
                 </div>
                 <p>{texts.cms.intro}</p>
+                {hasCmsTranslatableInput && (
+                    <p className="car-meta">
+                        {TRANSLATE_PROXY_URL
+                            ? (isCmsAutoTranslating ? cmsUiTexts.autoTranslatePending : cmsUiTexts.autoTranslateReady)
+                            : cmsUiTexts.autoTranslateDisabled}
+                    </p>
+                )}
                 {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
                 {error && <p className="error-text">{error}</p>}
                 <form className="form-grid" onSubmit={addCar} autoComplete="off">

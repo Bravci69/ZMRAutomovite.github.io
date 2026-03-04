@@ -264,6 +264,55 @@ h1 {
 	gap: 24px;
 }
 
+.home-workflow-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 12px;
+}
+
+.home-workflow-item {
+	display: grid;
+	grid-template-columns: 34px 1fr;
+	gap: 12px;
+	padding: 14px;
+	border-radius: 14px;
+	border: 1px solid var(--line);
+	background: rgba(27, 39, 57, 0.9);
+}
+
+.home-workflow-item h3 {
+	margin: 0 0 4px;
+}
+
+.home-workflow-item p {
+	margin: 0;
+}
+
+.home-step-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	font-weight: 800;
+	font-size: 0.92rem;
+	background: rgba(222, 59, 59, 0.18);
+	border: 1px solid rgba(222, 59, 59, 0.42);
+	color: #ffe2e2;
+}
+
+.home-cta {
+	display: grid;
+	gap: 12px;
+}
+
+.home-cta-actions {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
 h2 {
 	margin: 0 0 14px;
 	font-size: clamp(1.25rem, 2vw, 1.7rem);
@@ -1806,11 +1855,13 @@ a:hover {
 	}
 
 	.services-cta-actions,
+	.home-cta-actions,
 	.cms-actions {
 		width: 100%;
 	}
 
 	.services-cta-actions .button-link,
+	.home-cta-actions .button-link,
 	.cms-actions .button-link,
 	.inquiry-form .button-link,
 	.reservation-form .button-link {
