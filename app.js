@@ -1986,6 +1986,18 @@ function formatPrice(priceCzk, language) {
     }).format(amount);
 }
 
+function formatReservationDateTime(dateValue, language) {
+    const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+    const locale = language === "cs" ? "cs-CZ" : language === "de" ? "de-DE" : language === "en" ? "en-US" : "sk-SK";
+    return new Intl.DateTimeFormat(locale, {
+        dateStyle: "medium",
+        timeStyle: "medium"
+    }).format(date);
+}
+
 async function sendReservationEmailViaProxy(payload) {
     if (!RESERVATION_PROXY_URL) {
         return { ok: false, error: "missing-endpoint" };
@@ -2031,7 +2043,7 @@ function getReservationTexts(language) {
             reserveSending: "Reservierung wird gesendet...",
             alreadyReserved: "Dieses Fahrzeug ist bereits reserviert.",
             reservationSubject: (carName) => `Reservierung Fahrzeug: ${carName}`,
-            reservationBody: (car, form) => `Fahrzeug: ${car.name}\nID: ${car.id}\nJahr: ${car.year}\nPreis: ${car.priceCzk} CZK\n\nReservierungsanfrage von:\nVorname: ${form.firstName}\nNachname: ${form.lastName}\nE-Mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: DE\nSource: Vehicle detail page\nCampaign: website-reservation`
+            reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Fahrzeug: ${car.name}\nID: ${car.id}\nJahr: ${car.year}\nPreis: ${car.priceCzk} CZK\nReserviert am: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nReservierungsanfrage von:\nVorname: ${form.firstName}\nNachname: ${form.lastName}\nE-Mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: DE\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
     if (language === "en") {
@@ -2051,7 +2063,7 @@ function getReservationTexts(language) {
             reserveSending: "Sending reservation...",
             alreadyReserved: "This vehicle is already reserved.",
             reservationSubject: (carName) => `Vehicle reservation: ${carName}`,
-            reservationBody: (car, form) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}\n\nLanguage: EN\nSource: Vehicle detail page\nCampaign: website-reservation`
+            reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\nReserved at: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}\n\nLanguage: EN\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
     if (language === "cs") {
@@ -2071,7 +2083,7 @@ function getReservationTexts(language) {
             reserveSending: "Odesílám rezervaci...",
             alreadyReserved: "Toto vozidlo je už rezervované.",
             reservationSubject: (carName) => `Rezervace vozidla: ${carName}`,
-            reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: CS\nSource: Vehicle detail page\nCampaign: website-reservation`
+            reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\nRezervováno: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: CS\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
     return {
@@ -2090,7 +2102,7 @@ function getReservationTexts(language) {
         reserveSending: "Odosielam rezerváciu...",
         alreadyReserved: "Toto vozidlo je už rezervované.",
         reservationSubject: (carName) => `Rezervácia vozidla: ${carName}`,
-        reservationBody: (car, form) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}\n\nLanguage: SK\nSource: Vehicle detail page\nCampaign: website-reservation`
+        reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\nRezervované: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}\n\nLanguage: SK\nSource: Vehicle detail page\nCampaign: website-reservation`
     };
 }
 
@@ -2855,47 +2867,45 @@ function CarsPage({ cars, language, texts }) {
     );
 }
 
-function CarDetailPage({ cars, setCars, language, texts }) {
+function CarDetailPage({ cars, setCars, language, texts, isCarsLoading = false }) {
     const reservationTexts = useMemo(() => getReservationTexts(language), [language]);
     const carId = readCarIdFromQuery();
     const car = cars.find((item) => item.id === carId) || cars[0];
+    const hasCar = Boolean(car);
     const [dynamicTechnicalValues, setDynamicTechnicalValues] = useState({});
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [reservationForm, setReservationForm] = useState({ firstName: "", lastName: "", email: "", phone: "" });
     const [reservationMessage, setReservationMessage] = useState("");
     const [isReservationSending, setIsReservationSending] = useState(false);
 
-    if (!car) {
-        return (
-            <section className="card">
-                <h2>{texts.carDetail.notFoundTitle}</h2>
-                <p>{texts.carDetail.notFoundText}</p>
-            </section>
-        );
-    }
-
-    const technicalRows = getTechnicalData(car);
-    const equipmentRows = getEquipmentItems(car);
-    const detailImages = getCarImages(car);
+    const technicalRows = hasCar ? getTechnicalData(car) : [];
+    const equipmentRows = hasCar ? getEquipmentItems(car) : [];
+    const detailImages = hasCar ? getCarImages(car) : [];
     const detailMainImage = detailImages[Math.min(selectedImageIndex, detailImages.length - 1)] || detailImages[0];
-    const localizedName = getLocalizedCarText(car, "name", language);
-    const localizedDescription = getLocalizedCarText(car, "description", language);
-    const localizedLegal = getLocalizedCarText(car, "legal", language);
+    const localizedName = hasCar ? getLocalizedCarText(car, "name", language) : "";
+    const localizedDescription = hasCar ? getLocalizedCarText(car, "description", language) : "";
+    const localizedLegal = hasCar ? getLocalizedCarText(car, "legal", language) : "";
 
     useEffect(() => {
+        if (!hasCar) {
+            return;
+        }
         setSelectedImageIndex(Number.isInteger(car?.thumbnailIndex) ? car.thumbnailIndex : 0);
         setReservationMessage("");
-    }, [car?.id]);
+    }, [hasCar, car?.id]);
 
     const submitReservation = async (event) => {
         event.preventDefault();
-        if (!car || !car.available || car.reserved || isReservationSending) {
+        if (!hasCar || !car.available || car.reserved || isReservationSending) {
             setReservationMessage(reservationTexts.alreadyReserved);
             return;
         }
 
         setReservationMessage(reservationTexts.reserveSending);
         setIsReservationSending(true);
+        const reservedAt = new Date();
+        const reservedAtIso = reservedAt.toISOString();
+        const reservedAtLocal = formatReservationDateTime(reservedAt, language);
 
         const reservationPayload = {
             requestId: createRequestId("res"),
@@ -2904,7 +2914,11 @@ function CarDetailPage({ cars, setCars, language, texts }) {
             campaign: "website-reservation",
             toEmail: RESERVATION_EMAIL,
             subject: reservationTexts.reservationSubject(localizedName),
-            text: reservationTexts.reservationBody(car, reservationForm),
+            text: reservationTexts.reservationBody(car, reservationForm, reservedAtIso, reservedAtLocal),
+            reservedAt: {
+                iso: reservedAtIso,
+                local: reservedAtLocal
+            },
             car: {
                 id: car.id,
                 name: localizedName,
@@ -2935,6 +2949,9 @@ function CarDetailPage({ cars, setCars, language, texts }) {
     };
 
     useEffect(() => {
+        if (!hasCar) {
+            return undefined;
+        }
         let active = true;
         setDynamicTechnicalValues({});
 
@@ -2949,7 +2966,25 @@ function CarDetailPage({ cars, setCars, language, texts }) {
         return () => {
             active = false;
         };
-    }, [car?.id, language]);
+    }, [hasCar, car?.id, language]);
+
+    if (!hasCar && isCarsLoading) {
+        return (
+            <section className="card">
+                <h2>{texts.pages.carDetail.title}</h2>
+                <p>{texts.common?.loading || "Načítavam vozidlo…"}</p>
+            </section>
+        );
+    }
+
+    if (!hasCar) {
+        return (
+            <section className="card">
+                <h2>{texts.carDetail.notFoundTitle}</h2>
+                <p>{texts.carDetail.notFoundText}</p>
+            </section>
+        );
+    }
 
     return (
         <>
@@ -2987,8 +3022,8 @@ function CarDetailPage({ cars, setCars, language, texts }) {
                         <h3>{reservationTexts.reserveTitle}</h3>
                         {!car.reserved && car.available && (
                             <form className="reservation-form" onSubmit={submitReservation}>
-                                <input type="email" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={isReservationSending} />
-                                <input type="email" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={isReservationSending} />
+                                <input type="text" value={reservationForm.firstName} onChange={(e) => setReservationForm((prev) => ({ ...prev, firstName: e.target.value }))} placeholder={reservationTexts.firstName} required disabled={isReservationSending} />
+                                <input type="text" value={reservationForm.lastName} onChange={(e) => setReservationForm((prev) => ({ ...prev, lastName: e.target.value }))} placeholder={reservationTexts.lastName} required disabled={isReservationSending} />
                                 <input type="email" value={reservationForm.email} onChange={(e) => setReservationForm((prev) => ({ ...prev, email: e.target.value }))} placeholder={reservationTexts.email} required disabled={isReservationSending} />
                                 <input type="tel" value={reservationForm.phone} onChange={(e) => setReservationForm((prev) => ({ ...prev, phone: e.target.value }))} placeholder={reservationTexts.phone} required disabled={isReservationSending} />
                                 <button type="submit" className="button-link" disabled={isReservationSending}>{isReservationSending ? reservationTexts.reserveSending : reservationTexts.reserveButton}</button>
@@ -3732,17 +3767,22 @@ function App() {
     const [cars, setCars] = useState(() => (isCarsDataPage ? getCars() : []));
     const [language, setLanguage] = useState(getLanguagePreference);
     const [isCloudSyncReady, setIsCloudSyncReady] = useState(false);
+    const [isCarsLoading, setIsCarsLoading] = useState(isCarsDataPage);
+    const shouldDeferCloudSync = page !== "car-detail";
     const texts = useMemo(() => I18N[language] || I18N.cs, [language]);
 
     useEffect(() => {
         if (!isCarsDataPage) {
             setIsCloudSyncReady(false);
+            setIsCarsLoading(false);
             return;
         }
 
         let active = true;
+        setIsCloudSyncReady(false);
         const localCars = getCars();
         setCars(localCars);
+        setIsCarsLoading(localCars.length === 0);
 
         const runCloudSync = () => {
             fetchCarsFromCloud().then((cloudCars) => {
@@ -3755,12 +3795,13 @@ function App() {
                 setCars(normalizedMergedCars);
                 saveCars(normalizedMergedCars);
                 setIsCloudSyncReady(true);
+                setIsCarsLoading(false);
             });
         };
 
         let idleCallbackId = null;
         let timeoutId = null;
-        if (typeof window.requestIdleCallback === "function") {
+        if (shouldDeferCloudSync && typeof window.requestIdleCallback === "function") {
             idleCallbackId = window.requestIdleCallback(runCloudSync, { timeout: 1200 });
         } else {
             timeoutId = window.setTimeout(runCloudSync, 0);
@@ -3775,7 +3816,7 @@ function App() {
                 window.clearTimeout(timeoutId);
             }
         };
-    }, [isCarsDataPage]);
+    }, [isCarsDataPage, shouldDeferCloudSync]);
 
     useEffect(() => {
         if (!isCarsDataPage) {
@@ -3824,7 +3865,7 @@ function App() {
                 return {
                     title: texts.pages.carDetail.title,
                     subtitle: texts.pages.carDetail.subtitle,
-                    content: <CarDetailPage cars={cars} setCars={setCars} language={language} texts={texts} />
+                    content: <CarDetailPage cars={cars} setCars={setCars} language={language} texts={texts} isCarsLoading={isCarsLoading} />
                 };
             case "contact":
                 return {
@@ -3846,7 +3887,7 @@ function App() {
                     content: <HomePage texts={texts} language={language} />
                 };
         }
-    }, [page, cars, language, texts]);
+    }, [page, cars, language, texts, isCarsLoading]);
 
     return (
         <PageShell page={page} title={pageConfig.title} subtitle={pageConfig.subtitle} language={language} onLanguageChange={setLanguage} texts={texts}>
