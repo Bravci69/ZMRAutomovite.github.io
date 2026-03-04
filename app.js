@@ -2319,7 +2319,7 @@ function AboutPage({ texts, language }) {
 }
 
 function ServicesPage({ texts, language }) {
-    const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.cs;
+    const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.sk;
     const serviceIcons = ["🔍", "🧪", "🚢", "🛠️", "✅"];
     const languageContextSuffix = `%0D%0A%0D%0ALanguage:%20${encodeURIComponent(String(language || "cs").toUpperCase())}%0D%0ASource:%20Services%20page%0D%0ACampaign:%20website-services`;
     const withLanguageContext = (encodedBody) => `${String(encodedBody || "")}${languageContextSuffix}`;
