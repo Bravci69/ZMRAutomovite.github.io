@@ -3276,6 +3276,7 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [dragImageIndex, setDragImageIndex] = useState(null);
     const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
     const [liveMessage, setLiveMessage] = useState("");
+    const [isBrandSuggestionsOpen, setIsBrandSuggestionsOpen] = useState(false);
     const [publicBrandOptions, setPublicBrandOptions] = useState([]);
     const [form, setForm] = useState({
         name: "",
@@ -3417,7 +3418,26 @@ function CmsPage({ cars, setCars, language, texts }) {
         () => Array.from(new Set([...publicBrandOptions, ...existingBrandOptions].map((brand) => String(brand || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)),
         [publicBrandOptions, existingBrandOptions, language]
     );
-    const cmsBrandSelectOptions = useMemo(() => cmsBrandOptions.map((option) => ({ value: option, label: option })), [cmsBrandOptions]);
+    const cmsBrandSuggestions = useMemo(() => {
+        const query = normalizeBrandKey(form.brand);
+        if (!query) {
+            return cmsBrandOptions.slice(0, 12);
+        }
+
+        const startsWith = [];
+        const includes = [];
+        cmsBrandOptions.forEach((option) => {
+            const normalizedOption = normalizeBrandKey(option);
+            if (normalizedOption.startsWith(query)) {
+                startsWith.push(option);
+                return;
+            }
+            if (normalizedOption.includes(query)) {
+                includes.push(option);
+            }
+        });
+        return [...startsWith, ...includes].slice(0, 12);
+    }, [cmsBrandOptions, form.brand]);
     const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
     const isPublicBrandListAvailable = publicBrandOptions.length > 0;
 
@@ -3567,6 +3587,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setDragImageIndex(null);
         setDragOverImageIndex(null);
         setLiveMessage("");
+        setIsBrandSuggestionsOpen(false);
         setForm({
             name: "",
             brand: "",
@@ -3597,6 +3618,7 @@ function CmsPage({ cars, setCars, language, texts }) {
 
     const beginEditCar = (car) => {
         setEditingCarId(car.id);
+        setIsBrandSuggestionsOpen(false);
         setError("");
         setForm({
             name: car.name || "",
@@ -3660,6 +3682,11 @@ function CmsPage({ cars, setCars, language, texts }) {
                 thumbnailIndex: nextThumbnailIndex
             };
         });
+    };
+
+    const selectCmsBrandSuggestion = (brand) => {
+        setForm((prev) => ({ ...prev, brand: brand || "" }));
+        setIsBrandSuggestionsOpen(false);
     };
 
     const addCar = async (event) => {
@@ -3837,13 +3864,42 @@ function CmsPage({ cars, setCars, language, texts }) {
                     </label>
                     <label>{texts.cms.fields.name}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.brand}
-                        <DarkSelect
-                            value={form.brand}
-                            onChange={(value) => setForm((prev) => ({ ...prev, brand: value || "" }))}
-                            options={cmsBrandSelectOptions}
-                            placeholder={texts.cms.fields.brand}
-                            ariaLabel={texts.cms.fields.brand}
-                        />
+                        <div className="cms-brand-autocomplete">
+                            <input
+                                type="text"
+                                autoComplete="off"
+                                value={form.brand}
+                                placeholder={texts.cms.fields.brand}
+                                onFocus={() => setIsBrandSuggestionsOpen(true)}
+                                onBlur={() => {
+                                    window.setTimeout(() => setIsBrandSuggestionsOpen(false), 120);
+                                }}
+                                onChange={(event) => {
+                                    const nextValue = event.target.value;
+                                    setForm((prev) => ({ ...prev, brand: nextValue }));
+                                    setIsBrandSuggestionsOpen(true);
+                                }}
+                                aria-label={texts.cms.fields.brand}
+                                required
+                            />
+                            {isBrandSuggestionsOpen && cmsBrandSuggestions.length > 0 && (
+                                <div className="cms-brand-menu" role="listbox" aria-label={texts.cms.fields.brand}>
+                                    {cmsBrandSuggestions.map((option) => (
+                                        <button
+                                            key={option}
+                                            type="button"
+                                            className={`cms-brand-option${normalizeBrandKey(form.brand) === normalizeBrandKey(option) ? " active" : ""}`}
+                                            onMouseDown={(event) => {
+                                                event.preventDefault();
+                                                selectCmsBrandSuggestion(option);
+                                            }}
+                                        >
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </label>
                     <label>{texts.cms.fields.year}<input type="text" value={form.year} onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.priceCzk}<input type="number" min="0" value={form.priceCzk} onChange={(e) => setForm((prev) => ({ ...prev, priceCzk: e.target.value }))} required /></label>

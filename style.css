@@ -1293,6 +1293,52 @@ a:hover {
 	margin: 0;
 }
 
+.cms-brand-autocomplete {
+	position: relative;
+}
+
+.cms-brand-menu {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(100% + 8px);
+	z-index: 45;
+	display: grid;
+	gap: 6px;
+	padding: 8px;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: rgba(10, 16, 30, 0.98);
+	box-shadow: var(--shadow);
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+.cms-brand-option {
+	padding: 9px 10px;
+	border: 1px solid transparent;
+	border-radius: 9px;
+	background: rgba(255, 255, 255, 0.04);
+	color: var(--text);
+	font: inherit;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+	transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.cms-brand-option:hover,
+.cms-brand-option:focus-visible {
+	outline: none;
+	background: rgba(222, 59, 59, 0.16);
+	border-color: rgba(222, 59, 59, 0.42);
+}
+
+.cms-brand-option.active {
+	background: rgba(222, 59, 59, 0.2);
+	border-color: rgba(222, 59, 59, 0.55);
+}
+
 .checklist-block {
 	display: grid;
 	gap: 10px;
