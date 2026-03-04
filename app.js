@@ -3795,6 +3795,47 @@ function CmsPage({ cars, setCars, language, texts }) {
         };
     }, []);
 
+    useEffect(() => {
+        if (!isLogged) {
+            return;
+        }
+
+        const sourceFields = {
+            name: String(form.name || ""),
+            description: String(form.description || ""),
+            legal: String(form.legal || "")
+        };
+        const seededLocalized = createLocalizedCmsFieldMaps(sourceFields, language).localized;
+
+        if (!TRANSLATE_PROXY_URL || !hasCmsTranslatableInput) {
+            setLocalizedCmsDraftFields(seededLocalized);
+            setIsCmsAutoTranslating(false);
+            return;
+        }
+
+        let active = true;
+        const timeoutId = window.setTimeout(() => {
+            setIsCmsAutoTranslating(true);
+            buildLocalizedCmsFields(sourceFields, language)
+                .then((localized) => {
+                    if (!active) {
+                        return;
+                    }
+                    setLocalizedCmsDraftFields(localized);
+                })
+                .finally(() => {
+                    if (active) {
+                        setIsCmsAutoTranslating(false);
+                    }
+                });
+        }, 550);
+
+        return () => {
+            active = false;
+            window.clearTimeout(timeoutId);
+        };
+    }, [isLogged, form.name, form.description, form.legal, language, hasCmsTranslatableInput]);
+
     const handleLogin = async (event) => {
         event.preventDefault();
         const firebaseSession = await signInCmsWithFirebaseEmailPassword(credentials.email, credentials.password);
