@@ -2148,10 +2148,10 @@ function getCarAvailabilityRank(car) {
 
 function Navigation({ activePage, texts, className = "", onNavigate }) {
     const items = [
-        { key: "cars", label: texts.nav.cars, href: "auta.html" },
-        { key: "services", label: texts.nav.services, href: "sluzby.html" },
-        { key: "about", label: texts.nav.about, href: "o-nas.html" },
-        { key: "contact", label: texts.nav.contact, href: "kontakt.html" },
+        { key: "cars", label: texts.nav.cars, href: "/auta" },
+        { key: "services", label: texts.nav.services, href: "/sluzby" },
+        { key: "about", label: texts.nav.about, href: "/o-nas" },
+        { key: "contact", label: texts.nav.contact, href: "/kontakt" },
     ];
 
     return (
@@ -2217,7 +2217,7 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
         <>
             <header className="top-header">
                 <div className="top-inner">
-                    <a className="brand" href="main.html">
+                    <a className="brand" href="/">
                         <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automotive logo" className="logo" />
                     </a>
                     <div className="header-tools">
@@ -2235,7 +2235,7 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
                         <div id="primary-mobile-nav" className={isMobileMenuOpen ? "mobile-nav-wrap open" : "mobile-nav-wrap"}>
                             <Navigation activePage={page} texts={texts} className="primary-nav" onNavigate={() => setIsMobileMenuOpen(false)} />
                         </div>
-                        <a className="cms-login-icon" href="cms.html" aria-label={cmsLoginLabel} title={cmsLoginLabel}>
+                        <a className="cms-login-icon" href="/cms" aria-label={cmsLoginLabel} title={cmsLoginLabel}>
                             <span aria-hidden="true">🔐</span>
                             <span className="sr-only">{cmsLoginLabel}</span>
                         </a>
@@ -2433,7 +2433,7 @@ function ServicesPage({ texts, language }) {
                 <h2>{serviceContent.ctaTitle}</h2>
                 <p>{serviceContent.ctaText}</p>
                 <div className="services-cta-actions">
-                    <a href="kontakt.html" className="button-link">{serviceContent.ctaButton}</a>
+                    <a href="/kontakt" className="button-link">{serviceContent.ctaButton}</a>
                     <a
                         href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.customSubject)}&body=${withLanguageContext(serviceContent.customBody)}`}
                         className="button-link button-secondary"
@@ -2916,7 +2916,7 @@ function CarsPage({ cars, language, texts }) {
                             </p>
                             <div className="car-footer">
                                 <strong>{formatPrice(car.priceCzk, language)}</strong>
-                                <a href={`vozidlo.html?id=${encodeURIComponent(car.id)}`} className="button-link">{texts.cars.detailButton}</a>
+                                <a href={`/vozidlo?id=${encodeURIComponent(car.id)}`} className="button-link">{texts.cars.detailButton}</a>
                             </div>
                         </div>
                     </article>
