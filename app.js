@@ -82,7 +82,7 @@ const SERVICES_PAGE_CONTENT = {
         ctaButton: "Kontaktovat nás"
     },
     sk: {
-        kpis: ["48h reakcia", "100+ preverení ročne", "Import USA/JP/EU", "Transparentný report"],
+        kpis: ["Reakcia do 48 hodín", "Dôkladné preverenie vozidla", "Import USA/JPN", "Detailný report s fotodokumentáciou", "Individuálny prístup"],
         highlightsTitle: "Čo získate v praxi",
         highlights: [
             { icon: "🛡️", title: "Overený technický stav", text: "Diagnostika, vizuálna kontrola a vyhodnotenie rizík pred kúpou." },
@@ -92,12 +92,12 @@ const SERVICES_PAGE_CONTENT = {
         processTitle: "Ako prebieha spolupráca",
         processSteps: [
             { title: "1. Konzultácia", text: "Spresníme požiadavky, rozpočet a vhodné modely." },
-            { title: "2. Kontrola vozidla", text: "Preveríme technický stav, históriu a reálnu hodnotu." },
+            { title: "2. Kontrola vozidla", text: "Dôkladne preveríme technický stav, históriu aj reálnu trhovú hodnotu vozidla." },
             { title: "3. Dovoz a administratíva", text: "Zabezpečíme logistiku, dokumenty a legislatívne kroky." },
-            { title: "4. Odovzdanie a podpora", text: "Vozidlo odovzdáme s odporúčaním pre servis a prevádzku." }
+            { title: "4. Odovzdanie a podpora", text: "Vozidlo odovzdáme pripravené na prevádzku a doplníme odporúčania pre ďalší servis a údržbu." }
         ],
         deliverablesTitle: "Výstupy služby",
-        deliverables: ["Kontrolný report vozidla", "Odporúčanie opráv podľa priority", "Overenie histórie a právneho stavu", "Podpora pri registrácii a STK"],
+        deliverables: ["Kontrolný report vozidla", "Detailná fotodokumentácia", "Odporúčanie opráv podľa priority", "Overenie histórie a právneho stavu", "Podpora pri registrácii a STK"],
         luxuryTitle: "Luxury variant",
         luxuryPoints: ["VIP vybavenie dopytu", "Prioritné termíny obhliadok", "Prémiová fotodokumentácia", "Osobný konzultant počas celého procesu"],
         luxuryButton: "Mám záujem o Luxury",
@@ -116,7 +116,7 @@ const SERVICES_PAGE_CONTENT = {
         ctaButton: "Kontaktovať nás"
     },
     de: {
-        kpis: ["48h Reaktionszeit", "100+ Prüfungen/Jahr", "Import USA/JP/EU", "Transparenter Report"],
+        kpis: ["Reaktion innerhalb von 48 Stunden", "Gründliche Fahrzeugprüfung", "Import USA/JPN", "Detaillierter Bericht mit Fotodokumentation", "Individuelle Betreuung"],
         highlightsTitle: "Ihr konkreter Mehrwert",
         highlights: [
             { icon: "🛡️", title: "Geprüfter technischer Zustand", text: "Diagnose, Sichtprüfung und Risikobewertung vor dem Kauf." },
@@ -126,12 +126,12 @@ const SERVICES_PAGE_CONTENT = {
         processTitle: "So läuft die Zusammenarbeit",
         processSteps: [
             { title: "1. Beratung", text: "Wir klären Anforderungen, Budget und passende Modelle." },
-            { title: "2. Fahrzeugprüfung", text: "Wir prüfen Zustand, Historie und realistischen Marktwert." },
+            { title: "2. Fahrzeugprüfung", text: "Wir prüfen den technischen Zustand, die Historie und den realistischen Marktwert des Fahrzeugs im Detail." },
             { title: "3. Import & Formalitäten", text: "Wir übernehmen Logistik, Unterlagen und rechtliche Schritte." },
-            { title: "4. Übergabe & Support", text: "Sie erhalten das Fahrzeug mit klaren Empfehlungen für Betrieb und Service." }
+            { title: "4. Übergabe & Support", text: "Wir übergeben das Fahrzeug betriebsbereit und geben klare Empfehlungen für Service und Wartung." }
         ],
         deliverablesTitle: "Leistungsumfang im Ergebnis",
-        deliverables: ["Detaillierter Prüfbericht", "Empfehlung von Reparaturen nach Priorität", "Prüfung von Historie und Rechtsstatus", "Unterstützung bei Zulassung und HU/STK"],
+        deliverables: ["Detaillierter Prüfbericht", "Fotodokumentation im Detail", "Empfehlung von Reparaturen nach Priorität", "Prüfung von Historie und Rechtsstatus", "Unterstützung bei Zulassung und HU/STK"],
         luxuryTitle: "Luxury-Variante",
         luxuryPoints: ["VIP-Betreuung der Anfrage", "Priorisierte Besichtigungstermine", "Premium-Fotodokumentation", "Persönlicher Berater im gesamten Prozess"],
         luxuryButton: "Interesse an Luxury",
@@ -150,7 +150,7 @@ const SERVICES_PAGE_CONTENT = {
         ctaButton: "Kontakt aufnehmen"
     },
     en: {
-        kpis: ["48h response", "100+ checks/year", "USA/JP/EU import", "Transparent reporting"],
+        kpis: ["Response within 48 hours", "Thorough vehicle inspection", "USA/JPN import", "Detailed report with photo documentation", "Individual approach"],
         highlightsTitle: "What you get",
         highlights: [
             { icon: "🛡️", title: "Verified technical condition", text: "Diagnostics, visual inspection and risk assessment before purchase." },
@@ -160,12 +160,12 @@ const SERVICES_PAGE_CONTENT = {
         processTitle: "How we work",
         processSteps: [
             { title: "1. Consultation", text: "We define your requirements, budget and model shortlist." },
-            { title: "2. Vehicle inspection", text: "We verify condition, history and fair market value." },
+            { title: "2. Vehicle inspection", text: "We thoroughly verify technical condition, history, and real market value." },
             { title: "3. Import & administration", text: "We handle logistics, documents and compliance steps." },
-            { title: "4. Handover & support", text: "You get the vehicle with practical maintenance recommendations." }
+            { title: "4. Handover & support", text: "You receive a road-ready vehicle with practical recommendations for service and maintenance." }
         ],
         deliverablesTitle: "Service deliverables",
-        deliverables: ["Vehicle inspection report", "Priority-based repair recommendations", "History and legal-status verification", "Support for registration and STK/TÜV readiness"],
+        deliverables: ["Vehicle inspection report", "Detailed photo documentation", "Priority-based repair recommendations", "History and legal-status verification", "Support for registration and STK/TÜV readiness"],
         luxuryTitle: "Luxury variant",
         luxuryPoints: ["VIP request handling", "Priority inspection slots", "Premium photo documentation", "Dedicated consultant throughout the process"],
         luxuryButton: "I want Luxury",
@@ -527,31 +527,31 @@ const I18N = {
         },
         home: {
             whyTitle: "Prečo si vybrať ZMR Automotive",
-            whyP1: "Naším cieľom je, aby klient presne vedel, čo kupuje. Neponúkame len rýchly pohľad na vozidlo, ale detailné preverenie stavu, histórie aj legislatívy.",
-            whyP2: "Spoluprácu vedieme transparentne od prvého kontaktu až po odovzdanie odporúčaní.",
-            whyP3: "Špecializujeme sa na import vozidiel z USA a Japonska – od výberu modelu a aukcie až po bezpečnú prepravu na Slovensko a do Česka.",
-            whyP4: "Po dovoze zabezpečíme aj praktické kroky: homologizáciu, prihlásenie, STK a odporúčanie servisu, aby ste vozidlo vedeli bez obáv používať.",
-            approachTitle: "Komplexný prístup",
-            approachText: "Pokrývame výber, obhliadku, kontrolu, dovoz aj základný servis.",
-            outputTitle: "Jasné výstupy",
-            outputText: "Dostanete zrozumiteľné informácie o stave, legislatíve, výbave aj ďalších nákladoch."
+            whyP1: "ZMR Automotive je tím troch mladých mužov, ktorých spája vášeň pre autá, technické znalosti a dôraz na férový prístup.",
+            whyP2: "Špecializujeme sa na dovoz vozidiel z USA a Japonska a zároveň na profesionálnu kontrolu vozidiel po celom Česku aj v susedných štátoch.",
+            whyP3: "Každý projekt vedieme transparentne od prvého kontaktu: nastavíme rozsah, vysvetlíme riziká, definujeme kroky a priebežne vás informujeme.",
+            whyP4: "Naším cieľom je minimálne riziko pri kúpe a maximálna istota rozhodnutia – bez zbytočných komplikácií, s dôrazom na kvalitu a dlhodobú spokojnosť.",
+            approachTitle: "Komplexný a moderný prístup",
+            approachText: "Výber vozidla, preverenie histórie, technická kontrola, dovoz, administratíva aj príprava na prevádzku na jednom mieste.",
+            outputTitle: "Výstup, ktorému rozumiete",
+            outputText: "Dostanete detailný report s fotodokumentáciou, jasné odporúčania a konkrétne ďalšie kroky podľa vášho rozpočtu aj priorít."
         },
         about: {
             title: "O našej spoločnosti",
-            p1: "ZMR Automotive je špecializovaný tím pre odbornú kontrolu vozidiel, riadený dovoz a technicky podložené rozhodovanie pri kúpe auta na Slovensku aj v Česku.",
-            p2: "Našou prioritou je transparentná komunikácia, presná metodika a zodpovedné odporúčania, aby klient vedel presne, čo kupuje, v akom stave a s akým reálnym rizikom.",
+            p1: "ZMR Automotive je tím troch mladých mužov, ktorých spája vášeň pre autá, technické znalosti a dôraz na férový prístup.",
+            p2: "Špecializujeme sa na dovoz vozidiel z USA a Japonska a zároveň na profesionálnu kontrolu akýchkoľvek vozidiel po celom Česku aj v susedných štátoch.",
             locationTitle: "Naša lokalita – Praha",
             locationText: "Základňu máme v Prahe, no projekty riešime pre klientov z celej ČR, Slovenska aj okolitých krajín podľa typu vozidla a požadovaného rozsahu služby."
         },
         services: {
             title: "Rozsah služieb",
-            intro: "Služby sú navrhnuté tak, aby pokryli celý životný cyklus nákupu vozidla.",
+            intro: "Postaráme sa o celý proces dovozu vozidla z Japonska alebo USA – od výberu, kontroly a nákupu až po dopravu a registráciu v ČR. Ponúkame aj profesionálne preverenie vozidiel v Českej republike aj v zahraničí pred ich kúpou.",
             items: [
-                { title: "Kontrola stavu vozidla", text: "Každé vozidlo preverujeme vizuálne aj technicky vrátane diagnostiky a histórie." },
-                { title: "Kontrola po celej ČR", text: "Za vozidlom vycestujeme po celej Českej republike aj do susedných štátov." },
-                { title: "Dovoz z USA a Japonska", text: "Zabezpečíme výber, preverenie, prepravu aj administratívu dovozu." },
-                { title: "Základný servis a STK", text: "Pred odovzdaním pripravíme vozidlo po technickej stránke aj na STK." },
-                { title: "Vlastná ponuka vozidiel", text: "Priebežne dopĺňame ponuku overených vozidiel s transparentným stavom." }
+                { title: "Dôkladné preverenie vozidla", text: "Realizujeme detailné preverenie pred kúpou, diagnostiku, kontrolu karosérie aj mechanických častí." },
+                { title: "Kontroly v ČR aj zahraničí", text: "Preverujeme osobné, úžitkové aj športové vozidlá po celej ČR aj v zahraničí." },
+                { title: "Dovoz z USA a Japonska", text: "Zabezpečíme výber, preverenie, nákup, prepravu aj kompletnú administratívu dovozu." },
+                { title: "Základný servis a STK", text: "Pred odovzdaním vozidlo technicky pripravíme a zabezpečíme STK." },
+                { title: "Vlastná ponuka vozidiel", text: "Pravidelne ponúkame preverené vozidlá s transparentnou históriou." }
             ]
         },
         contact: {
@@ -582,9 +582,35 @@ const I18N = {
             contact: { title: "Kontakt", subtitle: "Wir unterstützen Sie bei Prüfung, Import und Auswahl des passenden Fahrzeugs." },
             cms: { title: "Fahrzeug-CMS", subtitle: "Interner Bereich zur Verwaltung des Fahrzeugangebots." }
         },
-        home: { whyTitle: "Warum ZMR Automotive", whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.", whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.", whyP3: "Ein Schwerpunkt ist der Import aus den USA und Japan – von der Fahrzeugauswahl bis zur sicheren Lieferung nach CZ/SK.", whyP4: "Wir koordinieren auch die nächsten Schritte nach dem Import: Homologation, Zulassung, technische Vorbereitung und Serviceempfehlungen.", approachTitle: "Ganzheitlicher Ansatz", approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.", outputTitle: "Klare Ergebnisse", outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung." },
-        about: { title: "Über unser Unternehmen", p1: "ZMR Automotive ist ein spezialisiertes Team für technische Fahrzeugprüfung, gesteuerten Import und belastbare Entscheidungsgrundlagen.", p2: "Wir arbeiten mit transparenter Kommunikation, technischer Präzision und klarer Prozessführung, damit Sie jederzeit den Projektstatus verstehen.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
-        services: { title: "Leistungsumfang", intro: "Unsere Leistungen sind als gesteuertes Framework aufgebaut und decken den kompletten Kauf- und Importprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
+        home: {
+            whyTitle: "Warum ZMR Automotive",
+            whyP1: "ZMR Automotive ist ein Team aus drei jungen Männern, verbunden durch Leidenschaft für Autos, technisches Know-how und einen fairen Ansatz.",
+            whyP2: "Wir sind auf den Fahrzeugimport aus den USA und Japan spezialisiert und führen gleichzeitig professionelle Fahrzeugprüfungen in ganz Tschechien und den Nachbarländern durch.",
+            whyP3: "Jedes Projekt führen wir transparent ab dem ersten Kontakt: Wir definieren den Umfang, erklären Risiken, setzen die nächsten Schritte auf und halten Sie laufend informiert.",
+            whyP4: "Unser Ziel ist minimales Kauf-Risiko und maximale Entscheidungssicherheit – ohne unnötige Komplikationen, mit Fokus auf Qualität und langfristige Zufriedenheit.",
+            approachTitle: "Komplexer und moderner Ansatz",
+            approachText: "Fahrzeugauswahl, Historienprüfung, technische Kontrolle, Import, Administration und Vorbereitung auf den Betrieb aus einer Hand.",
+            outputTitle: "Ein Ergebnis, das Sie verstehen",
+            outputText: "Sie erhalten einen detaillierten Bericht mit Fotodokumentation, klare Empfehlungen und konkrete nächste Schritte passend zu Budget und Prioritäten."
+        },
+        about: {
+            title: "Über unser Unternehmen",
+            p1: "ZMR Automotive ist ein Team aus drei jungen Männern, verbunden durch Leidenschaft für Autos, technisches Know-how und einen fairen Ansatz.",
+            p2: "Wir sind auf den Fahrzeugimport aus den USA und Japan spezialisiert und bieten zugleich professionelle Prüfungen aller Fahrzeugtypen in ganz Tschechien und den Nachbarländern an.",
+            locationTitle: "Unser Standort – Prag",
+            locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in ganz Tschechien und den umliegenden Ländern."
+        },
+        services: {
+            title: "Leistungsumfang",
+            intro: "Wir übernehmen den gesamten Importprozess aus Japan oder den USA – von Auswahl, Prüfung und Kauf bis zu Transport und Zulassung in Tschechien. Zusätzlich bieten wir professionelle Fahrzeugprüfungen in Tschechien und im Ausland vor dem Kauf an.",
+            items: [
+                { title: "Gründliche Fahrzeugprüfung", text: "Wir führen detaillierte Vorkaufprüfungen, Diagnostik sowie Kontrollen von Karosserie und Mechanik durch." },
+                { title: "Prüfungen in Tschechien und im Ausland", text: "Wir prüfen Pkw, Nutzfahrzeuge und Sportwagen in ganz Tschechien sowie im Ausland." },
+                { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Kauf, Transport und die komplette Import-Administration." },
+                { title: "Basisservice und HU/STK", text: "Vor der Übergabe bereiten wir das Fahrzeug technisch vor und sichern die HU/STK-Vorbereitung ab." },
+                { title: "Eigenes Fahrzeugangebot", text: "Regelmäßig bieten wir geprüfte Fahrzeuge mit transparenter Historie an." }
+            ]
+        },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
         cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", transmission: "Getriebe", transmissionAll: "Alle Getriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", seats: "Sitze", seatsAll: "Alle", seatsFrom: "Sitze ab", seatsTo: "Sitze bis", quickSeats: "Schnellauswahl", seatsUnit: "Sitze", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
         carDetail: { notFoundTitle: "Fahrzeug nicht gefunden", notFoundText: "Aktuell ist kein Fahrzeug verfügbar.", technicalTitle: "Technische Daten", legalTitle: "Rechtliche Informationen", equipmentTitle: "Ausstattung", previousOwners: "Anzahl Vorbesitzer" },
@@ -606,9 +632,35 @@ const I18N = {
             contact: { title: "Contact", subtitle: "We are ready to help with inspection, import and vehicle selection." },
             cms: { title: "Vehicle CMS", subtitle: "Internal area for managing vehicle inventory." }
         },
-        home: { whyTitle: "Why choose ZMR Automotive", whyP1: "We provide in-depth vehicle checks, not just a quick glance.", whyP2: "Transparent cooperation from first contact to final recommendation.", whyP3: "We focus on vehicle import from the USA and Japan, including sourcing, auctions, transport and compliance.", whyP4: "After delivery, we help with registration, technical readiness and clear service recommendations for daily operation.", approachTitle: "Comprehensive approach", approachText: "Selection, inspection, import and basic service in one place.", outputTitle: "Clear outputs", outputText: "You get clear information about condition, legal requirements and expected costs." },
-        about: { title: "About our company", p1: "ZMR Automotive is a specialized team for technical vehicle inspection, managed import, and evidence-based purchase decisions.", p2: "We combine transparent communication, technical precision, and process discipline so you always know project status, risk, and next step.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
-        services: { title: "Service scope", intro: "Our services are structured as a managed framework covering the full vehicle purchase and import lifecycle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
+        home: {
+            whyTitle: "Why choose ZMR Automotive",
+            whyP1: "ZMR Automotive is a team of three young professionals connected by passion for cars, technical expertise, and a fair approach.",
+            whyP2: "We specialize in importing vehicles from the USA and Japan while also providing professional vehicle inspections across Czechia and neighboring countries.",
+            whyP3: "Every project is run transparently from the first contact: we define scope, explain risks, set clear steps, and keep you informed throughout the process.",
+            whyP4: "Our goal is minimal purchase risk and maximum decision confidence—without unnecessary complications, with a focus on quality and long-term satisfaction.",
+            approachTitle: "Comprehensive modern approach",
+            approachText: "Vehicle selection, history verification, technical inspection, import, administration, and road-readiness in one place.",
+            outputTitle: "Output you can understand",
+            outputText: "You receive a detailed report with photo documentation, clear recommendations, and concrete next steps aligned with your budget and priorities."
+        },
+        about: {
+            title: "About our company",
+            p1: "ZMR Automotive is a team of three young professionals connected by passion for cars, technical expertise, and a fair approach.",
+            p2: "We specialize in importing vehicles from the USA and Japan and also provide professional inspections of all vehicle types across Czechia and neighboring countries.",
+            locationTitle: "Our location – Prague",
+            locationText: "We are based in Prague and provide services to clients across Czechia and nearby countries."
+        },
+        services: {
+            title: "Service scope",
+            intro: "We handle the full process of importing a vehicle from Japan or the USA—from selection, verification, and purchase to transport and registration in Czechia. We also provide professional pre-purchase inspections in Czechia and abroad.",
+            items: [
+                { title: "Thorough vehicle verification", text: "We perform detailed pre-purchase checks, diagnostics, and body/mechanical inspections." },
+                { title: "Inspections in Czechia and abroad", text: "We verify passenger, commercial, and sports vehicles across Czechia and internationally." },
+                { title: "Import from USA and Japan", text: "We manage selection, verification, purchase, transport, and complete import administration." },
+                { title: "Basic service and STK preparation", text: "Before handover, we prepare the vehicle technically and ensure STK readiness." },
+                { title: "Own vehicle inventory", text: "We regularly offer verified vehicles with transparent history." }
+            ]
+        },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
         cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", transmission: "Transmission", transmissionAll: "All transmissions", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", seats: "Seats", seatsAll: "All", seatsFrom: "Seats from", seatsTo: "Seats to", quickSeats: "Quick seats", seatsUnit: "seats", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
         carDetail: { notFoundTitle: "Vehicle not found", notFoundText: "There are currently no vehicles available.", technicalTitle: "Technical data", legalTitle: "Legal information", equipmentTitle: "Equipment", previousOwners: "Number of previous owners" },
@@ -2409,11 +2461,13 @@ function HomePage({ texts }) {
 function AboutPage({ texts, language }) {
     const aboutQuote = language === "cs"
         ? "„Stavíme na osobním přístupu, transparentnosti a kvalitně odvedené práci. S námi je dovoz i kontrola vozu jednoduchá, bezpečná a bez zbytečných komplikací.“"
+        : language === "sk"
+            ? "„Staviame na osobnom prístupe, transparentnosti a kvalitne odvedenej práci. S nami je dovoz aj kontrola vozidla jednoduchá, bezpečná a bez zbytočných komplikácií.“"
         : language === "de"
-            ? "„Wir tun das, damit Kunden ein Fahrzeug nicht nach Gefühl, sondern auf Basis belastbarer Fakten auswählen.“"
+            ? "„Wir setzen auf persönliche Betreuung, Transparenz und saubere Arbeit. Mit uns sind Import und Fahrzeugprüfung einfach, sicher und ohne unnötige Komplikationen.“"
             : language === "en"
-                ? "\"We do this so clients do not buy on emotion, but on facts that remain valid long after the purchase.\""
-                : "„Děláme to proto, aby klient nekupoval auto podle emocí, ale podle faktů, které obstojí i po letech.“";
+                ? "\"We build every project on personal support, transparency, and high-quality execution. With us, both import and vehicle inspection stay simple, safe, and free of unnecessary complications.\""
+                : "„Staviame na osobnom prístupe, transparentnosti a kvalitne odvedenej práci. S nami je dovoz aj kontrola vozidla jednoduchá, bezpečná a bez zbytočných komplikácií.“";
 
     const extendedAbout = language === "cs"
         ? [
@@ -2424,10 +2478,24 @@ function AboutPage({ texts, language }) {
         ]
         : language === "sk"
         ? [
-            "Začali sme preto, že na trhu často chýbajú jasné dáta a odborné vysvetlenie stavu vozidla pred kúpou. Namiesto dojmu prinášame fakty, merania a zrozumiteľné odporúčanie.",
-            "Každý projekt má pevný rámec: analýza zadania, technické preverenie, vyhodnotenie rizík a plán ďalších krokov. Klient tak vie, čo sa rieši, v akom poradí a s akým očakávaným výsledkom.",
-            "Silnou časťou našej práce je dovoz z USA a Japonska, kde riešime nielen výber modelu, ale aj overenie aukčných podkladov, logistiku, administratívu a prípravu na registráciu.",
-            "Nepracujeme na rýchly predaj za každú cenu. Našim cieľom je dlhodobo bezpečné a ekonomicky udržateľné rozhodnutie, ktoré obstojí aj po rokoch prevádzky."
+            "Klientom zabezpečujeme kompletný proces dovozu – od výberu vozidla, preverenia histórie a technickej kontroly pred kúpou, cez dopravu až po vybavenie potrebnej administratívy a registrácie.",
+            "Každé vozidlo dôsledne kontrolujeme, aby mal klient istotu reálneho technického stavu a jasnú predstavu o ďalších krokoch.",
+            "Okrem dovozu poskytujeme aj nezávislé technické kontroly všetkých typov vozidiel – osobných, úžitkových aj športových. Naším cieľom je minimalizovať riziká pri kúpe vozidla a priniesť klientom istotu a pokoj.",
+            "Rozsah služieb pokrýva celý proces dovozu z Japonska alebo USA aj profesionálne preverenie vozidiel v Českej republike a v zahraničí pred ich kúpou."
+        ]
+        : language === "de"
+        ? [
+            "Wir sichern unseren Kunden den kompletten Importprozess: von der Fahrzeugauswahl, Historienprüfung und technischen Kontrolle vor dem Kauf über den Transport bis zur gesamten Administration und Zulassung.",
+            "Jedes Fahrzeug prüfen wir sorgfältig, damit Sie den realen technischen Zustand kennen und klare nächste Schritte haben.",
+            "Neben dem Import bieten wir unabhängige technische Prüfungen für alle Fahrzeugtypen an – Pkw, Nutzfahrzeuge und Sportwagen. Unser Ziel ist es, Kauf-Risiken zu minimieren und Ihnen Sicherheit und Ruhe zu geben.",
+            "Unser Leistungsumfang deckt den gesamten Import aus Japan oder den USA sowie professionelle Vorkaufprüfungen in Tschechien und im Ausland ab."
+        ]
+        : language === "en"
+        ? [
+            "We provide a complete import process—from vehicle selection, history verification, and technical pre-purchase checks to transport, paperwork, and registration.",
+            "Every vehicle is thoroughly inspected so you clearly understand its actual technical condition and the next practical steps.",
+            "In addition to import services, we deliver independent technical inspections for all vehicle types—passenger, commercial, and sports. Our goal is to reduce purchase risk and give clients confidence and peace of mind.",
+            "Our service scope covers full import from Japan or the USA as well as professional pre-purchase verification in Czechia and abroad."
         ]
         : [];
 
