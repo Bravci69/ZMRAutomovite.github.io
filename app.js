@@ -2096,27 +2096,8 @@ function getReservationTexts(language) {
             reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vehicle: ${car.name}\nID: ${car.id}\nYear: ${car.year}\nPrice: ${car.priceCzk} CZK\nReserved at: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nReservation request from:\nFirst name: ${form.firstName}\nLast name: ${form.lastName}\nEmail: ${form.email}\nPhone: ${form.phone}\n\nLanguage: EN\nSource: Vehicle detail page\nCampaign: website-reservation`
         };
     }
-    if (language === "cs") {
+    if (language === "sk") {
         return {
-            statusReserved: "Rezervováno",
-            reserveButton: "Rezervovat",
-            reserveUnavailable: "Vozidlo nelze rezervovat",
-            reserveTitle: "Rezervace vozidla",
-            firstName: "Jméno",
-            lastName: "Příjmení",
-            email: "E-mail",
-            phone: "Telefon",
-            sendReservation: "Odeslat rezervaci",
-            reservedSuccess: "Rezervace byla úspěšně odeslána.",
-            reserveErrorConfig: "Rezervační služba není nakonfigurovaná.",
-            reserveErrorSend: "Rezervaci se nepodařilo odeslat. Zkuste to prosím znovu.",
-            reserveSending: "Odesílám rezervaci...",
-            alreadyReserved: "Toto vozidlo je už rezervované.",
-            reservationSubject: (carName) => `Rezervace vozidla: ${carName}`,
-            reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\nRezervováno: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: CS\nSource: Vehicle detail page\nCampaign: website-reservation`
-        };
-    }
-    return {
         statusReserved: "Rezervované",
         reserveButton: "Rezervovať",
         reserveUnavailable: "Vozidlo nie je možné rezervovať",
@@ -2133,6 +2114,25 @@ function getReservationTexts(language) {
         alreadyReserved: "Toto vozidlo je už rezervované.",
         reservationSubject: (carName) => `Rezervácia vozidla: ${carName}`,
         reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\nRezervované: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nŽiadosť o rezerváciu:\nMeno: ${form.firstName}\nPriezvisko: ${form.lastName}\nE-mail: ${form.email}\nTelefón: ${form.phone}\n\nLanguage: SK\nSource: Vehicle detail page\nCampaign: website-reservation`
+    };
+    }
+    return {
+        statusReserved: "Rezervováno",
+        reserveButton: "Rezervovat",
+        reserveUnavailable: "Vozidlo nelze rezervovat",
+        reserveTitle: "Rezervace vozidla",
+        firstName: "Jméno",
+        lastName: "Příjmení",
+        email: "E-mail",
+        phone: "Telefon",
+        sendReservation: "Odeslat rezervaci",
+        reservedSuccess: "Rezervace byla úspěšně odeslána.",
+        reserveErrorConfig: "Rezervační služba není nakonfigurovaná.",
+        reserveErrorSend: "Rezervaci se nepodařilo odeslat. Zkuste to prosím znovu.",
+        reserveSending: "Odesílám rezervaci...",
+        alreadyReserved: "Toto vozidlo je už rezervované.",
+        reservationSubject: (carName) => `Rezervace vozidla: ${carName}`,
+        reservationBody: (car, form, reservedAtIso, reservedAtLocal) => `Vozidlo: ${car.name}\nID: ${car.id}\nRok: ${car.year}\nCena: ${car.priceCzk} Kč\nRezervováno: ${reservedAtLocal || reservedAtIso}\nUTC: ${reservedAtIso}\n\nŽádost o rezervaci:\nJméno: ${form.firstName}\nPříjmení: ${form.lastName}\nE-mail: ${form.email}\nTelefon: ${form.phone}\n\nLanguage: CS\nSource: Vehicle detail page\nCampaign: website-reservation`
     };
 }
 
@@ -2440,9 +2440,7 @@ function ContactPage({ texts, language }) {
     const [contactStatus, setContactStatus] = useState("");
     const [isContactSending, setIsContactSending] = useState(false);
 
-    const contactLabels = language === "cs"
-        ? { title: "Nezávazná poptávka", name: "Jméno", email: "E-mail", phone: "Telefon", message: "Váš dotaz", button: "Odeslat dotaz", sending: "Odesílám dotaz...", success: "Děkujeme, dotaz byl úspěšně odeslán.", error: "Dotaz se nepodařilo odeslat. Zkuste to prosím znovu." }
-        : language === "de"
+    const contactLabels = language === "de"
             ? { title: "Unverbindliche Anfrage", name: "Name", email: "E-Mail", phone: "Telefon", message: "Ihre Nachricht", button: "Anfrage senden", sending: "Anfrage wird gesendet...", success: "Danke, Ihre Anfrage wurde erfolgreich gesendet.", error: "Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut." }
             : language === "en"
                 ? { title: "Non-binding inquiry", name: "Name", email: "Email", phone: "Phone", message: "Your message", button: "Send inquiry", sending: "Sending inquiry...", success: "Thank you, your inquiry was sent successfully.", error: "Inquiry could not be sent. Please try again." }
@@ -3213,30 +3211,8 @@ function CmsPage({ cars, setCars, language, texts }) {
                 statusUnavailable: "Unavailable"
             };
         }
-        if (language === "cs") {
+        if (language === "sk") {
             return {
-                edit: "Upravit",
-                update: "Uložit změny",
-                cancelEdit: "Zrušit úpravy",
-                setThumbnail: "Nastavit náhled",
-                thumbnail: "Náhled",
-                removeImage: "Odstranit",
-                imageReadError: "Nepodařilo se načíst nahrané obrázky.",
-                dragHint: "Přetáhněte pro změnu pořadí",
-                keyboardHint: "Přesuňte šipkami",
-                movedToPosition: (position, total) => `Obrázek přesunut na pozici ${position} z ${total}.`,
-                thumbnailSet: (position, total) => `Náhled nastaven na pozici ${position} z ${total}.`,
-                imageRemoved: (position, total) => `Obrázek ${position} odstraněn. Zbývá: ${total}.`,
-                imagesAdded: (added, total) => `Přidáno obrázků: ${added}. Celkem: ${total}.`,
-                reservedLabel: "Vozidlo je rezervované",
-                toggleReserved: "Přepnout rezervaci",
-                statusLabel: "Stav vozidla",
-                statusAvailable: "Dostupné",
-                statusReserved: "Rezervováno",
-                statusUnavailable: "Nedostupné"
-            };
-        }
-        return {
             edit: "Upraviť",
             update: "Uložiť zmeny",
             cancelEdit: "Zrušiť úpravu",
@@ -3255,6 +3231,28 @@ function CmsPage({ cars, setCars, language, texts }) {
             statusLabel: "Stav vozidla",
             statusAvailable: "Dostupné",
             statusReserved: "Rezervované",
+            statusUnavailable: "Nedostupné"
+        };
+        }
+        return {
+            edit: "Upravit",
+            update: "Uložit změny",
+            cancelEdit: "Zrušit úpravy",
+            setThumbnail: "Nastavit náhled",
+            thumbnail: "Náhled",
+            removeImage: "Odstranit",
+            imageReadError: "Nepodařilo se načíst nahrané obrázky.",
+            dragHint: "Přetáhněte pro změnu pořadí",
+            keyboardHint: "Přesuňte šipkami",
+            movedToPosition: (position, total) => `Obrázek přesunut na pozici ${position} z ${total}.`,
+            thumbnailSet: (position, total) => `Náhled nastaven na pozici ${position} z ${total}.`,
+            imageRemoved: (position, total) => `Obrázek ${position} odstraněn. Zbývá: ${total}.`,
+            imagesAdded: (added, total) => `Přidáno obrázků: ${added}. Celkem: ${total}.`,
+            reservedLabel: "Vozidlo je rezervované",
+            toggleReserved: "Přepnout rezervaci",
+            statusLabel: "Stav vozidla",
+            statusAvailable: "Dostupné",
+            statusReserved: "Rezervováno",
             statusUnavailable: "Nedostupné"
         };
     }, [language]);
