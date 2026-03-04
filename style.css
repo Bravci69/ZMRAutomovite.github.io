@@ -1318,6 +1318,10 @@ a:hover {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.checklist-block:has(.technical-grid-cms) {
+	display: none;
+}
+
 .equipment-grid-cms {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 }
