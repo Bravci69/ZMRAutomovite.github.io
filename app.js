@@ -2003,11 +2003,31 @@ async function sendReservationEmailViaProxy(payload) {
         return { ok: false, error: "missing-endpoint" };
     }
 
+    const isFormSubmitEndpoint = /formsubmit\.co\/ajax\//i.test(RESERVATION_PROXY_URL);
+    const requesterName = [payload?.form?.firstName, payload?.form?.lastName].filter(Boolean).join(" ").trim();
+    const requesterEmail = String(payload?.form?.email || "").trim();
+    const subject = String(payload?.subject || "Reservation request").trim();
+    const message = String(payload?.text || "").trim();
+
+    const formSubmitPayload = {
+        name: requesterName || "Website reservation",
+        email: requesterEmail,
+        subject,
+        message,
+        _subject: subject,
+        _replyto: requesterEmail,
+        _captcha: "false",
+        _template: "table"
+    };
+
     try {
         const response = await fetch(RESERVATION_PROXY_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            headers: {
+                "Content-Type": "application/json",
+                ...(isFormSubmitEndpoint ? { Accept: "application/json" } : {})
+            },
+            body: JSON.stringify(isFormSubmitEndpoint ? formSubmitPayload : payload)
         });
 
         if (!response.ok) {
@@ -2015,6 +2035,12 @@ async function sendReservationEmailViaProxy(payload) {
         }
 
         const data = await response.json().catch(() => ({}));
+        if (isFormSubmitEndpoint) {
+            if (data?.success === true || data?.success === "true") {
+                return { ok: true };
+            }
+            return { ok: false, error: data?.message ? `formsubmit-${String(data.message)}` : "invalid-response" };
+        }
         if (data?.ok) {
             return { ok: true };
         }
@@ -2024,7 +2050,6 @@ async function sendReservationEmailViaProxy(payload) {
         return { ok: false, error: "network" };
     }
 }
-
 function getReservationTexts(language) {
     if (language === "de") {
         return {
@@ -3897,6 +3922,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
 
 
 
