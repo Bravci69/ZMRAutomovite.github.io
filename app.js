@@ -20,6 +20,9 @@ const FIRESTORE_DOCUMENT_PATH = window.ZMR_FIRESTORE_DOCUMENT_PATH || "zmrSync/c
 let runtimeFirestoreIdToken = window.ZMR_FIRESTORE_ID_TOKEN || "";
 const FIREBASE_AUTH_SESSION_KEY = "zmrFirebaseAuthSession";
 const TRANSLATION_CACHE_KEY = "zmrTechnicalTranslations";
+const VEHICLE_MAKES_API_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/GetAllMakes?format=json";
+const VEHICLE_MAKES_CACHE_KEY = "zmrVehicleMakesCache";
+const VEHICLE_MAKES_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug-in hybrid", "Plyn"];
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
@@ -794,6 +797,70 @@ function normalizeFuelValue(value) {
 
 function normalizeBrandKey(value) {
     return String(value || "").trim().toLowerCase();
+}
+
+function readVehicleMakesCache() {
+    try {
+        const raw = localStorage.getItem(VEHICLE_MAKES_CACHE_KEY);
+        if (!raw) {
+            return null;
+        }
+        const parsed = JSON.parse(raw);
+        const brands = Array.isArray(parsed?.brands) ? parsed.brands.map((item) => String(item || "").trim()).filter(Boolean) : [];
+        const savedAt = Number(parsed?.savedAt);
+        if (brands.length === 0 || !Number.isFinite(savedAt) || savedAt <= 0) {
+            return null;
+        }
+        return { brands, savedAt };
+    } catch {
+        return null;
+    }
+}
+
+function saveVehicleMakesCache(brands) {
+    if (!Array.isArray(brands) || brands.length === 0) {
+        return;
+    }
+    try {
+        localStorage.setItem(VEHICLE_MAKES_CACHE_KEY, JSON.stringify({
+            savedAt: Date.now(),
+            brands
+        }));
+    } catch {
+        return;
+    }
+}
+
+async function fetchPublicVehicleMakes() {
+    const cached = readVehicleMakesCache();
+    if (cached && Date.now() - cached.savedAt < VEHICLE_MAKES_CACHE_TTL_MS) {
+        return cached.brands;
+    }
+
+    try {
+        const response = await fetch(VEHICLE_MAKES_API_URL, { method: "GET" });
+        if (!response.ok) {
+            return cached?.brands || [];
+        }
+        const payload = await response.json();
+        const rawResults = Array.isArray(payload?.Results) ? payload.Results : [];
+        const makes = Array.from(
+            new Set(
+                rawResults
+                    .map((item) => String(item?.Make_Name || "").trim())
+                    .filter(Boolean)
+            )
+        ).sort((a, b) => a.localeCompare(b, "en"));
+
+        if (makes.length > 0) {
+            saveVehicleMakesCache(makes);
+            return makes;
+        }
+
+        return cached?.brands || [];
+    } catch {
+        return cached?.brands || [];
+    }
 }
 
 function getEquipmentItems(car) {
@@ -3209,6 +3276,7 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [dragImageIndex, setDragImageIndex] = useState(null);
     const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
     const [liveMessage, setLiveMessage] = useState("");
+    const [publicBrandOptions, setPublicBrandOptions] = useState([]);
     const [form, setForm] = useState({
         name: "",
         brand: "",
@@ -3341,12 +3409,17 @@ function CmsPage({ cars, setCars, language, texts }) {
         return { invalidBrand: "Neplatná značka. Vyberte značku z existujícího seznamu." };
     }, [language]);
 
-    const cmsBrandOptions = useMemo(
+    const existingBrandOptions = useMemo(
         () => Array.from(new Set((Array.isArray(cars) ? cars : []).map((car) => String(car?.brand || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)),
         [cars, language]
     );
+    const cmsBrandOptions = useMemo(
+        () => Array.from(new Set([...publicBrandOptions, ...existingBrandOptions].map((brand) => String(brand || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)),
+        [publicBrandOptions, existingBrandOptions, language]
+    );
     const cmsBrandSelectOptions = useMemo(() => cmsBrandOptions.map((option) => ({ value: option, label: option })), [cmsBrandOptions]);
     const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
+    const isPublicBrandListAvailable = publicBrandOptions.length > 0;
 
     const getStatusFromCar = (car) => {
         if (!car?.available) {
@@ -3452,6 +3525,20 @@ function CmsPage({ cars, setCars, language, texts }) {
         }
         ensureFirebaseCmsIdToken();
     }, [isLogged]);
+
+    useEffect(() => {
+        let active = true;
+        fetchPublicVehicleMakes().then((makes) => {
+            if (!active) {
+                return;
+            }
+            setPublicBrandOptions(Array.isArray(makes) ? makes : []);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, []);
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -3580,7 +3667,9 @@ function CmsPage({ cars, setCars, language, texts }) {
 
         const normalizedBrand = normalizeBrandKey(form.brand);
         const matchedBrand = cmsBrandOptions.find((option) => normalizeBrandKey(option) === normalizedBrand) || "";
-        if (!matchedBrand) {
+        const fallbackBrand = String(form.brand || "").trim();
+        const selectedBrand = matchedBrand || (!isPublicBrandListAvailable ? fallbackBrand : "");
+        if (!selectedBrand) {
             setError(cmsValidationTexts.invalidBrand);
             return;
         }
@@ -3613,7 +3702,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         const baseCar = {
             id: editingCarId || `zmr-${Date.now()}`,
             name: form.name,
-            brand: matchedBrand,
+            brand: selectedBrand,
             origin: normalizeOriginValue(form.origin),
             year: form.year,
             priceCzk: Math.round(parseNumber(form.priceCzk) || 0),
