@@ -1282,6 +1282,17 @@ a:hover {
 	resize: vertical;
 }
 
+.cms-card input[type="number"] {
+	appearance: textfield;
+	-moz-appearance: textfield;
+}
+
+.cms-card input[type="number"]::-webkit-outer-spin-button,
+.cms-card input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
 .checklist-block {
 	display: grid;
 	gap: 10px;

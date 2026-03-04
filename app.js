@@ -791,6 +791,10 @@ function normalizeFuelValue(value) {
     return sanitizeOption(value, FUEL_OPTIONS, "Benzín");
 }
 
+function normalizeBrandKey(value) {
+    return String(value || "").trim().toLowerCase();
+}
+
 function getEquipmentItems(car) {
     if (Array.isArray(car.equipmentItems) && car.equipmentItems.length > 0) {
         return car.equipmentItems;
@@ -1216,6 +1220,15 @@ function sanitizeTechnicalChecklistValue(label, value) {
     return String(value || "").replace(/[^\d]/g, "");
 }
 
+function getTechnicalSuggestionListId(label) {
+    const slug = String(label || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    return `technical-values-${slug || "field"}`;
+}
+
 function normalizeTranslationValueKey(value) {
     return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
 }
@@ -1437,6 +1450,47 @@ function createTechnicalChecklistFromCar(car) {
     });
 
     return state;
+}
+
+function buildTechnicalValueSuggestions(cars) {
+    const valuesByLabel = TECHNICAL_CHECKLIST_FIELDS.reduce((accumulator, field) => {
+        accumulator[field.label] = new Set();
+        const fallbackValue = sanitizeTechnicalChecklistValue(field.label, field.defaultValue || "").trim();
+        if (fallbackValue) {
+            accumulator[field.label].add(fallbackValue);
+        }
+        return accumulator;
+    }, {});
+
+    (Array.isArray(cars) ? cars : []).forEach((car) => {
+        const technicalRows = getTechnicalData(car);
+        technicalRows.forEach((row) => {
+            const canonicalLabel = getCanonicalTechnicalLabel(row?.label);
+            if (!valuesByLabel[canonicalLabel]) {
+                return;
+            }
+            const sanitizedValue = sanitizeTechnicalChecklistValue(canonicalLabel, row?.value || "").trim();
+            if (!sanitizedValue) {
+                return;
+            }
+            valuesByLabel[canonicalLabel].add(sanitizedValue);
+        });
+    });
+
+    return Object.entries(valuesByLabel).reduce((accumulator, [label, values]) => {
+        const sortedValues = [...values].sort((a, b) => {
+            if (TECHNICAL_NUMERIC_FIELD_LABELS.has(label)) {
+                const parsedA = Number(a);
+                const parsedB = Number(b);
+                if (Number.isFinite(parsedA) && Number.isFinite(parsedB)) {
+                    return parsedA - parsedB;
+                }
+            }
+            return String(a).localeCompare(String(b));
+        });
+        accumulator[label] = sortedValues;
+        return accumulator;
+    }, {});
 }
 
 function createInitialEquipmentChecklistState() {
@@ -3268,6 +3322,26 @@ function CmsPage({ cars, setCars, language, texts }) {
         };
     }, [language]);
 
+    const cmsValidationTexts = useMemo(() => {
+        if (language === "de") {
+            return { invalidBrand: "Ungültige Marke. Wählen Sie eine bestehende Marke aus." };
+        }
+        if (language === "en") {
+            return { invalidBrand: "Invalid brand. Choose one of the existing brands." };
+        }
+        if (language === "sk") {
+            return { invalidBrand: "Neplatná značka. Vyber značku z existujúceho zoznamu." };
+        }
+        return { invalidBrand: "Neplatná značka. Vyberte značku z existujícího seznamu." };
+    }, [language]);
+
+    const cmsBrandOptions = useMemo(
+        () => Array.from(new Set((Array.isArray(cars) ? cars : []).map((car) => String(car?.brand || "").trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b, language)),
+        [cars, language]
+    );
+    const cmsBrandSelectOptions = useMemo(() => cmsBrandOptions.map((option) => ({ value: option, label: option })), [cmsBrandOptions]);
+    const technicalValueSuggestions = useMemo(() => buildTechnicalValueSuggestions(cars), [cars]);
+
     const getStatusFromCar = (car) => {
         if (!car?.available) {
             return "unavailable";
@@ -3496,6 +3570,13 @@ function CmsPage({ cars, setCars, language, texts }) {
     const addCar = async (event) => {
         event.preventDefault();
 
+        const normalizedBrand = normalizeBrandKey(form.brand);
+        const matchedBrand = cmsBrandOptions.find((option) => normalizeBrandKey(option) === normalizedBrand) || "";
+        if (!matchedBrand) {
+            setError(cmsValidationTexts.invalidBrand);
+            return;
+        }
+
         const transmission = sanitizeOption(form.transmission, TRANSMISSION_OPTIONS, "Automat");
         const manualGears = transmission === "Manuál" ? Math.max(1, Math.round(parseNumber(form.manualGears) || 0)) : 0;
         const technicalData = buildTechnicalDataFromChecklist(technicalChecklist, form, transmission, manualGears);
@@ -3524,7 +3605,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         const baseCar = {
             id: editingCarId || `zmr-${Date.now()}`,
             name: form.name,
-            brand: form.brand,
+            brand: matchedBrand,
             year: form.year,
             priceCzk: Math.round(parseNumber(form.priceCzk) || 0),
             mileage: form.mileage,
@@ -3641,7 +3722,15 @@ function CmsPage({ cars, setCars, language, texts }) {
                 <form className="form-grid" onSubmit={addCar} autoComplete="off">
                     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMessage}</p>
                     <label>{texts.cms.fields.name}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
-                    <label>{texts.cms.fields.brand}<input type="text" name="vehicleBrand" autoComplete="off" value={form.brand} onChange={(e) => setForm((prev) => ({ ...prev, brand: e.target.value }))} required /></label>
+                    <label>{texts.cms.fields.brand}
+                        <DarkSelect
+                            value={form.brand}
+                            onChange={(value) => setForm((prev) => ({ ...prev, brand: value || "" }))}
+                            options={cmsBrandSelectOptions}
+                            placeholder={texts.cms.fields.brand}
+                            ariaLabel={texts.cms.fields.brand}
+                        />
+                    </label>
                     <label>{texts.cms.fields.year}<input type="text" value={form.year} onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.priceCzk}<input type="number" min="0" value={form.priceCzk} onChange={(e) => setForm((prev) => ({ ...prev, priceCzk: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.mileage}<input type="text" value={form.mileage} onChange={(e) => setForm((prev) => ({ ...prev, mileage: e.target.value }))} required /></label>
@@ -3739,6 +3828,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                                             min={isNumericField ? "0" : undefined}
                                             inputMode={isNumericField ? "numeric" : undefined}
                                             pattern={isNumericField ? "[0-9]*" : undefined}
+                                            list={getTechnicalSuggestionListId(field.label)}
                                             value={row.value}
                                             onChange={(e) => setTechnicalChecklist((prev) => ({
                                                 ...prev,
@@ -3746,6 +3836,13 @@ function CmsPage({ cars, setCars, language, texts }) {
                                             }))}
                                             disabled={!row.enabled}
                                         />
+                                        {Array.isArray(technicalValueSuggestions[field.label]) && technicalValueSuggestions[field.label].length > 0 && (
+                                            <datalist id={getTechnicalSuggestionListId(field.label)}>
+                                                {technicalValueSuggestions[field.label].map((suggestionValue) => (
+                                                    <option key={`${field.label}-${suggestionValue}`} value={suggestionValue} />
+                                                ))}
+                                            </datalist>
+                                        )}
                                     </div>
                                 );
                             })}
