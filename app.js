@@ -2516,6 +2516,11 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
     );
 }
 function HomePage({ texts }) {
+    const homeKpis = Array.isArray(texts.home.kpis) ? texts.home.kpis : [];
+    const homePillars = Array.isArray(texts.home.pillars) ? texts.home.pillars : [];
+    const homeWorkflowSteps = Array.isArray(texts.home.workflowSteps) ? texts.home.workflowSteps : [];
+    const homePillarIcons = ["🧭", "📡", "🤝", "🚚"];
+
     return (
         <>
             <section className="card">
@@ -2534,6 +2539,60 @@ function HomePage({ texts }) {
                 <div>
                     <h2>{texts.home.outputTitle}</h2>
                     <p>{texts.home.outputText}</p>
+                </div>
+            </section>
+
+            {homeKpis.length > 0 && (
+                <section className="card">
+                    <h2>{texts.home.kpiTitle || texts.home.whyTitle}</h2>
+                    <div className="services-kpi-strip" aria-label="Home highlights">
+                        {homeKpis.map((kpi) => (
+                            <span key={kpi} className="services-kpi-chip">{kpi}</span>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {homePillars.length > 0 && (
+                <section className="card services-section">
+                    <h2>{texts.home.pillarsTitle || texts.home.outputTitle}</h2>
+                    <div className="grid wide-grid">
+                        {homePillars.map((pillar, index) => (
+                            <article key={`${pillar.title}-${index}`} className="service-item">
+                                <div className="service-item-head">
+                                    <span className="service-item-icon" aria-hidden="true">{homePillarIcons[index] || "✔"}</span>
+                                    <h3>{pillar.title}</h3>
+                                </div>
+                                <p>{pillar.text}</p>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {homeWorkflowSteps.length > 0 && (
+                <section className="card services-section">
+                    <h2>{texts.home.workflowTitle || texts.contact.processTitle}</h2>
+                    <div className="home-workflow-grid">
+                        {homeWorkflowSteps.map((step, index) => (
+                            <article key={`${step.title || step}-${index}`} className="home-workflow-item">
+                                <span className="home-step-badge" aria-hidden="true">{index + 1}</span>
+                                <div>
+                                    <h3>{step.title || `${index + 1}.`}</h3>
+                                    <p>{step.text || step}</p>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            <section className="card home-cta">
+                <h2>{texts.home.ctaTitle || texts.contact.title}</h2>
+                <p>{texts.home.ctaText || texts.contact.p1}</p>
+                <div className="home-cta-actions">
+                    <a href="/sluzby" className="button-link">{texts.home.ctaPrimary || texts.nav.services}</a>
+                    <a href="/kontakt" className="button-link button-secondary">{texts.home.ctaSecondary || texts.nav.contact}</a>
                 </div>
             </section>
         </>
