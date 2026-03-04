@@ -3548,7 +3548,12 @@ function CmsPage({ cars, setCars, language, texts }) {
                 statusUnavailable: "Nicht verfügbar",
                 autoTranslatePending: "Automatische Übersetzung läuft für alle Sprachversionen…",
                 autoTranslateReady: "Texte sind für alle Sprachversionen synchronisiert.",
-                autoTranslateDisabled: "Automatische Übersetzung ist derzeit nicht konfiguriert."
+                autoTranslateDisabled: "Automatische Übersetzung ist derzeit nicht konfiguriert.",
+                manualTranslateInfo: "Manueller Modus: Sie bearbeiten den Text nur für die ausgewählte Sprache.",
+                translationModeLabel: "Übersetzungsmodus",
+                translationModeAuto: "Automatisch",
+                translationModeManual: "Manuell",
+                translationLanguageLabel: "Bearbeitungssprache (Flaggen)"
             };
         }
         if (language === "en") {
@@ -3574,7 +3579,12 @@ function CmsPage({ cars, setCars, language, texts }) {
                 statusUnavailable: "Unavailable",
                 autoTranslatePending: "Auto-translation is running for all language versions…",
                 autoTranslateReady: "Texts are synchronized across all language versions.",
-                autoTranslateDisabled: "Auto-translation is not configured right now."
+                autoTranslateDisabled: "Auto-translation is not configured right now.",
+                manualTranslateInfo: "Manual mode: you are editing text only for the selected language.",
+                translationModeLabel: "Translation mode",
+                translationModeAuto: "Automatic",
+                translationModeManual: "Manual",
+                translationLanguageLabel: "Editing language (flags)"
             };
         }
         if (language === "sk") {
@@ -3600,7 +3610,12 @@ function CmsPage({ cars, setCars, language, texts }) {
             statusUnavailable: "Nedostupné",
             autoTranslatePending: "Automatický preklad pre všetky jazykové mutácie práve prebieha…",
             autoTranslateReady: "Texty sú zosynchronizované pre všetky jazykové mutácie.",
-            autoTranslateDisabled: "Automatický preklad teraz nie je nakonfigurovaný."
+            autoTranslateDisabled: "Automatický preklad teraz nie je nakonfigurovaný.",
+            manualTranslateInfo: "Manuálny režim: upravuješ text iba pre vybraný jazyk.",
+            translationModeLabel: "Režim prekladu",
+            translationModeAuto: "Automatický",
+            translationModeManual: "Manuálny",
+            translationLanguageLabel: "Jazyk prepisu (vlajky)"
         };
         }
         return {
@@ -3625,7 +3640,12 @@ function CmsPage({ cars, setCars, language, texts }) {
             statusUnavailable: "Nedostupné",
             autoTranslatePending: "Automatický překlad do všech jazykových mutací právě probíhá…",
             autoTranslateReady: "Texty jsou synchronizované pro všechny jazykové mutace.",
-            autoTranslateDisabled: "Automatický překlad nyní není nakonfigurovaný."
+            autoTranslateDisabled: "Automatický překlad nyní není nakonfigurovaný.",
+            manualTranslateInfo: "Manuální režim: upravujete text pouze pro vybraný jazyk.",
+            translationModeLabel: "Režim překladu",
+            translationModeAuto: "Automatický",
+            translationModeManual: "Manuální",
+            translationLanguageLabel: "Jazyk přepisu (vlajky)"
         };
     }, [language]);
 
@@ -3674,8 +3694,50 @@ function CmsPage({ cars, setCars, language, texts }) {
         () => [form.name, form.description, form.legal].some((value) => String(value || "").trim().length > 0),
         [form.name, form.description, form.legal]
     );
+    const cmsDraftLanguageOption = useMemo(
+        () => LANGUAGE_OPTIONS.find((option) => option.code === cmsDraftLanguage) || LANGUAGE_OPTIONS[0],
+        [cmsDraftLanguage]
+    );
+    const cmsDraftLanguageBadge = cmsDraftLanguageOption
+        ? `${cmsDraftLanguageOption.flag} ${cmsDraftLanguageOption.code.toUpperCase()}`
+        : String(cmsDraftLanguage || "").toUpperCase();
     const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
     const isPublicBrandListAvailable = publicBrandOptions.length > 0;
+
+    const getLocalizedDraftValueForLanguage = (fields, fieldKey, languageCode, fallbackValue = "") => {
+        const mapKey = `${fieldKey}I18n`;
+        if (fields?.[mapKey] && typeof fields[mapKey][languageCode] === "string") {
+            return fields[mapKey][languageCode];
+        }
+        return String(fallbackValue || "");
+    };
+
+    const switchCmsDraftLanguage = (nextLanguage) => {
+        if (!SUPPORTED_LANG_CODES.includes(nextLanguage)) {
+            return;
+        }
+        setCmsDraftLanguage(nextLanguage);
+        setForm((prev) => ({
+            ...prev,
+            name: getLocalizedDraftValueForLanguage(localizedCmsDraftFields, "name", nextLanguage, prev.name),
+            description: getLocalizedDraftValueForLanguage(localizedCmsDraftFields, "description", nextLanguage, prev.description),
+            legal: getLocalizedDraftValueForLanguage(localizedCmsDraftFields, "legal", nextLanguage, prev.legal)
+        }));
+    };
+
+    const updateLocalizedDraftField = (fieldKey, value) => {
+        const nextValue = String(value || "");
+        const mapKey = `${fieldKey}I18n`;
+        setForm((prev) => ({ ...prev, [fieldKey]: nextValue }));
+        setLocalizedCmsDraftFields((prev) => {
+            const nextMap = createLocalizedMap(prev?.[mapKey], "");
+            nextMap[cmsDraftLanguage] = nextValue;
+            return {
+                ...prev,
+                [mapKey]: nextMap
+            };
+        });
+    };
 
     const getStatusFromCar = (car) => {
         if (!car?.available) {
@@ -3802,12 +3864,17 @@ function CmsPage({ cars, setCars, language, texts }) {
             return;
         }
 
+        if (cmsTranslationMode !== "auto") {
+            setIsCmsAutoTranslating(false);
+            return;
+        }
+
         const sourceFields = {
             name: String(form.name || ""),
             description: String(form.description || ""),
             legal: String(form.legal || "")
         };
-        const seededLocalized = createLocalizedCmsFieldMaps(sourceFields, language).localized;
+        const seededLocalized = createLocalizedCmsFieldMaps(sourceFields, cmsDraftLanguage).localized;
 
         if (!TRANSLATE_PROXY_URL || !hasCmsTranslatableInput) {
             setLocalizedCmsDraftFields(seededLocalized);
@@ -3818,7 +3885,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         let active = true;
         const timeoutId = window.setTimeout(() => {
             setIsCmsAutoTranslating(true);
-            buildLocalizedCmsFields(sourceFields, language)
+            buildLocalizedCmsFields(sourceFields, cmsDraftLanguage)
                 .then((localized) => {
                     if (!active) {
                         return;
@@ -3836,7 +3903,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             active = false;
             window.clearTimeout(timeoutId);
         };
-    }, [isLogged, form.name, form.description, form.legal, language, hasCmsTranslatableInput]);
+    }, [isLogged, form.name, form.description, form.legal, cmsDraftLanguage, hasCmsTranslatableInput, cmsTranslationMode]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
