@@ -3933,6 +3933,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setDragOverImageIndex(null);
         setLiveMessage("");
         setIsBrandSuggestionsOpen(false);
+        setCmsDraftLanguage(SUPPORTED_LANG_CODES.includes(language) ? language : "sk");
         setForm({
             name: "",
             brand: "",
@@ -3967,6 +3968,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setEditingCarId(car.id);
         setIsBrandSuggestionsOpen(false);
         setError("");
+        setCmsDraftLanguage(SUPPORTED_LANG_CODES.includes(language) ? language : "sk");
         setForm({
             name: car.name || "",
             brand: car.brand || "",
@@ -4076,12 +4078,12 @@ function CmsPage({ cars, setCars, language, texts }) {
             legal: form.legal
         };
         const isDraftUpToDate = !isCmsAutoTranslating
-            && String(localizedCmsDraftFields?.nameI18n?.[language] || "") === String(sourceCmsFields.name || "")
-            && String(localizedCmsDraftFields?.descriptionI18n?.[language] || "") === String(sourceCmsFields.description || "")
-            && String(localizedCmsDraftFields?.legalI18n?.[language] || "") === String(sourceCmsFields.legal || "");
+            && String(localizedCmsDraftFields?.nameI18n?.[cmsDraftLanguage] || "") === String(sourceCmsFields.name || "")
+            && String(localizedCmsDraftFields?.descriptionI18n?.[cmsDraftLanguage] || "") === String(sourceCmsFields.description || "")
+            && String(localizedCmsDraftFields?.legalI18n?.[cmsDraftLanguage] || "") === String(sourceCmsFields.legal || "");
         const localizedCmsFields = isDraftUpToDate
             ? localizedCmsDraftFields
-            : await buildLocalizedCmsFields(sourceCmsFields, language);
+            : await buildLocalizedCmsFields(sourceCmsFields, cmsDraftLanguage);
 
         const existingCar = editingCarId ? cars.find((car) => car.id === editingCarId) : null;
         const now = Date.now();
