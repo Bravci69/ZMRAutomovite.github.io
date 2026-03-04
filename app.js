@@ -534,10 +534,10 @@ const I18N = {
         },
         about: {
             title: "O našej spoločnosti",
-            p1: "ZMR Automotive je tím zameraný na odbornú kontrolu vozidiel a podporu pri kúpe alebo dovoze auta zo zahraničia.",
-            p2: "Dôraz kladieme na transparentnú komunikáciu, technickú presnosť a zrozumiteľný proces.",
+            p1: "ZMR Automotive je špecializovaný tím pre odbornú kontrolu vozidiel, riadený dovoz a technicky podložené rozhodovanie pri kúpe auta na Slovensku aj v Česku.",
+            p2: "Našou prioritou je transparentná komunikácia, presná metodika a zodpovedné odporúčania, aby klient vedel presne, čo kupuje, v akom stave a s akým reálnym rizikom.",
             locationTitle: "Naša lokalita – Praha",
-            locationText: "Základňu máme v Prahe a služby poskytujeme klientom z celej ČR aj okolitých štátov."
+            locationText: "Základňu máme v Prahe, no projekty riešime pre klientov z celej ČR, Slovenska aj okolitých krajín podľa typu vozidla a požadovaného rozsahu služby."
         },
         services: {
             title: "Rozsah služieb",
@@ -2269,13 +2269,37 @@ function HomePage({ texts }) {
     );
 }
 
-function AboutPage({ texts }) {
+function AboutPage({ texts, language }) {
+    const aboutQuote = language === "cs"
+        ? "„Děláme to proto, aby klient nekupoval auto podle emocí, ale podle faktů, které obstojí i po letech.“"
+        : language === "de"
+            ? "„Wir tun das, damit Kunden ein Fahrzeug nicht nach Gefühl, sondern auf Basis belastbarer Fakten auswählen.“"
+            : language === "en"
+                ? "\"We do this so clients do not buy on emotion, but on facts that remain valid long after the purchase.\""
+                : "„Robíme to preto, aby klient nekupoval auto na základe emócie, ale na základe faktov, ktoré obstoja aj po rokoch.“";
+
+    const extendedAbout = language === "sk"
+        ? [
+            "Začali sme preto, že na trhu často chýbajú jasné dáta a odborné vysvetlenie stavu vozidla pred kúpou. Namiesto dojmu prinášame fakty, merania a zrozumiteľné odporúčanie.",
+            "Každý projekt má pevný rámec: analýza zadania, technické preverenie, vyhodnotenie rizík a plán ďalších krokov. Klient tak vie, čo sa rieši, v akom poradí a s akým očakávaným výsledkom.",
+            "Silnou časťou našej práce je dovoz z USA a Japonska, kde riešime nielen výber modelu, ale aj overenie aukčných podkladov, logistiku, administratívu a prípravu na registráciu.",
+            "Nepracujeme na rýchly predaj za každú cenu. Našim cieľom je dlhodobo bezpečné a ekonomicky udržateľné rozhodnutie, ktoré obstojí aj po rokoch prevádzky."
+        ]
+        : [];
+
     return (
         <>
             <section className="card">
                 <h2>{texts.about.title}</h2>
                 <p>{texts.about.p1}</p>
                 <p>{texts.about.p2}</p>
+                <blockquote>
+                    <p>{aboutQuote}</p>
+                    <cite>— ZMR Automotive</cite>
+                </blockquote>
+                {extendedAbout.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                ))}
             </section>
 
             <section className="card">
@@ -3929,6 +3953,8 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+
 
 
 
