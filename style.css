@@ -98,6 +98,27 @@ img {
 	width: 170px;
 }
 
+.cms-login-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--text);
+	font-size: 0.95rem;
+	text-decoration: none;
+	transition: all 0.2s ease;
+}
+
+.cms-login-icon:hover {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.3);
+	color: #fff;
+}
+
 .language-switcher .dark-select {
 	width: 170px;
 }
@@ -1608,9 +1629,13 @@ a:hover {
 	}
 
 	.language-switcher {
-		order: 2;
+		order: 3;
 		justify-content: flex-end;
 		width: 150px;
+	}
+
+	.cms-login-icon {
+		order: 2;
 	}
 
 	.language-switcher .dark-select,

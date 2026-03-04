@@ -2191,6 +2191,13 @@ function LanguageSwitcher({ language, onChange, texts }) {
 function PageShell({ page, title, subtitle, language, onLanguageChange, texts, children }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const menuLabel = language === "de" ? "Menü" : "Menu";
+    const cmsLoginLabel = language === "de"
+        ? "CMS Anmeldung"
+        : language === "en"
+            ? "CMS login"
+            : language === "sk"
+                ? "Prihlásenie do CMS"
+                : "Přihlášení do CMS";
 
     useEffect(() => {
         setIsMobileMenuOpen(false);
@@ -2228,6 +2235,10 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
                         <div id="primary-mobile-nav" className={isMobileMenuOpen ? "mobile-nav-wrap open" : "mobile-nav-wrap"}>
                             <Navigation activePage={page} texts={texts} className="primary-nav" onNavigate={() => setIsMobileMenuOpen(false)} />
                         </div>
+                        <a className="cms-login-icon" href="cms.html" aria-label={cmsLoginLabel} title={cmsLoginLabel}>
+                            <span aria-hidden="true">🔐</span>
+                            <span className="sr-only">{cmsLoginLabel}</span>
+                        </a>
                         <LanguageSwitcher language={language} onChange={onLanguageChange} texts={texts} />
                     </div>
                 </div>
