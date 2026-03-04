@@ -64,15 +64,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP handling požadavku", "Prioritní termíny obhlídek", "Prémiová fotodokumentace", "Osobní konzultant po celou dobu"],
         luxuryButton: "Mám zájem o Luxury",
         luxurySubject: "Poptávka: Luxury varianta",
-        luxuryBody: "Dobrý den,%0D%0A%0D%0Amám zájem o Luxury variantu služeb ZMR Automovité.%0D%0AProsím o kontakt a návrh dalšího postupu.%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0APreferovaný termín:%0D%0A",
+        luxuryBody: "Dobrý den,%0D%0A%0D%0Amám zájem o Luxury variantu služeb ZMR Automotive.%0D%0AProsím o kontakt a návrh dalšího postupu.%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0APreferovaný termín:%0D%0A",
         technicalTitle: "Technical varianta",
         technicalPoints: ["Měření a diagnostika řídicích jednotek", "Kontrola kritických komponent", "Detailní risk-score report", "Návrh servisního plánu po koupi"],
         technicalButton: "Mám zájem o Technical",
         technicalSubject: "Poptávka: Technical varianta",
-        technicalBody: "Dobrý den,%0D%0A%0D%0Amám zájem o Technical variantu služeb ZMR Automovité.%0D%0AProsím o kontakt a návrh technického postupu.%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0ATyp vozidla / VIN (volitelné):%0D%0A",
+        technicalBody: "Dobrý den,%0D%0A%0D%0Amám zájem o Technical variantu služeb ZMR Automotive.%0D%0AProsím o kontakt a návrh technického postupu.%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0ATyp vozidla / VIN (volitelné):%0D%0A",
         customButton: "Chci individuální nabídku",
         customSubject: "Poptávka: Individuální nabídka",
-        customBody: "Dobrý den,%0D%0A%0D%0Aprosím o individuální nabídku služeb ZMR Automovité podle mých požadavků.%0D%0A%0D%0APopis požadavku:%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0A",
+        customBody: "Dobrý den,%0D%0A%0D%0Aprosím o individuální nabídku služeb ZMR Automotive podle mých požadavků.%0D%0A%0D%0APopis požadavku:%0D%0A%0D%0AJméno:%0D%0ATelefon:%0D%0AE-mail:%0D%0A",
         ctaTitle: "Potřebujete konzultaci k vozu?",
         ctaText: "Pošlete poptávku a připravíme konkrétní postup podle vaší situace.",
         ctaButton: "Kontaktovat nás"
@@ -98,15 +98,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP vybavenie dopytu", "Prioritné termíny obhliadok", "Prémiová fotodokumentácia", "Osobný konzultant počas celého procesu"],
         luxuryButton: "Mám záujem o Luxury",
         luxurySubject: "Dopyt: Luxury variant",
-        luxuryBody: "Dobrý deň,%0D%0A%0D%0Amám záujem o Luxury variant služieb ZMR Automovité.%0D%0AProsím o kontakt a návrh ďalšieho postupu.%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0APreferovaný termín:%0D%0A",
+        luxuryBody: "Dobrý deň,%0D%0A%0D%0Amám záujem o Luxury variant služieb ZMR Automotive.%0D%0AProsím o kontakt a návrh ďalšieho postupu.%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0APreferovaný termín:%0D%0A",
         technicalTitle: "Technical variant",
         technicalPoints: ["Merania a diagnostika riadiacich jednotiek", "Kontrola kritických komponentov", "Detailný risk-score report", "Návrh servisného plánu po kúpe"],
         technicalButton: "Mám záujem o Technical",
         technicalSubject: "Dopyt: Technical variant",
-        technicalBody: "Dobrý deň,%0D%0A%0D%0Amám záujem o Technical variant služieb ZMR Automovité.%0D%0AProsím o kontakt a návrh technického postupu.%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0ATyp vozidla / VIN (voliteľné):%0D%0A",
+        technicalBody: "Dobrý deň,%0D%0A%0D%0Amám záujem o Technical variant služieb ZMR Automotive.%0D%0AProsím o kontakt a návrh technického postupu.%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0ATyp vozidla / VIN (voliteľné):%0D%0A",
         customButton: "Chcem individuálnu ponuku",
         customSubject: "Dopyt: Individuálna ponuka",
-        customBody: "Dobrý deň,%0D%0A%0D%0Aprosím o individuálnu ponuku služieb ZMR Automovité podľa mojich požiadaviek.%0D%0A%0D%0APopis požiadavky:%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0A",
+        customBody: "Dobrý deň,%0D%0A%0D%0Aprosím o individuálnu ponuku služieb ZMR Automotive podľa mojich požiadaviek.%0D%0A%0D%0APopis požiadavky:%0D%0A%0D%0AMeno:%0D%0ATelefón:%0D%0AE-mail:%0D%0A",
         ctaTitle: "Potrebujete konzultáciu k vozidlu?",
         ctaText: "Pošlite dopyt a pripravíme konkrétny postup podľa vašej situácie.",
         ctaButton: "Kontaktovať nás"
@@ -132,15 +132,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP-Betreuung der Anfrage", "Priorisierte Besichtigungstermine", "Premium-Fotodokumentation", "Persönlicher Berater im gesamten Prozess"],
         luxuryButton: "Interesse an Luxury",
         luxurySubject: "Anfrage: Luxury-Variante",
-        luxuryBody: "Guten Tag,%0D%0A%0D%0Aich habe Interesse an der Luxury-Variante von ZMR Automovité.%0D%0ABitte kontaktieren Sie mich mit einem Vorschlag für die nächsten Schritte.%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0ABevorzugter Termin:%0D%0A",
+        luxuryBody: "Guten Tag,%0D%0A%0D%0Aich habe Interesse an der Luxury-Variante von ZMR Automotive.%0D%0ABitte kontaktieren Sie mich mit einem Vorschlag für die nächsten Schritte.%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0ABevorzugter Termin:%0D%0A",
         technicalTitle: "Technical-Variante",
         technicalPoints: ["Steuergeräte-Diagnose und Messwerte", "Prüfung kritischer Komponenten", "Detaillierter Risk-Score-Report", "Serviceplan-Empfehlung nach Kauf"],
         technicalButton: "Interesse an Technical",
         technicalSubject: "Anfrage: Technical-Variante",
-        technicalBody: "Guten Tag,%0D%0A%0D%0Aich habe Interesse an der Technical-Variante von ZMR Automovité.%0D%0ABitte kontaktieren Sie mich mit einem technischen Vorgehensvorschlag.%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0AFahrzeugtyp / VIN (optional):%0D%0A",
+        technicalBody: "Guten Tag,%0D%0A%0D%0Aich habe Interesse an der Technical-Variante von ZMR Automotive.%0D%0ABitte kontaktieren Sie mich mit einem technischen Vorgehensvorschlag.%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0AFahrzeugtyp / VIN (optional):%0D%0A",
         customButton: "Individuelles Angebot",
         customSubject: "Anfrage: Individuelles Angebot",
-        customBody: "Guten Tag,%0D%0A%0D%0Aich bitte um ein individuelles Angebot von ZMR Automovité entsprechend meiner Anforderungen.%0D%0A%0D%0ABeschreibung der Anfrage:%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0A",
+        customBody: "Guten Tag,%0D%0A%0D%0Aich bitte um ein individuelles Angebot von ZMR Automotive entsprechend meiner Anforderungen.%0D%0A%0D%0ABeschreibung der Anfrage:%0D%0A%0D%0AName:%0D%0ATelefon:%0D%0AE-Mail:%0D%0A",
         ctaTitle: "Benötigen Sie eine Fahrzeugberatung?",
         ctaText: "Senden Sie uns Ihre Anfrage und wir erstellen einen klaren nächsten Schritt.",
         ctaButton: "Kontakt aufnehmen"
@@ -166,15 +166,15 @@ const SERVICES_PAGE_CONTENT = {
         luxuryPoints: ["VIP request handling", "Priority inspection slots", "Premium photo documentation", "Dedicated consultant throughout the process"],
         luxuryButton: "I want Luxury",
         luxurySubject: "Inquiry: Luxury variant",
-        luxuryBody: "Hello,%0D%0A%0D%0AI am interested in the Luxury variant of ZMR Automovité services.%0D%0APlease contact me with the next-step proposal.%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0APreferred date:%0D%0A",
+        luxuryBody: "Hello,%0D%0A%0D%0AI am interested in the Luxury variant of ZMR Automotive services.%0D%0APlease contact me with the next-step proposal.%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0APreferred date:%0D%0A",
         technicalTitle: "Technical variant",
         technicalPoints: ["ECU diagnostics and measurements", "Critical-component checks", "Detailed risk-score reporting", "Post-purchase service-plan recommendation"],
         technicalButton: "I want Technical",
         technicalSubject: "Inquiry: Technical variant",
-        technicalBody: "Hello,%0D%0A%0D%0AI am interested in the Technical variant of ZMR Automovité services.%0D%0APlease contact me with a technical next-step proposal.%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0AVehicle type / VIN (optional):%0D%0A",
+        technicalBody: "Hello,%0D%0A%0D%0AI am interested in the Technical variant of ZMR Automotive services.%0D%0APlease contact me with a technical next-step proposal.%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0AVehicle type / VIN (optional):%0D%0A",
         customButton: "I want a custom offer",
         customSubject: "Inquiry: Custom offer",
-        customBody: "Hello,%0D%0A%0D%0APlease prepare a custom service offer from ZMR Automovité based on my requirements.%0D%0A%0D%0ARequest details:%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0A",
+        customBody: "Hello,%0D%0A%0D%0APlease prepare a custom service offer from ZMR Automotive based on my requirements.%0D%0A%0D%0ARequest details:%0D%0A%0D%0AName:%0D%0APhone:%0D%0AEmail:%0D%0A",
         ctaTitle: "Need advice for a specific car?",
         ctaText: "Send us your request and we will prepare a concrete next-step plan.",
         ctaButton: "Contact us"
@@ -389,7 +389,7 @@ const I18N = {
             doorsUnit: "dveří"
         },
         pages: {
-            home: { title: "ZMR Automovité", subtitle: "Reprezentativní služby pro kontrolu a dovoz vozidel bez kompromisů." },
+            home: { title: "ZMR Automotive", subtitle: "Komplexní kontrola a dovoz vozidel z USA, Japonska i EU bez kompromisů." },
             about: { title: "O nás", subtitle: "Zkušenosti, transparentnost a důraz na bezpečný nákup vozidla." },
             services: { title: "Služby", subtitle: "Komplexní řešení kontroly, dovozu a přípravy vozidla na provoz." },
             cars: { title: "Nabídka vozidel", subtitle: "Přehled aktuálně dostupných vozidel s detailním popisem stavu, výbavy a legislativních informací." },
@@ -398,9 +398,11 @@ const I18N = {
             cms: { title: "CMS vozidel", subtitle: "Interní zóna pro správu nabídky vozidel." }
         },
         home: {
-            whyTitle: "Proč si vybrat ZMR Automovité",
+            whyTitle: "Proč si vybrat ZMR Automotive",
             whyP1: "Naším cílem je, aby klient přesně věděl, co kupuje. Nejde jen o rychlý pohled na vozidlo, ale o detailní proces prověření technického stavu, historie, výbavy a legislativní připravenosti.",
             whyP2: "Spolupráce je transparentní od prvního kontaktu: domluvíme rozsah kontroly, připravíme výstupní zprávu, vysvětlíme rizika a navrhneme další postup.",
+            whyP3: "Specializujeme se na import vozidel z USA a Japonska – od výběru vhodného vozu přes aukce až po bezpečné doručení do ČR/SR.",
+            whyP4: "Řešíme i celý proces po dovozu: homologace, přihlášení, STK a doporučení servisních kroků, aby bylo vozidlo připravené na provoz.",
             approachTitle: "Komplexní přístup",
             approachText: "Pokrýváme celý proces od výběru modelu přes obhlídku až po dovoz a základní servis.",
             outputTitle: "Jasné výstupy",
@@ -408,7 +410,7 @@ const I18N = {
         },
         about: {
             title: "O naší společnosti",
-            p1: "ZMR Automovité je tým zaměřený na odbornou kontrolu vozidel a podporu při koupi nebo dovozu auta ze zahraničí.",
+            p1: "ZMR Automotive je tým zaměřený na odbornou kontrolu vozidel a podporu při koupi nebo dovozu auta ze zahraničí.",
             p2: "Klademe důraz na transparentní komunikaci, technickou přesnost a srozumitelný proces i pro klienty bez hlubších zkušeností.",
             locationTitle: "Naše lokalita – Praha",
             locationText: "Základnu máme v Praze a služby poskytujeme klientům z celé ČR i okolních států."
@@ -511,7 +513,7 @@ const I18N = {
         nav: { home: "Domov", about: "O nás", services: "Služby", cars: "Vozidlá", contact: "Kontakt", cms: "CMS" },
         common: { language: "Jazyk", statusAvailable: "Dostupné", statusUnavailable: "Momentálne nedostupné", price: "Cena", horsepowerUnit: "k", doorsUnit: "dverí" },
         pages: {
-            home: { title: "ZMR Automovité", subtitle: "Reprezentatívne služby pre kontrolu a dovoz vozidiel bez kompromisov." },
+            home: { title: "ZMR Automotive", subtitle: "Komplexná kontrola a dovoz vozidiel z USA, Japonska aj EÚ bez kompromisov." },
             about: { title: "O nás", subtitle: "Skúsenosti, transparentnosť a dôraz na bezpečný nákup vozidla." },
             services: { title: "Služby", subtitle: "Komplexné riešenia kontroly, dovozu a prípravy vozidla na prevádzku." },
             cars: { title: "Ponuka vozidiel", subtitle: "Prehľad aktuálne dostupných vozidiel s detailným popisom stavu, výbavy a legislatívnych informácií." },
@@ -520,9 +522,11 @@ const I18N = {
             cms: { title: "CMS vozidiel", subtitle: "Interná zóna pre správu ponuky vozidiel." }
         },
         home: {
-            whyTitle: "Prečo si vybrať ZMR Automovité",
+            whyTitle: "Prečo si vybrať ZMR Automotive",
             whyP1: "Naším cieľom je, aby klient presne vedel, čo kupuje. Neponúkame len rýchly pohľad na vozidlo, ale detailné preverenie stavu, histórie aj legislatívy.",
             whyP2: "Spoluprácu vedieme transparentne od prvého kontaktu až po odovzdanie odporúčaní.",
+            whyP3: "Špecializujeme sa na import vozidiel z USA a Japonska – od výberu modelu a aukcie až po bezpečnú prepravu na Slovensko a do Česka.",
+            whyP4: "Po dovoze zabezpečíme aj praktické kroky: homologizáciu, prihlásenie, STK a odporúčanie servisu, aby ste vozidlo vedeli bez obáv používať.",
             approachTitle: "Komplexný prístup",
             approachText: "Pokrývame výber, obhliadku, kontrolu, dovoz aj základný servis.",
             outputTitle: "Jasné výstupy",
@@ -530,7 +534,7 @@ const I18N = {
         },
         about: {
             title: "O našej spoločnosti",
-            p1: "ZMR Automovité je tím zameraný na odbornú kontrolu vozidiel a podporu pri kúpe alebo dovoze auta zo zahraničia.",
+            p1: "ZMR Automotive je tím zameraný na odbornú kontrolu vozidiel a podporu pri kúpe alebo dovoze auta zo zahraničia.",
             p2: "Dôraz kladieme na transparentnú komunikáciu, technickú presnosť a zrozumiteľný proces.",
             locationTitle: "Naša lokalita – Praha",
             locationText: "Základňu máme v Prahe a služby poskytujeme klientom z celej ČR aj okolitých štátov."
@@ -566,7 +570,7 @@ const I18N = {
         nav: { home: "Start", about: "Über uns", services: "Leistungen", cars: "Fahrzeuge", contact: "Kontakt", cms: "CMS" },
         common: { language: "Sprache", statusAvailable: "Verfügbar", statusUnavailable: "Derzeit nicht verfügbar", price: "Preis", horsepowerUnit: "PS", doorsUnit: "Türen" },
         pages: {
-            home: { title: "ZMR Automovité", subtitle: "Professionelle Services für Fahrzeugprüfung und Import ohne Kompromisse." },
+            home: { title: "ZMR Automotive", subtitle: "Professionelle Fahrzeugprüfung und Import aus den USA, Japan und der EU ohne Kompromisse." },
             about: { title: "Über uns", subtitle: "Erfahrung, Transparenz und Fokus auf sicheren Fahrzeugkauf." },
             services: { title: "Leistungen", subtitle: "Komplette Lösungen für Prüfung, Import und Fahrzeugvorbereitung." },
             cars: { title: "Fahrzeugangebot", subtitle: "Übersicht der verfügbaren Fahrzeuge mit detaillierten Informationen." },
@@ -574,8 +578,8 @@ const I18N = {
             contact: { title: "Kontakt", subtitle: "Wir unterstützen Sie bei Prüfung, Import und Auswahl des passenden Fahrzeugs." },
             cms: { title: "Fahrzeug-CMS", subtitle: "Interner Bereich zur Verwaltung des Fahrzeugangebots." }
         },
-        home: { whyTitle: "Warum ZMR Automovité", whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.", whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.", approachTitle: "Ganzheitlicher Ansatz", approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.", outputTitle: "Klare Ergebnisse", outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung." },
-        about: { title: "Über unser Unternehmen", p1: "ZMR Automovité ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
+        home: { whyTitle: "Warum ZMR Automotive", whyP1: "Wir prüfen Fahrzeuge umfassend statt nur oberflächlich.", whyP2: "Von der Erstberatung bis zur finalen Empfehlung transparent begleitet.", whyP3: "Ein Schwerpunkt ist der Import aus den USA und Japan – von der Fahrzeugauswahl bis zur sicheren Lieferung nach CZ/SK.", whyP4: "Wir koordinieren auch die nächsten Schritte nach dem Import: Homologation, Zulassung, technische Vorbereitung und Serviceempfehlungen.", approachTitle: "Ganzheitlicher Ansatz", approachText: "Auswahl, Prüfung, Import und Service aus einer Hand.", outputTitle: "Klare Ergebnisse", outputText: "Sie erhalten verständliche und belastbare Informationen für die Entscheidung." },
+        about: { title: "Über unser Unternehmen", p1: "ZMR Automotive ist auf professionelle Fahrzeugprüfung und Importberatung spezialisiert.", p2: "Wir setzen auf transparente Kommunikation und technische Präzision.", locationTitle: "Unser Standort – Prag", locationText: "Unser Sitz ist in Prag, wir betreuen Kunden in Tschechien und Nachbarländern." },
         services: { title: "Leistungsumfang", intro: "Unsere Leistungen decken den gesamten Fahrzeugkaufprozess ab.", items: [{ title: "Fahrzeugzustandsprüfung", text: "Technische und visuelle Prüfung inkl. Diagnose und Historie." }, { title: "Prüfung in ganz Tschechien", text: "Wir reisen landesweit und auch in Nachbarstaaten." }, { title: "Import aus USA und Japan", text: "Wir übernehmen Auswahl, Prüfung, Transport und Formalitäten." }, { title: "Basisservice und TÜV-Vorbereitung", text: "Technische Vorbereitung vor Übergabe." }, { title: "Eigenes Fahrzeugangebot", text: "Laufend aktualisiertes Angebot geprüfter Fahrzeuge." }] },
         contact: { title: "Kontakt", p1: "Bei Kauf, Prüfung oder Import unterstützen wir Sie gerne.", processTitle: "Ablauf", processText: "Nach Ihrer Anfrage erstellen wir einen Plan und liefern klare Empfehlungen." },
         cars: { filterTitle: "Suche und Filter", search: "Suche", searchPlaceholder: "Modell, Marke, Antrieb...", fuel: "Kraftstoff", fuelAll: "Alle Kraftstoffe", brand: "Marke", brandAll: "Alle Marken", drive: "Antrieb", driveAll: "Alle Antriebe", transmission: "Getriebe", transmissionAll: "Alle Getriebe", hpFrom: "Leistung von (PS)", hpTo: "Leistung bis (PS)", doors: "Türen", doorsAll: "Alle", seats: "Sitze", seatsAll: "Alle", seatsFrom: "Sitze ab", seatsTo: "Sitze bis", quickSeats: "Schnellauswahl", seatsUnit: "Sitze", activeFilters: "Aktive Filter", clearAll: "Alle löschen", detailButton: "Fahrzeugdetails", noResults: "Für die gewählten Filter wurden keine Fahrzeuge gefunden." },
@@ -590,7 +594,7 @@ const I18N = {
         nav: { home: "Home", about: "About", services: "Services", cars: "Cars", contact: "Contact", cms: "CMS" },
         common: { language: "Language", statusAvailable: "Available", statusUnavailable: "Currently unavailable", price: "Price", horsepowerUnit: "hp", doorsUnit: "doors" },
         pages: {
-            home: { title: "ZMR Automovité", subtitle: "Premium vehicle inspection and import services without compromise." },
+            home: { title: "ZMR Automotive", subtitle: "Premium vehicle inspection and import from the USA, Japan and EU without compromise." },
             about: { title: "About Us", subtitle: "Experience, transparency and focus on safe vehicle purchase." },
             services: { title: "Services", subtitle: "Complete solutions for inspection, import and vehicle preparation." },
             cars: { title: "Vehicle Offer", subtitle: "Overview of currently available vehicles with detailed information." },
@@ -598,8 +602,8 @@ const I18N = {
             contact: { title: "Contact", subtitle: "We are ready to help with inspection, import and vehicle selection." },
             cms: { title: "Vehicle CMS", subtitle: "Internal area for managing vehicle inventory." }
         },
-        home: { whyTitle: "Why choose ZMR Automovité", whyP1: "We provide in-depth vehicle checks, not just a quick glance.", whyP2: "Transparent cooperation from first contact to final recommendation.", approachTitle: "Comprehensive approach", approachText: "Selection, inspection, import and basic service in one place.", outputTitle: "Clear outputs", outputText: "You get clear information about condition, legal requirements and expected costs." },
-        about: { title: "About our company", p1: "ZMR Automovité specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
+        home: { whyTitle: "Why choose ZMR Automotive", whyP1: "We provide in-depth vehicle checks, not just a quick glance.", whyP2: "Transparent cooperation from first contact to final recommendation.", whyP3: "We focus on vehicle import from the USA and Japan, including sourcing, auctions, transport and compliance.", whyP4: "After delivery, we help with registration, technical readiness and clear service recommendations for daily operation.", approachTitle: "Comprehensive approach", approachText: "Selection, inspection, import and basic service in one place.", outputTitle: "Clear outputs", outputText: "You get clear information about condition, legal requirements and expected costs." },
+        about: { title: "About our company", p1: "ZMR Automotive specializes in professional vehicle inspection and import support.", p2: "We emphasize transparent communication and technical precision.", locationTitle: "Our location – Prague", locationText: "We are based in Prague and serve clients across Czechia and neighboring countries." },
         services: { title: "Service scope", intro: "Our services cover the full lifecycle of buying a vehicle.", items: [{ title: "Vehicle condition inspection", text: "Visual and technical check including diagnostics and history verification." }, { title: "Inspection across Czechia", text: "We can travel across Czechia and neighboring countries." }, { title: "Import from USA and Japan", text: "We handle selection, verification, transport and administration." }, { title: "Basic service and inspection prep", text: "We prepare the vehicle technically before handover." }, { title: "Own vehicle inventory", text: "We continuously add verified vehicles with transparent condition." }] },
         contact: { title: "Contact", p1: "If you are buying, inspecting or importing a car, we can help.", processTitle: "Cooperation process", processText: "After receiving your request, we prepare a plan and provide recommendations." },
         cars: { filterTitle: "Search and filters", search: "Search", searchPlaceholder: "Model, brand, drive...", fuel: "Fuel", fuelAll: "All fuels", brand: "Brand", brandAll: "All brands", drive: "Drive", driveAll: "All drive types", transmission: "Transmission", transmissionAll: "All transmissions", hpFrom: "Power from (hp)", hpTo: "Power to (hp)", doors: "Doors", doorsAll: "All", seats: "Seats", seatsAll: "All", seatsFrom: "Seats from", seatsTo: "Seats to", quickSeats: "Quick seats", seatsUnit: "seats", activeFilters: "Active filters", clearAll: "Clear all", detailButton: "Vehicle detail", noResults: "No vehicles found for the selected filters." },
@@ -2207,7 +2211,7 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
             <header className="top-header">
                 <div className="top-inner">
                     <a className="brand" href="main.html">
-                        <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automovité logo" className="logo" />
+                        <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automotive logo" className="logo" />
                     </a>
                     <div className="header-tools">
                         <button
@@ -2247,6 +2251,8 @@ function HomePage({ texts }) {
                 <h2>{texts.home.whyTitle}</h2>
                 <p>{texts.home.whyP1}</p>
                 <p>{texts.home.whyP2}</p>
+                {texts.home.whyP3 ? <p>{texts.home.whyP3}</p> : null}
+                {texts.home.whyP4 ? <p>{texts.home.whyP4}</p> : null}
             </section>
 
             <section className="card split-card">
@@ -3923,6 +3929,11 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+
+
+
+
 
 
 
