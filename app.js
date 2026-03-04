@@ -3518,6 +3518,8 @@ function CmsPage({ cars, setCars, language, texts }) {
         reserved: false,
         available: true
     });
+    const [localizedCmsDraftFields, setLocalizedCmsDraftFields] = useState(() => createLocalizedCmsFieldMaps({ name: "", description: "", legal: "" }, language).localized);
+    const [isCmsAutoTranslating, setIsCmsAutoTranslating] = useState(false);
     const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
     const [equipmentChecklist, setEquipmentChecklist] = useState(createInitialEquipmentChecklistState);
     const cmsUiTexts = useMemo(() => {
