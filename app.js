@@ -3520,6 +3520,8 @@ function CmsPage({ cars, setCars, language, texts }) {
     });
     const [localizedCmsDraftFields, setLocalizedCmsDraftFields] = useState(() => createLocalizedCmsFieldMaps({ name: "", description: "", legal: "" }, language).localized);
     const [isCmsAutoTranslating, setIsCmsAutoTranslating] = useState(false);
+    const [cmsTranslationMode, setCmsTranslationMode] = useState(() => TRANSLATE_PROXY_URL ? "auto" : "manual");
+    const [cmsDraftLanguage, setCmsDraftLanguage] = useState(() => (SUPPORTED_LANG_CODES.includes(language) ? language : "sk"));
     const [technicalChecklist, setTechnicalChecklist] = useState(createInitialTechnicalChecklistState);
     const [equipmentChecklist, setEquipmentChecklist] = useState(createInitialEquipmentChecklistState);
     const cmsUiTexts = useMemo(() => {
