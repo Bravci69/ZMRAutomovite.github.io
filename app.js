@@ -3543,7 +3543,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                 statusLabel: "Fahrzeugstatus",
                 statusAvailable: "Verfügbar",
                 statusReserved: "Reserviert",
-                statusUnavailable: "Nicht verfügbar"
+                statusUnavailable: "Nicht verfügbar",
+                autoTranslatePending: "Automatische Übersetzung läuft für alle Sprachversionen…",
+                autoTranslateReady: "Texte sind für alle Sprachversionen synchronisiert.",
+                autoTranslateDisabled: "Automatische Übersetzung ist derzeit nicht konfiguriert."
             };
         }
         if (language === "en") {
@@ -3566,7 +3569,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                 statusLabel: "Vehicle status",
                 statusAvailable: "Available",
                 statusReserved: "Reserved",
-                statusUnavailable: "Unavailable"
+                statusUnavailable: "Unavailable",
+                autoTranslatePending: "Auto-translation is running for all language versions…",
+                autoTranslateReady: "Texts are synchronized across all language versions.",
+                autoTranslateDisabled: "Auto-translation is not configured right now."
             };
         }
         if (language === "sk") {
@@ -3589,7 +3595,10 @@ function CmsPage({ cars, setCars, language, texts }) {
             statusLabel: "Stav vozidla",
             statusAvailable: "Dostupné",
             statusReserved: "Rezervované",
-            statusUnavailable: "Nedostupné"
+            statusUnavailable: "Nedostupné",
+            autoTranslatePending: "Automatický preklad pre všetky jazykové mutácie práve prebieha…",
+            autoTranslateReady: "Texty sú zosynchronizované pre všetky jazykové mutácie.",
+            autoTranslateDisabled: "Automatický preklad teraz nie je nakonfigurovaný."
         };
         }
         return {
@@ -3611,7 +3620,10 @@ function CmsPage({ cars, setCars, language, texts }) {
             statusLabel: "Stav vozidla",
             statusAvailable: "Dostupné",
             statusReserved: "Rezervováno",
-            statusUnavailable: "Nedostupné"
+            statusUnavailable: "Nedostupné",
+            autoTranslatePending: "Automatický překlad do všech jazykových mutací právě probíhá…",
+            autoTranslateReady: "Texty jsou synchronizované pro všechny jazykové mutace.",
+            autoTranslateDisabled: "Automatický překlad nyní není nakonfigurovaný."
         };
     }, [language]);
 
@@ -3656,6 +3668,10 @@ function CmsPage({ cars, setCars, language, texts }) {
         });
         return [...startsWith, ...includes].slice(0, 12);
     }, [cmsBrandOptions, form.brand]);
+    const hasCmsTranslatableInput = useMemo(
+        () => [form.name, form.description, form.legal].some((value) => String(value || "").trim().length > 0),
+        [form.name, form.description, form.legal]
+    );
     const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
     const isPublicBrandListAvailable = publicBrandOptions.length > 0;
 
