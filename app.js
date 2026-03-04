@@ -4204,13 +4204,59 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <button className="button-link button-secondary" onClick={handleLogout}>{texts.cms.logoutButton}</button>
                 </div>
                 <p>{texts.cms.intro}</p>
-                {hasCmsTranslatableInput && (
+                <div className="cms-localization-panel">
+                    <div className="cms-localization-row">
+                        <p className="checklist-title">{cmsUiTexts.translationModeLabel}</p>
+                        <div className="cms-localization-modes">
+                            <button
+                                type="button"
+                                className={cmsTranslationMode === "auto" ? "cms-localization-mode-btn active" : "cms-localization-mode-btn"}
+                                onClick={() => setCmsTranslationMode("auto")}
+                                disabled={!TRANSLATE_PROXY_URL}
+                            >
+                                {cmsUiTexts.translationModeAuto}
+                            </button>
+                            <button
+                                type="button"
+                                className={cmsTranslationMode === "manual" ? "cms-localization-mode-btn active" : "cms-localization-mode-btn"}
+                                onClick={() => {
+                                    setCmsTranslationMode("manual");
+                                    setIsCmsAutoTranslating(false);
+                                }}
+                            >
+                                {cmsUiTexts.translationModeManual}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="cms-localization-row">
+                        <p className="checklist-title">{cmsUiTexts.translationLanguageLabel}</p>
+                        <div className="cms-localization-flags" role="group" aria-label={cmsUiTexts.translationLanguageLabel}>
+                            {LANGUAGE_OPTIONS.map((option) => (
+                                <button
+                                    key={option.code}
+                                    type="button"
+                                    className={cmsDraftLanguage === option.code ? "cms-lang-flag-btn active" : "cms-lang-flag-btn"}
+                                    onClick={() => switchCmsDraftLanguage(option.code)}
+                                    title={`${option.flag} ${option.label}`}
+                                >
+                                    <span aria-hidden="true">{option.flag}</span>
+                                    <span>{option.code.toUpperCase()}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
                     <p className="car-meta">
-                        {TRANSLATE_PROXY_URL
-                            ? (isCmsAutoTranslating ? cmsUiTexts.autoTranslatePending : cmsUiTexts.autoTranslateReady)
-                            : cmsUiTexts.autoTranslateDisabled}
+                        {cmsTranslationMode === "manual"
+                            ? cmsUiTexts.manualTranslateInfo
+                            : (TRANSLATE_PROXY_URL
+                                ? (hasCmsTranslatableInput
+                                    ? (isCmsAutoTranslating ? cmsUiTexts.autoTranslatePending : cmsUiTexts.autoTranslateReady)
+                                    : cmsUiTexts.autoTranslateReady)
+                                : cmsUiTexts.autoTranslateDisabled)}
                     </p>
-                )}
+                </div>
                 {syncMessage && <p className={syncMessageType === "error" ? "error-text" : "car-meta"}>{syncMessage}</p>}
                 {error && <p className="error-text">{error}</p>}
                 <form className="form-grid" onSubmit={addCar} autoComplete="off">
@@ -4231,7 +4277,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                             ariaLabel={translateTechnicalLabel("Origin", language)}
                         />
                     </label>
-                    <label>{texts.cms.fields.name}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
+                    <label>{`${texts.cms.fields.name} (${cmsDraftLanguageBadge})`}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => updateLocalizedDraftField("name", e.target.value)} required /></label>
                     <label>{texts.cms.fields.brand}
                         <div className="cms-brand-autocomplete">
                             <input
@@ -4339,8 +4385,8 @@ function CmsPage({ cars, setCars, language, texts }) {
                             ))}
                         </div>
                     )}
-                    <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
-                    <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
+                    <label className="full-width">{`${texts.cms.fields.description} (${cmsDraftLanguageBadge})`}<textarea value={form.description} onChange={(e) => updateLocalizedDraftField("description", e.target.value)} required /></label>
+                    <label className="full-width">{`${texts.cms.fields.legal} (${cmsDraftLanguageBadge})`}<textarea value={form.legal} onChange={(e) => updateLocalizedDraftField("legal", e.target.value)} required /></label>
                     <div className="full-width checklist-block">
                         <p className="checklist-title">{texts.cms.fields.equipmentItemsRaw}</p>
                         <small>{texts.cms.equipmentHelp}</small>

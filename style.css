@@ -1473,6 +1473,82 @@ a:hover {
 	margin-bottom: 10px;
 }
 
+.cms-localization-panel {
+	display: grid;
+	gap: 10px;
+	padding: 12px;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.03);
+	margin-bottom: 8px;
+}
+
+.cms-localization-row {
+	display: grid;
+	gap: 8px;
+}
+
+.cms-localization-modes,
+.cms-localization-flags {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.cms-localization-mode-btn {
+	padding: 7px 11px;
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--text);
+	font-family: inherit;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.cms-localization-mode-btn:hover:not(:disabled) {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cms-localization-mode-btn.active {
+	background: linear-gradient(135deg, var(--accent), #b22f2f);
+	border-color: rgba(255, 255, 255, 0.24);
+	color: #fff;
+}
+
+.cms-localization-mode-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.cms-lang-flag-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--text);
+	font-family: inherit;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.cms-lang-flag-btn:hover {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cms-lang-flag-btn.active {
+	background: linear-gradient(135deg, var(--accent), #b22f2f);
+	border-color: rgba(255, 255, 255, 0.24);
+	color: #fff;
+}
+
 .cms-list {
 	display: grid;
 	gap: 12px;
