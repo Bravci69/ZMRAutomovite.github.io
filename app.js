@@ -24,6 +24,7 @@ const SUPPORTED_LANG_CODES = ["cs", "sk", "de", "en"];
 const FUEL_OPTIONS = ["Nafta", "Benzín", "Elektrina", "Plug-in hybrid", "Plyn"];
 const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
+const ORIGIN_TECHNICAL_VALUES = ["German version", "EU version", "Imported", "Domestic"];
 const LANGUAGE_OPTIONS = [
     { code: "cs", flag: "🇨🇿", label: "Čeština" },
     { code: "sk", flag: "🇸🇰", label: "Slovenčina" },
@@ -1105,6 +1106,7 @@ function getTechnicalData(car) {
 
     return [
         { label: "Vehicle condition", value: car.reserved ? "Reserved" : (car.available ? "Available" : "Unavailable"), icon: "🚗" },
+        { label: "Origin", value: car.origin || "German version", icon: "🌍" },
         { label: "Mileage", value: car.mileage || "-", icon: "📍" },
         { label: "Performance", value: `${car.horsepower || 0} hp`, icon: "⚡" },
         { label: "Drive type", value: car.drive || "-", icon: "🛞" },
@@ -1114,6 +1116,27 @@ function getTechnicalData(car) {
         { label: "Gearbox", value: formatTransmission(car), icon: "🕹️" },
         { label: "Number of vehicle owners", value: String(car.previousOwners ?? "-"), icon: "👤" }
     ];
+}
+
+function normalizeOriginValue(value) {
+    const normalizedValue = String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+    const translation = TECHNICAL_VALUE_TRANSLATIONS_BY_KEY[normalizedValue];
+    if (translation?.en) {
+        return translation.en;
+    }
+    return String(value || "").trim() || "German version";
+}
+
+function getOriginFromCar(car) {
+    if (car?.origin) {
+        return normalizeOriginValue(car.origin);
+    }
+    const technicalRow = (Array.isArray(car?.technicalData) ? car.technicalData : [])
+        .find((row) => getCanonicalTechnicalLabel(row?.label) === "Origin");
+    if (technicalRow?.value) {
+        return normalizeOriginValue(technicalRow.value);
+    }
+    return "German version";
 }
 
 function normalizeCar(car, index) {
@@ -1145,6 +1168,7 @@ function normalizeCar(car, index) {
         descriptionI18n,
         legalI18n,
         brand: car.brand || getBrandFromName(primaryName),
+        origin: getOriginFromCar(car),
         horsepower: Number.isFinite(Number(car.horsepower)) ? Number(car.horsepower) : 0,
         doors,
         seats,
@@ -1588,43 +1612,24 @@ function readFilesAsDataUrls(files) {
 }
 
 function buildTechnicalDataFromChecklist(checklist, baseForm, transmission, manualGears) {
-    const fallbackByLabel = {
-        "Vehicle condition": baseForm.available ? "Available" : "Unavailable",
-        "Mileage": baseForm.mileage,
-        "Performance": `${Math.round(parseNumber(baseForm.horsepower) || 0)} hp`,
-        "Drive type": baseForm.drive,
-        "Fuel type": baseForm.fuel,
-        "Number of seats": String(Math.max(2, Math.round(parseNumber(baseForm.seats) || 0))),
-        "Number of doors": String(Math.max(2, Math.round(parseNumber(baseForm.doors) || 0))),
-        "Gearbox": transmission === "Manuál" && manualGears > 0 ? `${transmission} (${manualGears})` : transmission,
-        "Number of vehicle owners": String(Math.max(0, Math.round(parseNumber(baseForm.previousOwners) || 0)))
-    };
+    const conditionValue = baseForm.status === "reserved"
+        ? "Reserved"
+        : baseForm.status === "unavailable"
+            ? "Unavailable"
+            : "Available";
 
-    const rows = TECHNICAL_CHECKLIST_FIELDS
-        .map((field) => {
-            const selected = checklist[field.label];
-            if (!selected?.enabled) {
-                return null;
-            }
-            let rawValue = selected.value?.trim() || fallbackByLabel[field.label] || "";
-            if (TECHNICAL_NUMERIC_FIELD_LABELS.has(field.label)) {
-                rawValue = rawValue.replace(/[^\d]/g, "");
-            }
-            if (field.label === "Performance" && rawValue && !/hp$/i.test(rawValue)) {
-                rawValue = `${rawValue} hp`;
-            }
-            if (!rawValue) {
-                return null;
-            }
-            return {
-                label: field.label,
-                value: rawValue,
-                icon: selected.icon || field.defaultIcon || "🧾"
-            };
-        })
-        .filter(Boolean);
-
-    return rows.length > 0 ? rows : undefined;
+    return [
+        { label: "Vehicle condition", value: conditionValue, icon: "🚗" },
+        { label: "Origin", value: normalizeOriginValue(baseForm.origin), icon: "🌍" },
+        { label: "Mileage", value: baseForm.mileage || "-", icon: "📍" },
+        { label: "Performance", value: `${Math.round(parseNumber(baseForm.horsepower) || 0)} hp`, icon: "⚡" },
+        { label: "Drive type", value: baseForm.drive || "-", icon: "🛞" },
+        { label: "Fuel type", value: baseForm.fuel || "-", icon: "⛽" },
+        { label: "Number of seats", value: String(Math.max(2, Math.round(parseNumber(baseForm.seats) || 0))), icon: "💺" },
+        { label: "Number of doors", value: String(Math.max(2, Math.round(parseNumber(baseForm.doors) || 0))), icon: "🚪" },
+        { label: "Gearbox", value: transmission === "Manuál" && manualGears > 0 ? `${transmission} (${manualGears})` : transmission, icon: "🕹️" },
+        { label: "Number of vehicle owners", value: String(Math.max(0, Math.round(parseNumber(baseForm.previousOwners) || 0))), icon: "👤" }
+    ];
 }
 
 function DarkSelect({ value, onChange, options, placeholder, ariaLabel }) {
@@ -3207,6 +3212,7 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [form, setForm] = useState({
         name: "",
         brand: "",
+        origin: "German version",
         year: "",
         priceCzk: "",
         mileage: "",
@@ -3340,7 +3346,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         [cars, language]
     );
     const cmsBrandSelectOptions = useMemo(() => cmsBrandOptions.map((option) => ({ value: option, label: option })), [cmsBrandOptions]);
-    const technicalValueSuggestions = useMemo(() => buildTechnicalValueSuggestions(cars), [cars]);
+    const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
 
     const getStatusFromCar = (car) => {
         if (!car?.available) {
@@ -3477,6 +3483,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setForm({
             name: "",
             brand: "",
+            origin: "German version",
             year: "",
             priceCzk: "",
             mileage: "",
@@ -3507,6 +3514,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         setForm({
             name: car.name || "",
             brand: car.brand || "",
+            origin: getOriginFromCar(car),
             year: car.year || "",
             priceCzk: String(car.priceCzk || ""),
             mileage: car.mileage || "",
@@ -3606,6 +3614,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             id: editingCarId || `zmr-${Date.now()}`,
             name: form.name,
             brand: matchedBrand,
+            origin: normalizeOriginValue(form.origin),
             year: form.year,
             priceCzk: Math.round(parseNumber(form.priceCzk) || 0),
             mileage: form.mileage,
@@ -3721,6 +3730,22 @@ function CmsPage({ cars, setCars, language, texts }) {
                 {error && <p className="error-text">{error}</p>}
                 <form className="form-grid" onSubmit={addCar} autoComplete="off">
                     <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{liveMessage}</p>
+                    <label>{cmsUiTexts.statusLabel}
+                        <DarkSelect
+                            value={form.status}
+                            onChange={(value) => setForm((prev) => ({ ...prev, status: value || "available" }))}
+                            options={statusSelectOptions}
+                            ariaLabel={cmsUiTexts.statusLabel}
+                        />
+                    </label>
+                    <label>{translateTechnicalLabel("Origin", language)}
+                        <DarkSelect
+                            value={form.origin}
+                            onChange={(value) => setForm((prev) => ({ ...prev, origin: value || "German version" }))}
+                            options={originSelectOptions}
+                            ariaLabel={translateTechnicalLabel("Origin", language)}
+                        />
+                    </label>
                     <label>{texts.cms.fields.name}<input type="text" name="vehicleModel" autoComplete="off" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} required /></label>
                     <label>{texts.cms.fields.brand}
                         <DarkSelect
@@ -3803,52 +3828,6 @@ function CmsPage({ cars, setCars, language, texts }) {
                     <label className="full-width">{texts.cms.fields.description}<textarea value={form.description} onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))} required /></label>
                     <label className="full-width">{texts.cms.fields.legal}<textarea value={form.legal} onChange={(e) => setForm((prev) => ({ ...prev, legal: e.target.value }))} required /></label>
                     <div className="full-width checklist-block">
-                        <p className="checklist-title">{texts.cms.fields.technicalDataRaw}</p>
-                        <small>{texts.cms.technicalHelp}</small>
-                        <div className="checklist-grid technical-grid-cms">
-                            {TECHNICAL_CHECKLIST_FIELDS.map((field) => {
-                                const row = technicalChecklist[field.label] || { enabled: false, value: "", icon: field.defaultIcon };
-                                const isNumericField = TECHNICAL_NUMERIC_FIELD_LABELS.has(field.label);
-                                return (
-                                    <div key={field.label} className="checklist-item technical-check-item">
-                                        <label className="checkbox-row">
-                                            <input
-                                                type="checkbox"
-                                                checked={Boolean(row.enabled)}
-                                                onChange={(e) => setTechnicalChecklist((prev) => ({
-                                                    ...prev,
-                                                    [field.label]: { ...row, enabled: e.target.checked }
-                                                }))}
-                                            />
-                                            <span className="fixed-tech-icon" title={translateTechnicalIconLabel(row.icon || field.defaultIcon, language)} aria-label={translateTechnicalIconLabel(row.icon || field.defaultIcon, language)}>{row.icon || field.defaultIcon}</span>
-                                            {translateTechnicalLabel(field.label, language)}
-                                        </label>
-                                        <input
-                                            type={isNumericField ? "number" : "text"}
-                                            min={isNumericField ? "0" : undefined}
-                                            inputMode={isNumericField ? "numeric" : undefined}
-                                            pattern={isNumericField ? "[0-9]*" : undefined}
-                                            list={getTechnicalSuggestionListId(field.label)}
-                                            value={row.value}
-                                            onChange={(e) => setTechnicalChecklist((prev) => ({
-                                                ...prev,
-                                                [field.label]: { ...row, value: sanitizeTechnicalChecklistValue(field.label, e.target.value) }
-                                            }))}
-                                            disabled={!row.enabled}
-                                        />
-                                        {Array.isArray(technicalValueSuggestions[field.label]) && technicalValueSuggestions[field.label].length > 0 && (
-                                            <datalist id={getTechnicalSuggestionListId(field.label)}>
-                                                {technicalValueSuggestions[field.label].map((suggestionValue) => (
-                                                    <option key={`${field.label}-${suggestionValue}`} value={suggestionValue} />
-                                                ))}
-                                            </datalist>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                    <div className="full-width checklist-block">
                         <p className="checklist-title">{texts.cms.fields.equipmentItemsRaw}</p>
                         <small>{texts.cms.equipmentHelp}</small>
                         <div className="checklist-grid equipment-grid-cms">
@@ -3865,15 +3844,6 @@ function CmsPage({ cars, setCars, language, texts }) {
                         </div>
                     </div>
                     <label className="full-width">{texts.cms.fields.equipment}<textarea value={form.equipment} onChange={(e) => setForm((prev) => ({ ...prev, equipment: e.target.value }))} required /></label>
-                    <label className="checkbox-row full-width">
-                        {cmsUiTexts.statusLabel}
-                        <DarkSelect
-                            value={form.status}
-                            onChange={(value) => setForm((prev) => ({ ...prev, status: value || "available" }))}
-                            options={statusSelectOptions}
-                            ariaLabel={cmsUiTexts.statusLabel}
-                        />
-                    </label>
                     <button type="submit" className="button-link">{editingCarId ? cmsUiTexts.update : texts.cms.addButton}</button>
                     {editingCarId && (
                         <button type="button" className="button-link button-secondary" onClick={resetCmsForm}>{cmsUiTexts.cancelEdit}</button>
