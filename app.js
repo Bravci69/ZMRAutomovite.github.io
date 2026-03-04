@@ -410,7 +410,26 @@ const I18N = {
             approachTitle: "Komplexní a moderní přístup",
             approachText: "Výběr vozu, prověření historie, technická kontrola, dovoz, administrativa i příprava na provoz na jednom místě.",
             outputTitle: "Výstup, kterému rozumíte",
-            outputText: "Dostanete detailní report s fotodokumentací, jasná doporučení a konkrétní další kroky podle vašeho rozpočtu i priorit."
+            outputText: "Dostanete detailní report s fotodokumentací, jasná doporučení a konkrétní další kroky podle vašeho rozpočtu i priorit.",
+            kpiTitle: "Rychlý přehled",
+            kpis: ["Reakce do 48 hodin", "Kontroly v ČR i zahraničí", "Import USA/JPN", "Detailní report s fotodokumentací"],
+            pillarsTitle: "Co získáte navíc",
+            pillars: [
+                { title: "Strategické doporučení", text: "Pomůžeme vybrat variantu, která dává smysl technicky i finančně." },
+                { title: "Transparentní komunikace", text: "Během celého procesu máte jasný přehled o stavu, rizicích i dalších krocích." },
+                { title: "Podpora po převzetí", text: "Po předání vozu navrhneme servisní priority a plán údržby." }
+            ],
+            workflowTitle: "Jak spolupráce probíhá",
+            workflowSteps: [
+                { title: "1. Úvodní konzultace", text: "Upřesníme typ vozidla, rozpočet i očekávání." },
+                { title: "2. Ověření a kontrola", text: "Prověříme historii, technický stav a reálnou hodnotu." },
+                { title: "3. Dovoz a administrativa", text: "Zajistíme logistiku, dokumenty i legislativní kroky." },
+                { title: "4. Předání a další plán", text: "Vůz předáme připravený k provozu s doporučením další péče." }
+            ],
+            ctaTitle: "Řešíte konkrétní vozidlo?",
+            ctaText: "Pošlete nám zadání a navrhneme jasný postup podle vašich priorit.",
+            ctaPrimary: "Zobrazit služby",
+            ctaSecondary: "Nezávazně nás kontaktovat"
         },
         about: {
             title: "O naší společnosti",
@@ -534,7 +553,26 @@ const I18N = {
             approachTitle: "Komplexný a moderný prístup",
             approachText: "Výber vozidla, preverenie histórie, technická kontrola, dovoz, administratíva aj príprava na prevádzku na jednom mieste.",
             outputTitle: "Výstup, ktorému rozumiete",
-            outputText: "Dostanete detailný report s fotodokumentáciou, jasné odporúčania a konkrétne ďalšie kroky podľa vášho rozpočtu aj priorít."
+            outputText: "Dostanete detailný report s fotodokumentáciou, jasné odporúčania a konkrétne ďalšie kroky podľa vášho rozpočtu aj priorít.",
+            kpiTitle: "Rýchly prehľad",
+            kpis: ["Reakcia do 48 hodín", "Kontroly v ČR aj zahraničí", "Import USA/JPN", "Detailný report s fotodokumentáciou"],
+            pillarsTitle: "Čo získate navyše",
+            pillars: [
+                { title: "Strategické odporúčanie", text: "Pomôžeme vybrať riešenie, ktoré dáva technický aj finančný zmysel." },
+                { title: "Transparentná komunikácia", text: "Počas celého procesu máte jasný prehľad o stave, rizikách aj ďalších krokoch." },
+                { title: "Podpora po prevzatí", text: "Po odovzdaní vozidla navrhneme servisné priority a plán údržby." }
+            ],
+            workflowTitle: "Ako prebieha spolupráca",
+            workflowSteps: [
+                { title: "1. Úvodná konzultácia", text: "Spresníme typ vozidla, rozpočet aj očakávania." },
+                { title: "2. Overenie a kontrola", text: "Preveríme históriu, technický stav aj reálnu hodnotu." },
+                { title: "3. Dovoz a administratíva", text: "Zabezpečíme logistiku, dokumenty aj legislatívne kroky." },
+                { title: "4. Odovzdanie a ďalší plán", text: "Vozidlo odovzdáme pripravené na prevádzku s odporúčaním ďalšej starostlivosti." }
+            ],
+            ctaTitle: "Riešite konkrétne vozidlo?",
+            ctaText: "Pošlite nám zadanie a navrhneme jasný postup podľa vašich priorít.",
+            ctaPrimary: "Zobraziť služby",
+            ctaSecondary: "Nezáväzne nás kontaktovať"
         },
         about: {
             title: "O našej spoločnosti",
@@ -591,7 +629,26 @@ const I18N = {
             approachTitle: "Komplexer und moderner Ansatz",
             approachText: "Fahrzeugauswahl, Historienprüfung, technische Kontrolle, Import, Administration und Vorbereitung auf den Betrieb aus einer Hand.",
             outputTitle: "Ein Ergebnis, das Sie verstehen",
-            outputText: "Sie erhalten einen detaillierten Bericht mit Fotodokumentation, klare Empfehlungen und konkrete nächste Schritte passend zu Budget und Prioritäten."
+            outputText: "Sie erhalten einen detaillierten Bericht mit Fotodokumentation, klare Empfehlungen und konkrete nächste Schritte passend zu Budget und Prioritäten.",
+            kpiTitle: "Schnellüberblick",
+            kpis: ["Reaktion innerhalb von 48 Stunden", "Prüfungen in Tschechien und im Ausland", "Import USA/JPN", "Detaillierter Bericht mit Fotodokumentation"],
+            pillarsTitle: "Ihr zusätzlicher Mehrwert",
+            pillars: [
+                { title: "Strategische Empfehlung", text: "Wir helfen bei der Wahl der Variante, die technisch und wirtschaftlich passt." },
+                { title: "Transparente Kommunikation", text: "Während des gesamten Projekts kennen Sie Status, Risiken und nächste Schritte." },
+                { title: "Support nach Übergabe", text: "Nach der Übergabe erhalten Sie klare Service-Prioritäten und einen Wartungsplan." }
+            ],
+            workflowTitle: "So läuft die Zusammenarbeit",
+            workflowSteps: [
+                { title: "1. Erstgespräch", text: "Wir klären Fahrzeugtyp, Budget und Erwartungen." },
+                { title: "2. Prüfung & Bewertung", text: "Wir prüfen Historie, technischen Zustand und realistischen Marktwert." },
+                { title: "3. Import & Formalitäten", text: "Wir übernehmen Logistik, Unterlagen und rechtliche Schritte." },
+                { title: "4. Übergabe & Planung", text: "Sie erhalten ein fahrbereites Fahrzeug mit klarem Plan für die nächsten Schritte." }
+            ],
+            ctaTitle: "Geht es um ein konkretes Fahrzeug?",
+            ctaText: "Senden Sie uns Ihr Briefing und wir schlagen den klaren nächsten Schritt vor.",
+            ctaPrimary: "Leistungen ansehen",
+            ctaSecondary: "Unverbindlich kontaktieren"
         },
         about: {
             title: "Über unser Unternehmen",
@@ -641,7 +698,26 @@ const I18N = {
             approachTitle: "Comprehensive modern approach",
             approachText: "Vehicle selection, history verification, technical inspection, import, administration, and road-readiness in one place.",
             outputTitle: "Output you can understand",
-            outputText: "You receive a detailed report with photo documentation, clear recommendations, and concrete next steps aligned with your budget and priorities."
+            outputText: "You receive a detailed report with photo documentation, clear recommendations, and concrete next steps aligned with your budget and priorities.",
+            kpiTitle: "Quick overview",
+            kpis: ["Response within 48 hours", "Inspections in Czechia and abroad", "USA/JPN import", "Detailed report with photo documentation"],
+            pillarsTitle: "Additional value you get",
+            pillars: [
+                { title: "Strategic recommendation", text: "We help you choose the option that is technically and financially sound." },
+                { title: "Transparent communication", text: "You always see status, risks, and next steps throughout the project." },
+                { title: "Post-handover support", text: "After delivery, we provide clear service priorities and a maintenance plan." }
+            ],
+            workflowTitle: "How the cooperation works",
+            workflowSteps: [
+                { title: "1. Initial consultation", text: "We define vehicle type, budget, and expectations." },
+                { title: "2. Verification and checks", text: "We verify history, technical condition, and real market value." },
+                { title: "3. Import and administration", text: "We handle logistics, paperwork, and compliance steps." },
+                { title: "4. Handover and next plan", text: "You receive a road-ready vehicle with a clear follow-up plan." }
+            ],
+            ctaTitle: "Do you have a specific vehicle in mind?",
+            ctaText: "Send us your brief and we will propose a concrete next-step plan.",
+            ctaPrimary: "View services",
+            ctaSecondary: "Contact us"
         },
         about: {
             title: "About our company",
