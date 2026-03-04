@@ -3470,6 +3470,7 @@ function CmsPage({ cars, setCars, language, texts }) {
 
     const announceLiveMessage = (message) => {
         setLiveMessage("");
+        setIsBrandSuggestionsOpen(false);
         window.setTimeout(() => {
             setLiveMessage(message);
         }, 10);
@@ -3684,11 +3685,11 @@ function CmsPage({ cars, setCars, language, texts }) {
         });
     };
 
+
     const selectCmsBrandSuggestion = (brand) => {
         setForm((prev) => ({ ...prev, brand: brand || "" }));
         setIsBrandSuggestionsOpen(false);
     };
-
     const addCar = async (event) => {
         event.preventDefault();
 
@@ -4176,3 +4177,4 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
