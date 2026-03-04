@@ -2180,7 +2180,7 @@ function LanguageSwitcher({ language, onChange, texts }) {
         <div className="language-switcher" role="group" aria-label={texts.common.language}>
             <DarkSelect
                 value={language}
-                onChange={(value) => onChange(value || "sk")}
+                onChange={(value) => onChange(value || "cs")}
                 options={languageSelectOptions}
                 ariaLabel={texts.common.language}
             />
@@ -2319,9 +2319,9 @@ function AboutPage({ texts, language }) {
 }
 
 function ServicesPage({ texts, language }) {
-    const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.sk;
+    const serviceContent = SERVICES_PAGE_CONTENT[language] || SERVICES_PAGE_CONTENT.cs;
     const serviceIcons = ["🔍", "🧪", "🚢", "🛠️", "✅"];
-    const languageContextSuffix = `%0D%0A%0D%0ALanguage:%20${encodeURIComponent(String(language || "sk").toUpperCase())}%0D%0ASource:%20Services%20page%0D%0ACampaign:%20website-services`;
+    const languageContextSuffix = `%0D%0A%0D%0ALanguage:%20${encodeURIComponent(String(language || "cs").toUpperCase())}%0D%0ASource:%20Services%20page%0D%0ACampaign:%20website-services`;
     const withLanguageContext = (encodedBody) => `${String(encodedBody || "")}${languageContextSuffix}`;
 
     return (
@@ -2463,8 +2463,8 @@ function ContactPage({ texts, language }) {
             source: "contact-page",
             campaign: "website-contact-inquiry",
             toEmail: RESERVATION_EMAIL,
-            subject: `Kontakt dopyt (${String(language || "sk").toUpperCase()})`,
-            text: `Source: contact-page\nLanguage: ${String(language || "sk").toUpperCase()}\n\nName: ${String(contactForm.name || "")}\nEmail: ${String(contactForm.email || "")}\nPhone: ${String(contactForm.phone || "")}\n\nMessage:\n${String(contactForm.message || "")}`,
+            subject: `Kontakt dopyt (${String(language || "cs").toUpperCase()})`,
+            text: `Source: contact-page\nLanguage: ${String(language || "cs").toUpperCase()}\n\nName: ${String(contactForm.name || "")}\nEmail: ${String(contactForm.email || "")}\nPhone: ${String(contactForm.phone || "")}\n\nMessage:\n${String(contactForm.message || "")}`,
             form: {
                 name: String(contactForm.name || ""),
                 email: String(contactForm.email || ""),
@@ -3953,6 +3953,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
 
 
 
