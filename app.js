@@ -1996,7 +1996,7 @@ function formatReservationDateTime(dateValue, language) {
     if (Number.isNaN(date.getTime())) {
         return "";
     }
-    const locale = language === "cs" ? "cs-CZ" : language === "de" ? "de-DE" : language === "en" ? "en-US" : "sk-SK";
+    const locale = language === "sk" ? "sk-SK" : language === "de" ? "de-DE" : language === "en" ? "en-US" : "cs-CZ";
     return new Intl.DateTimeFormat(locale, {
         dateStyle: "medium",
         timeStyle: "medium"
@@ -2276,7 +2276,7 @@ function AboutPage({ texts, language }) {
             ? "„Wir tun das, damit Kunden ein Fahrzeug nicht nach Gefühl, sondern auf Basis belastbarer Fakten auswählen.“"
             : language === "en"
                 ? "\"We do this so clients do not buy on emotion, but on facts that remain valid long after the purchase.\""
-                : "„Robíme to preto, aby klient nekupoval auto na základe emócie, ale na základe faktov, ktoré obstoja aj po rokoch.“";
+                : "„Děláme to proto, aby klient nekupoval auto podle emocí, ale podle faktů, které obstojí i po letech.“";
 
     const extendedAbout = language === "sk"
         ? [
@@ -2463,7 +2463,7 @@ function ContactPage({ texts, language }) {
             source: "contact-page",
             campaign: "website-contact-inquiry",
             toEmail: RESERVATION_EMAIL,
-            subject: `Kontakt dopyt (${String(language || "cs").toUpperCase()})`,
+            subject: `Kontaktní poptávka (${String(language || "cs").toUpperCase()})`,
             text: `Source: contact-page\nLanguage: ${String(language || "cs").toUpperCase()}\n\nName: ${String(contactForm.name || "")}\nEmail: ${String(contactForm.email || "")}\nPhone: ${String(contactForm.phone || "")}\n\nMessage:\n${String(contactForm.message || "")}`,
             form: {
                 name: String(contactForm.name || ""),
@@ -3953,6 +3953,8 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+
 
 
 
