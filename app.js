@@ -1981,7 +1981,7 @@ function getCurrencyForLanguage(language) {
 
 function formatPrice(priceCzk, language) {
     const currency = getCurrencyForLanguage(language);
-    const locale = language === "cs" ? "cs-CZ" : language === "sk" ? "sk-SK" : language === "de" ? "de-DE" : "en-US";
+    const locale = language === "sk" ? "sk-SK" : language === "de" ? "de-DE" : language === "en" ? "en-US" : "cs-CZ";
     const amount = currency === "CZK" ? priceCzk : priceCzk / CZK_TO_EUR_RATE;
 
     return new Intl.NumberFormat(locale, {
@@ -2446,7 +2446,9 @@ function ContactPage({ texts, language }) {
             ? { title: "Unverbindliche Anfrage", name: "Name", email: "E-Mail", phone: "Telefon", message: "Ihre Nachricht", button: "Anfrage senden", sending: "Anfrage wird gesendet...", success: "Danke, Ihre Anfrage wurde erfolgreich gesendet.", error: "Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut." }
             : language === "en"
                 ? { title: "Non-binding inquiry", name: "Name", email: "Email", phone: "Phone", message: "Your message", button: "Send inquiry", sending: "Sending inquiry...", success: "Thank you, your inquiry was sent successfully.", error: "Inquiry could not be sent. Please try again." }
-                : { title: "Nezáväzný dopyt", name: "Meno", email: "E-mail", phone: "Telefón", message: "Vaša správa", button: "Odoslať dopyt", sending: "Odosielam dopyt...", success: "Ďakujeme, dopyt bol úspešne odoslaný.", error: "Dopyt sa nepodarilo odoslať. Skúste to prosím znova." };
+                : language === "sk"
+                    ? { title: "Nezáväzný dopyt", name: "Meno", email: "E-mail", phone: "Telefón", message: "Vaša správa", button: "Odoslať dopyt", sending: "Odosielam dopyt...", success: "Ďakujeme, dopyt bol úspešne odoslaný.", error: "Dopyt sa nepodarilo odoslať. Skúste to prosím znova." }
+                    : { title: "Nezávazná poptávka", name: "Jméno", email: "E-mail", phone: "Telefon", message: "Váš dotaz", button: "Odeslat dotaz", sending: "Odesílám dotaz...", success: "Děkujeme, dotaz byl úspěšně odeslán.", error: "Dotaz se nepodařilo odeslat. Zkuste to prosím znovu." };
 
     const submitContactInquiry = async (event) => {
         event.preventDefault();
@@ -3953,6 +3955,8 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+
 
 
 
