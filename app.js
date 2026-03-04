@@ -1166,7 +1166,7 @@ async function translateTextsForLanguage(texts, targetLanguage) {
     }
 }
 
-async function buildLocalizedCmsFields(baseFields, sourceLanguage) {
+function createLocalizedCmsFieldMaps(baseFields, sourceLanguage) {
     const source = SUPPORTED_LANG_CODES.includes(sourceLanguage) ? sourceLanguage : "sk";
     const normalizedBase = {
         name: String(baseFields?.name || ""),
@@ -1183,6 +1183,12 @@ async function buildLocalizedCmsFields(baseFields, sourceLanguage) {
     localized.nameI18n[source] = normalizedBase.name;
     localized.descriptionI18n[source] = normalizedBase.description;
     localized.legalI18n[source] = normalizedBase.legal;
+
+    return { source, normalizedBase, localized };
+}
+
+async function buildLocalizedCmsFields(baseFields, sourceLanguage) {
+    const { source, normalizedBase, localized } = createLocalizedCmsFieldMaps(baseFields, sourceLanguage);
 
     if (!TRANSLATE_PROXY_URL) {
         return localized;
