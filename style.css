@@ -190,9 +190,10 @@ img {
 .flag-icon {
 	display: block;
 	width: 24px;
-	height: 18px;
+	height: auto;
+	aspect-ratio: 3 / 2;
 	border-radius: 3px;
-	object-fit: cover;
+	object-fit: contain;
 	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -657,7 +658,8 @@ a:hover {
 	align-items: center;
 	justify-content: center;
 	width: 28px;
-	height: 28px;
+	height: auto;
+	aspect-ratio: 3 / 2;
 	border-radius: 8px;
 	background: rgba(222, 59, 59, 0.2);
 }
@@ -1449,7 +1451,8 @@ a:hover {
 
 .fixed-tech-icon {
 	width: 22px;
-	height: 22px;
+	height: auto;
+	aspect-ratio: 3 / 2;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
