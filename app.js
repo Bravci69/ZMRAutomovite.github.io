@@ -4013,6 +4013,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         { value: "reserved", label: cmsUiTexts.statusReserved },
         { value: "unavailable", label: cmsUiTexts.statusUnavailable }
     ]), [cmsUiTexts.statusAvailable, cmsUiTexts.statusReserved, cmsUiTexts.statusUnavailable]);
+    const hasCmsSearchActive = Boolean(String(cmsSearchName || "").trim() || cmsSearchAvailability);
 
     const filteredCmsCars = useMemo(() => {
         if (cmsSearchMode === "availability") {
@@ -4039,6 +4040,11 @@ function CmsPage({ cars, setCars, language, texts }) {
         window.setTimeout(() => {
             setLiveMessage(message);
         }, 10);
+    };
+
+    const clearCmsSearch = () => {
+        setCmsSearchName("");
+        setCmsSearchAvailability("");
     };
 
     const moveFormImage = (fromIndex, toIndex) => {
@@ -4740,6 +4746,9 @@ function CmsPage({ cars, setCars, language, texts }) {
                             />
                         )}
                     </label>
+                    <button type="button" className="button-link button-secondary" onClick={clearCmsSearch} disabled={!hasCmsSearchActive}>
+                        {texts.cars.clearAll}
+                    </button>
                 </div>
                 <div className="cms-list">
                     {filteredCmsCars.map((car) => (
