@@ -3706,6 +3706,8 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [dragImageIndex, setDragImageIndex] = useState(null);
     const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
     const [liveMessage, setLiveMessage] = useState("");
+    const [cmsSearchMode, setCmsSearchMode] = useState("name");
+    const [cmsSearchValue, setCmsSearchValue] = useState("");
     const [isBrandSuggestionsOpen, setIsBrandSuggestionsOpen] = useState(false);
     const [publicBrandOptions, setPublicBrandOptions] = useState([]);
     const [form, setForm] = useState({
@@ -3987,6 +3989,32 @@ function CmsPage({ cars, setCars, language, texts }) {
         { value: "reserved", label: cmsUiTexts.statusReserved },
         { value: "unavailable", label: cmsUiTexts.statusUnavailable }
     ]), [cmsUiTexts]);
+
+    const cmsSearchModeOptions = useMemo(() => ([
+        { value: "name", label: texts.cms.fields.name },
+        { value: "availability", label: cmsUiTexts.statusLabel }
+    ]), [texts.cms.fields.name, cmsUiTexts.statusLabel]);
+
+    const filteredCmsCars = useMemo(() => {
+        const query = String(cmsSearchValue || "").trim().toLowerCase();
+        if (!query) {
+            return cars;
+        }
+
+        if (cmsSearchMode === "availability") {
+            return cars.filter((car) => {
+                const statusLabel = getStatusFromCar(car) === "reserved"
+                    ? cmsUiTexts.statusReserved
+                    : (getStatusFromCar(car) === "unavailable" ? cmsUiTexts.statusUnavailable : cmsUiTexts.statusAvailable);
+                return String(statusLabel || "").toLowerCase().includes(query);
+            });
+        }
+
+        return cars.filter((car) => {
+            const localizedName = getLocalizedCarText(car, "name", language);
+            return String(localizedName || "").toLowerCase().includes(query);
+        });
+    }, [cars, cmsSearchValue, cmsSearchMode, cmsUiTexts.statusAvailable, cmsUiTexts.statusReserved, cmsUiTexts.statusUnavailable, language]);
 
     const announceLiveMessage = (message) => {
         setLiveMessage("");
@@ -4665,8 +4693,31 @@ function CmsPage({ cars, setCars, language, texts }) {
 
             <section className="card cms-card">
                 <h2>{texts.cms.currentCars}</h2>
+                <div className="form-grid">
+                    <label>
+                        {cmsUiTexts.statusLabel}
+                        <DarkSelect
+                            value={cmsSearchMode}
+                            onChange={(value) => setCmsSearchMode(value || "name")}
+                            options={cmsSearchModeOptions}
+                            ariaLabel={cmsUiTexts.statusLabel}
+                        />
+                    </label>
+                    <label>
+                        {texts.cars.search}
+                        <input
+                            type="text"
+                            autoComplete="off"
+                            value={cmsSearchValue}
+                            onChange={(event) => setCmsSearchValue(event.target.value)}
+                            placeholder={cmsSearchMode === "availability"
+                                ? `${cmsUiTexts.statusAvailable}, ${cmsUiTexts.statusReserved}, ${cmsUiTexts.statusUnavailable}`
+                                : texts.cms.fields.name}
+                        />
+                    </label>
+                </div>
                 <div className="cms-list">
-                    {cars.map((car) => (
+                    {filteredCmsCars.map((car) => (
                         (() => {
                             const localizedName = getLocalizedCarText(car, "name", language);
                             return (
@@ -4701,6 +4752,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                         })()
                     ))}
                 </div>
+                {filteredCmsCars.length === 0 && <p className="car-meta">{texts.cars.noResults}</p>}
             </section>
         </>
     );
