@@ -2115,7 +2115,7 @@ async function fetchCarsFromCloud() {
         return null;
     }
     try {
-        const response = await fetch(CARS_API_URL, { method: "GET" });
+        const response = await fetch(CARS_API_URL, { method: "GET", cache: "no-store" });
         if (!response.ok) {
             return null;
         }
@@ -2185,7 +2185,7 @@ async function fetchCarsFromFirebase() {
         return null;
     }
     try {
-        const response = await fetch(url, { method: "GET" });
+        const response = await fetch(url, { method: "GET", cache: "no-store" });
         if (!response.ok) {
             return null;
         }
@@ -2331,6 +2331,7 @@ async function fetchCarsFromFirestoreQueryFallback() {
         const response = await fetch(url, {
             method: "POST",
             headers: getFirestoreHeaders(),
+            cache: "no-store",
             body: JSON.stringify({
                 structuredQuery: {
                     from: [{ collectionId: getFirestoreTopLevelCollectionId() }],
@@ -2375,7 +2376,7 @@ async function fetchCarsFromFirestore() {
         return null;
     }
     try {
-        const response = await fetch(url, { method: "GET", headers: getFirestoreHeaders() });
+        const response = await fetch(url, { method: "GET", headers: getFirestoreHeaders(), cache: "no-store" });
         if (!response.ok) {
             return await fetchCarsFromFirestoreQueryFallback();
         }
@@ -4760,13 +4761,17 @@ function App() {
         setIsCarsLoading(localCars.length === 0);
 
         let syncInFlight = false;
+        let hasRetriedCloudSync = false;
+        let retryTimeoutId = null;
         const runCloudSync = async () => {
             if (syncInFlight || !active) {
                 return;
             }
             syncInFlight = true;
+            let hasCloudCars = false;
             try {
                 const cloudCars = await fetchCarsFromCloud();
+                hasCloudCars = Array.isArray(cloudCars) && cloudCars.length > 0;
                 if (!active) {
                     return;
                 }
@@ -4782,6 +4787,12 @@ function App() {
                     setIsCarsLoading(false);
                 }
                 syncInFlight = false;
+                if (active && !hasCloudCars && !hasRetriedCloudSync) {
+                    hasRetriedCloudSync = true;
+                    retryTimeoutId = window.setTimeout(() => {
+                        runCloudSync();
+                    }, 1200);
+                }
             }
         };
 
@@ -4814,6 +4825,9 @@ function App() {
             }
             if (timeoutId !== null) {
                 window.clearTimeout(timeoutId);
+            }
+            if (retryTimeoutId !== null) {
+                window.clearTimeout(retryTimeoutId);
             }
         };
     }, [isCarsDataPage, shouldDeferCloudSync]);
