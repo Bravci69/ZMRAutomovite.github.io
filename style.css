@@ -135,6 +135,18 @@ img {
 	font-size: 0.82rem;
 }
 
+.language-option-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.language-option-label .flag-icon {
+	width: 20px;
+	height: 14px;
+	border-radius: 2px;
+}
+
 .mobile-nav-wrap {
 	width: auto;
 }
