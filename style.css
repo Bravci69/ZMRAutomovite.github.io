@@ -659,8 +659,7 @@ a:hover {
 	align-items: center;
 	justify-content: center;
 	width: 28px;
-	height: auto;
-	aspect-ratio: 3 / 2;
+	height: 28px;
 	border-radius: 8px;
 	background: rgba(222, 59, 59, 0.2);
 }
@@ -701,8 +700,6 @@ a:hover {
 
 .status {
 	font-weight: 700;
-	height: auto;
-	aspect-ratio: 3 / 2;
 	padding: 5px 10px;
 	border-radius: 999px;
 	display: inline-block;
@@ -1453,8 +1450,7 @@ a:hover {
 
 .fixed-tech-icon {
 	width: 22px;
-	height: auto;
-	aspect-ratio: 3 / 2;
+	height: 22px;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
