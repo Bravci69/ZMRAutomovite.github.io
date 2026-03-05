@@ -3770,7 +3770,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                 translationModeLabel: "Übersetzungsmodus",
                 translationModeAuto: "Automatisch",
                 translationModeManual: "Manuell",
-                translationLanguageLabel: "Bearbeitungssprache (Flaggen)"
+                translationLanguageLabel: "Bearbeitungssprache (Flaggen)",
+                searchFilterLabel: "Filtern nach",
+                searchByVehicles: "Fahrzeuge",
+                searchByAvailability: "Verfügbarkeit"
             };
         }
         if (language === "en") {
@@ -3802,7 +3805,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                 translationModeLabel: "Translation mode",
                 translationModeAuto: "Automatic",
                 translationModeManual: "Manual",
-                translationLanguageLabel: "Editing language (flags)"
+                translationLanguageLabel: "Editing language (flags)",
+                searchFilterLabel: "Filter by",
+                searchByVehicles: "Vehicles",
+                searchByAvailability: "Availability"
             };
         }
         if (language === "sk") {
@@ -3834,7 +3840,10 @@ function CmsPage({ cars, setCars, language, texts }) {
             translationModeLabel: "Režim prekladu",
             translationModeAuto: "Automatický",
             translationModeManual: "Manuálny",
-            translationLanguageLabel: "Jazyk prepisu (vlajky)"
+            translationLanguageLabel: "Jazyk prepisu (vlajky)",
+            searchFilterLabel: "Filtrovať podľa",
+            searchByVehicles: "Vozidlá",
+            searchByAvailability: "Dostupnosť"
         };
         }
         return {
@@ -3865,7 +3874,10 @@ function CmsPage({ cars, setCars, language, texts }) {
             translationModeLabel: "Režim překladu",
             translationModeAuto: "Automatický",
             translationModeManual: "Manuální",
-            translationLanguageLabel: "Jazyk přepisu (vlajky)"
+            translationLanguageLabel: "Jazyk přepisu (vlajky)",
+            searchFilterLabel: "Filtrovat podle",
+            searchByVehicles: "Vozidla",
+            searchByAvailability: "Dostupnost"
         };
     }, [language]);
 
@@ -3991,9 +4003,9 @@ function CmsPage({ cars, setCars, language, texts }) {
     ]), [cmsUiTexts]);
 
     const cmsSearchModeOptions = useMemo(() => ([
-        { value: "name", label: texts.cms.fields.name },
-        { value: "availability", label: cmsUiTexts.statusLabel }
-    ]), [texts.cms.fields.name, cmsUiTexts.statusLabel]);
+        { value: "name", label: cmsUiTexts.searchByVehicles },
+        { value: "availability", label: cmsUiTexts.searchByAvailability }
+    ]), [cmsUiTexts.searchByVehicles, cmsUiTexts.searchByAvailability]);
 
     const filteredCmsCars = useMemo(() => {
         const query = String(cmsSearchValue || "").trim().toLowerCase();
@@ -4695,12 +4707,12 @@ function CmsPage({ cars, setCars, language, texts }) {
                 <h2>{texts.cms.currentCars}</h2>
                 <div className="form-grid">
                     <label>
-                        {cmsUiTexts.statusLabel}
+                        {cmsUiTexts.searchFilterLabel}
                         <DarkSelect
                             value={cmsSearchMode}
                             onChange={(value) => setCmsSearchMode(value || "name")}
                             options={cmsSearchModeOptions}
-                            ariaLabel={cmsUiTexts.statusLabel}
+                            ariaLabel={cmsUiTexts.searchFilterLabel}
                         />
                     </label>
                     <label>
@@ -4712,7 +4724,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                             onChange={(event) => setCmsSearchValue(event.target.value)}
                             placeholder={cmsSearchMode === "availability"
                                 ? `${cmsUiTexts.statusAvailable}, ${cmsUiTexts.statusReserved}, ${cmsUiTexts.statusUnavailable}`
-                                : texts.cms.fields.name}
+                                : cmsUiTexts.searchByVehicles}
                         />
                     </label>
                 </div>
