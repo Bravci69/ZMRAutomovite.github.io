@@ -2705,6 +2705,28 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
             : language === "sk"
                 ? "Prihlásenie do CMS"
                 : "Přihlášení do CMS";
+    const footerBaseInfoLabel = language === "de"
+        ? "Grundinformationen"
+        : language === "en"
+            ? "Basic information"
+            : language === "sk"
+                ? "Základné informácie"
+                : "Základní informace";
+    const footerRightsLabel = language === "de"
+        ? "Alle Rechte vorbehalten."
+        : language === "en"
+            ? "All rights reserved."
+            : language === "sk"
+                ? "Všetky práva vyhradené."
+                : "Všechna práva vyhrazena.";
+    const footerLocationLabel = language === "de"
+        ? "Prag, Tschechien"
+        : language === "en"
+            ? "Prague, Czech Republic"
+            : language === "sk"
+                ? "Praha, Česká republika"
+                : "Praha, Česká republika";
+    const currentYear = new Date().getFullYear();
 
     useEffect(() => {
         setIsMobileMenuOpen(false);
@@ -2759,6 +2781,21 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
             </section>
 
             <main className="container page-content">{children}</main>
+
+            <footer className="site-footer">
+                <div className="container site-footer-inner">
+                    <div className="site-footer-main">
+                        <strong>ZMR Automotive</strong>
+                        <span>{footerBaseInfoLabel}</span>
+                    </div>
+                    <div className="site-footer-contact">
+                        <a href="tel:+420000000000">+420 000 000 000</a>
+                        <a href="mailto:info@zmrautomovite.cz">info@zmrautomovite.cz</a>
+                        <span>{footerLocationLabel}</span>
+                    </div>
+                    <p className="site-footer-copy">© {currentYear} ZMR Automotive · {footerRightsLabel}</p>
+                </div>
+            </footer>
         </>
     );
 }
