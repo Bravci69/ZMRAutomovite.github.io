@@ -1215,7 +1215,7 @@ async function ensureFirebaseCmsIdToken() {
     return true;
 }
 
-async function translateTextsForLanguage(texts, targetLanguage) {
+async function translateTextsForLanguage(texts, targetLanguage, sourceLanguage = "") {
     if (!TRANSLATE_PROXY_URL || !Array.isArray(texts) || texts.length === 0) {
         return {};
     }
@@ -1227,6 +1227,9 @@ async function translateTextsForLanguage(texts, targetLanguage) {
             body: JSON.stringify({
                 texts,
                 target: targetLanguage,
+                sourceLanguage,
+                sourceLang: sourceLanguage,
+                from: sourceLanguage,
                 source: "cms-localization",
                 campaign: "website-translate",
                 requestId
@@ -1263,6 +1266,43 @@ function createLocalizedCmsFieldMaps(baseFields, sourceLanguage) {
     return { source, normalizedBase, localized };
 }
 
+function isMeaningfulCmsTranslation(sourceText, translatedText) {
+    const source = String(sourceText || "").trim();
+    const translated = String(translatedText || "").trim();
+    if (!source) {
+        return true;
+    }
+    if (!translated) {
+        return false;
+    }
+    return source.toLowerCase() !== translated.toLowerCase();
+}
+
+function collectMissingCmsTranslations(localizedFields, sourceFields, sourceLanguage) {
+    const source = SUPPORTED_LANG_CODES.includes(sourceLanguage) ? sourceLanguage : "sk";
+    const fields = ["name", "description", "legal"];
+    const missing = [];
+
+    fields.forEach((field) => {
+        const sourceValue = String(sourceFields?.[field] || "").trim();
+        if (!sourceValue) {
+            return;
+        }
+        const mapKey = `${field}I18n`;
+        SUPPORTED_LANG_CODES.forEach((targetLanguage) => {
+            if (targetLanguage === source) {
+                return;
+            }
+            const translated = localizedFields?.[mapKey]?.[targetLanguage] || "";
+            if (!isMeaningfulCmsTranslation(sourceValue, translated)) {
+                missing.push(targetLanguage);
+            }
+        });
+    });
+
+    return Array.from(new Set(missing));
+}
+
 async function buildLocalizedCmsFields(baseFields, sourceLanguage) {
     const { source, normalizedBase, localized } = createLocalizedCmsFieldMaps(baseFields, sourceLanguage);
 
@@ -1278,12 +1318,12 @@ async function buildLocalizedCmsFields(baseFields, sourceLanguage) {
             continue;
         }
 
-        const translations = await translateTextsForLanguage(sourceTexts, targetLanguage);
+        const translations = await translateTextsForLanguage(sourceTexts, targetLanguage, source);
         fieldOrder.forEach((fieldName, index) => {
             const sourceText = sourceTexts[index];
             const translatedText = translations[sourceText];
             const mapKey = `${fieldName}I18n`;
-            localized[mapKey][targetLanguage] = translatedText ? String(translatedText) : sourceText;
+            localized[mapKey][targetLanguage] = translatedText ? String(translatedText) : "";
         });
     }
 
