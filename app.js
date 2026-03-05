@@ -3707,7 +3707,8 @@ function CmsPage({ cars, setCars, language, texts }) {
     const [dragOverImageIndex, setDragOverImageIndex] = useState(null);
     const [liveMessage, setLiveMessage] = useState("");
     const [cmsSearchMode, setCmsSearchMode] = useState("name");
-    const [cmsSearchValue, setCmsSearchValue] = useState("");
+    const [cmsSearchName, setCmsSearchName] = useState("");
+    const [cmsSearchAvailability, setCmsSearchAvailability] = useState("");
     const [isBrandSuggestionsOpen, setIsBrandSuggestionsOpen] = useState(false);
     const [publicBrandOptions, setPublicBrandOptions] = useState([]);
     const [form, setForm] = useState({
@@ -4007,26 +4008,30 @@ function CmsPage({ cars, setCars, language, texts }) {
         { value: "availability", label: cmsUiTexts.searchByAvailability }
     ]), [cmsUiTexts.searchByVehicles, cmsUiTexts.searchByAvailability]);
 
+    const cmsAvailabilitySearchOptions = useMemo(() => ([
+        { value: "available", label: cmsUiTexts.statusAvailable },
+        { value: "reserved", label: cmsUiTexts.statusReserved },
+        { value: "unavailable", label: cmsUiTexts.statusUnavailable }
+    ]), [cmsUiTexts.statusAvailable, cmsUiTexts.statusReserved, cmsUiTexts.statusUnavailable]);
+
     const filteredCmsCars = useMemo(() => {
-        const query = String(cmsSearchValue || "").trim().toLowerCase();
-        if (!query) {
-            return cars;
+        if (cmsSearchMode === "availability") {
+            if (!cmsSearchAvailability) {
+                return cars;
+            }
+            return cars.filter((car) => getStatusFromCar(car) === cmsSearchAvailability);
         }
 
-        if (cmsSearchMode === "availability") {
-            return cars.filter((car) => {
-                const statusLabel = getStatusFromCar(car) === "reserved"
-                    ? cmsUiTexts.statusReserved
-                    : (getStatusFromCar(car) === "unavailable" ? cmsUiTexts.statusUnavailable : cmsUiTexts.statusAvailable);
-                return String(statusLabel || "").toLowerCase().includes(query);
-            });
+        const query = String(cmsSearchName || "").trim().toLowerCase();
+        if (!query) {
+            return cars;
         }
 
         return cars.filter((car) => {
             const localizedName = getLocalizedCarText(car, "name", language);
             return String(localizedName || "").toLowerCase().includes(query);
         });
-    }, [cars, cmsSearchValue, cmsSearchMode, cmsUiTexts.statusAvailable, cmsUiTexts.statusReserved, cmsUiTexts.statusUnavailable, language]);
+    }, [cars, cmsSearchMode, cmsSearchName, cmsSearchAvailability, language]);
 
     const announceLiveMessage = (message) => {
         setLiveMessage("");
@@ -4717,15 +4722,23 @@ function CmsPage({ cars, setCars, language, texts }) {
                     </label>
                     <label>
                         {texts.cars.search}
-                        <input
-                            type="text"
-                            autoComplete="off"
-                            value={cmsSearchValue}
-                            onChange={(event) => setCmsSearchValue(event.target.value)}
-                            placeholder={cmsSearchMode === "availability"
-                                ? `${cmsUiTexts.statusAvailable}, ${cmsUiTexts.statusReserved}, ${cmsUiTexts.statusUnavailable}`
-                                : cmsUiTexts.searchByVehicles}
-                        />
+                        {cmsSearchMode === "availability" ? (
+                            <DarkSelect
+                                value={cmsSearchAvailability}
+                                onChange={(value) => setCmsSearchAvailability(value || "")}
+                                options={cmsAvailabilitySearchOptions}
+                                placeholder="-"
+                                ariaLabel={cmsUiTexts.searchByAvailability}
+                            />
+                        ) : (
+                            <input
+                                type="text"
+                                autoComplete="off"
+                                value={cmsSearchName}
+                                onChange={(event) => setCmsSearchName(event.target.value)}
+                                placeholder={cmsUiTexts.searchByVehicles}
+                            />
+                        )}
                     </label>
                 </div>
                 <div className="cms-list">
