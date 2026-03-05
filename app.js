@@ -871,6 +871,9 @@ function parseNumber(value) {
         return NaN;
     }
     const cleaned = value.replace(/\s/g, "").replace(",", ".").replace(/[^\d.]/g, "");
+    if (!cleaned) {
+        return NaN;
+    }
     const parsed = Number(cleaned);
     return Number.isFinite(parsed) ? parsed : NaN;
 }
