@@ -1215,34 +1215,143 @@ async function ensureFirebaseCmsIdToken() {
     return true;
 }
 
-async function translateTextsForLanguage(texts, targetLanguage, sourceLanguage = "") {
-    if (!TRANSLATE_PROXY_URL || !Array.isArray(texts) || texts.length === 0) {
+function normalizeTranslateApiResult(payload, requestedTexts) {
+    if (!payload || typeof payload !== "object") {
         return {};
     }
-    try {
-        const requestId = createRequestId("tr");
-        const response = await fetch(TRANSLATE_PROXY_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                texts,
-                target: targetLanguage,
-                sourceLanguage,
-                sourceLang: sourceLanguage,
-                from: sourceLanguage,
-                source: "cms-localization",
-                campaign: "website-translate",
-                requestId
-            })
+
+    const texts = Array.isArray(requestedTexts) ? requestedTexts : [];
+    const normalized = {};
+
+    if (payload.translations && typeof payload.translations === "object" && !Array.isArray(payload.translations)) {
+        texts.forEach((text) => {
+            const translated = payload.translations[text];
+            if (typeof translated === "string" && translated.trim()) {
+                normalized[text] = translated;
+            }
         });
-        if (!response.ok) {
-            return {};
+        if (Object.keys(normalized).length > 0) {
+            return normalized;
         }
-        const data = await response.json();
-        return data?.translations && typeof data.translations === "object" ? data.translations : {};
-    } catch {
+    }
+
+    const orderedTranslations = Array.isArray(payload?.data?.translations)
+        ? payload.data.translations
+        : (Array.isArray(payload?.translations) ? payload.translations : []);
+
+    if (orderedTranslations.length > 0) {
+        texts.forEach((text, index) => {
+            const translated = orderedTranslations[index]?.translatedText;
+            if (typeof translated === "string" && translated.trim()) {
+                normalized[text] = translated;
+            }
+        });
+    }
+
+    return normalized;
+}
+
+async function translateTextsWithGoogleApi(texts, targetLanguage, sourceLanguage = "") {
+    const target = String(targetLanguage || "").trim().toLowerCase();
+    if (!SUPPORTED_LANG_CODES.includes(target)) {
         return {};
     }
+
+    const source = SUPPORTED_LANG_CODES.includes(sourceLanguage) ? sourceLanguage : "auto";
+    const uniqueTexts = [...new Set(
+        (Array.isArray(texts) ? texts : [])
+            .map((item) => String(item || "").trim())
+            .filter(Boolean)
+    )];
+
+    if (uniqueTexts.length === 0) {
+        return {};
+    }
+
+    const responses = await Promise.all(uniqueTexts.map(async (sourceText) => {
+        try {
+            const query = new URLSearchParams({
+                client: "gtx",
+                sl: source,
+                tl: target,
+                dt: "t",
+                q: sourceText
+            });
+            const response = await fetch(`https://translate.googleapis.com/translate_a/single?${query.toString()}`);
+            if (!response.ok) {
+                return [sourceText, ""];
+            }
+            const payload = await response.json();
+            const segments = Array.isArray(payload?.[0]) ? payload[0] : [];
+            const translatedText = segments
+                .map((segment) => (Array.isArray(segment) ? String(segment[0] || "") : ""))
+                .join("")
+                .trim();
+            return [sourceText, translatedText];
+        } catch {
+            return [sourceText, ""];
+        }
+    }));
+
+    return responses.reduce((accumulator, [sourceText, translatedText]) => {
+        if (sourceText && translatedText) {
+            accumulator[sourceText] = translatedText;
+        }
+        return accumulator;
+    }, {});
+}
+
+async function translateTextsForLanguage(texts, targetLanguage, sourceLanguage = "") {
+    if (!Array.isArray(texts) || texts.length === 0) {
+        return {};
+    }
+
+    const uniqueTexts = [...new Set(texts.map((item) => String(item || "").trim()).filter(Boolean))];
+    if (uniqueTexts.length === 0) {
+        return {};
+    }
+
+    let translations = {};
+
+    if (TRANSLATE_PROXY_URL) {
+        try {
+            const requestId = createRequestId("tr");
+            const response = await fetch(TRANSLATE_PROXY_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    texts: uniqueTexts,
+                    target: targetLanguage,
+                    sourceLanguage,
+                    sourceLang: sourceLanguage,
+                    from: sourceLanguage,
+                    source: "cms-localization",
+                    campaign: "website-translate",
+                    requestId
+                })
+            });
+            if (response.ok) {
+                const rawPayload = await response.text();
+                let parsedPayload = null;
+                try {
+                    parsedPayload = JSON.parse(rawPayload);
+                } catch {
+                    parsedPayload = null;
+                }
+                translations = normalizeTranslateApiResult(parsedPayload, uniqueTexts);
+            }
+        } catch {
+            translations = {};
+        }
+    }
+
+    const missingTexts = uniqueTexts.filter((text) => !translations[text]);
+    if (missingTexts.length === 0) {
+        return translations;
+    }
+
+    const googleFallbackTranslations = await translateTextsWithGoogleApi(missingTexts, targetLanguage, sourceLanguage);
+    return { ...translations, ...googleFallbackTranslations };
 }
 
 function createLocalizedCmsFieldMaps(baseFields, sourceLanguage) {
