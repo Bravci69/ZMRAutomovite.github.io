@@ -367,9 +367,19 @@ const TECHNICAL_VALUE_TRANSLATIONS = {
     "Full leather, Black": { cs: "Plná kůže, černá", sk: "Plná koža, čierna", de: "Vollleder, Schwarz", en: "Full leather, Black" }
 };
 
-const TECHNICAL_VALUE_TRANSLATIONS_BY_KEY = Object.fromEntries(
-    Object.entries(TECHNICAL_VALUE_TRANSLATIONS).map(([key, translation]) => [String(key).trim().toLowerCase(), translation])
-);
+const TECHNICAL_VALUE_TRANSLATIONS_BY_KEY = Object.entries(TECHNICAL_VALUE_TRANSLATIONS).reduce((accumulator, [key, translation]) => {
+    const canonicalKey = String(key).trim().toLowerCase();
+    if (canonicalKey) {
+        accumulator[canonicalKey] = translation;
+    }
+    Object.values(translation || {}).forEach((localizedValue) => {
+        const localizedKey = String(localizedValue || "").trim().toLowerCase();
+        if (localizedKey) {
+            accumulator[localizedKey] = translation;
+        }
+    });
+    return accumulator;
+}, {});
 
 const TECHNICAL_LABEL_CANONICAL_BY_KEY = Object.entries(TECHNICAL_LABEL_TRANSLATIONS).reduce((accumulator, [canonical, translations]) => {
     accumulator[String(canonical).trim().toLowerCase()] = canonical;
@@ -1537,11 +1547,12 @@ function normalizeCar(car, index) {
     };
 }
 
-function formatTransmission(car) {
+function formatTransmission(car, language = "sk") {
+    const translatedTransmission = translateTechnicalValue(car.transmission, language);
     if (car.transmission === "Manuál" && car.manualGears > 0) {
-        return `${car.transmission} (${car.manualGears})`;
+        return `${translatedTransmission} (${car.manualGears})`;
     }
-    return car.transmission;
+    return translatedTransmission;
 }
 
 function translateTechnicalLabel(label, language) {
@@ -3087,10 +3098,10 @@ function CarsPage({ cars, language, texts }) {
     const horsepowerRangeTo = Math.max(horsepowerFromCurrent, horsepowerToCurrent);
     const hasHorsepowerFilter = horsepowerFromCurrent > horsepowerMinBound || horsepowerToCurrent < horsepowerMaxBound;
     const doorOptions = useMemo(() => Array.from(new Set(cars.map((car) => Number(car.doors)).filter((count) => Number.isFinite(count) && count > 0))).sort((a, b) => a - b), [cars]);
-    const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: option })), [fuelOptions]);
+    const fuelSelectOptions = useMemo(() => fuelOptions.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [fuelOptions, language]);
     const brandSelectOptions = useMemo(() => brandOptions.map((option) => ({ value: option, label: option })), [brandOptions]);
-    const driveSelectOptions = useMemo(() => driveOptions.map((option) => ({ value: option, label: option })), [driveOptions]);
-    const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: option })), []);
+    const driveSelectOptions = useMemo(() => driveOptions.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [driveOptions, language]);
+    const transmissionSelectOptions = useMemo(() => TRANSMISSION_OPTIONS.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
     const doorSelectOptions = useMemo(() => doorOptions.map((option) => ({ value: String(option), label: String(option) })), [doorOptions]);
     const filteredCars = useMemo(() => {
         const query = debouncedSearch.trim().toLowerCase();
@@ -3214,16 +3225,16 @@ function CarsPage({ cars, language, texts }) {
         activeFilterChips.push({ key: "search", label: `${texts.cars.search}: ${search}`, clear: () => setSearch("") });
     }
     if (fuel) {
-        activeFilterChips.push({ key: "fuel", label: `${texts.cars.fuel}: ${fuel}`, clear: () => setFuel("") });
+        activeFilterChips.push({ key: "fuel", label: `${texts.cars.fuel}: ${translateTechnicalValue(fuel, language)}`, clear: () => setFuel("") });
     }
     if (brand) {
         activeFilterChips.push({ key: "brand", label: `${texts.cars.brand}: ${brand}`, clear: () => setBrand("") });
     }
     if (drive) {
-        activeFilterChips.push({ key: "drive", label: `${texts.cars.drive}: ${drive}`, clear: () => setDrive("") });
+        activeFilterChips.push({ key: "drive", label: `${texts.cars.drive}: ${translateTechnicalValue(drive, language)}`, clear: () => setDrive("") });
     }
     if (transmission) {
-        activeFilterChips.push({ key: "transmission", label: `${texts.cars.transmission}: ${transmission}`, clear: () => setTransmission("") });
+        activeFilterChips.push({ key: "transmission", label: `${texts.cars.transmission}: ${translateTechnicalValue(transmission, language)}`, clear: () => setTransmission("") });
     }
     if (doors) {
         activeFilterChips.push({ key: "doors", label: `${texts.cars.doors}: ${doors}`, clear: () => setDoors("") });
@@ -3412,10 +3423,10 @@ function CarsPage({ cars, language, texts }) {
                         <div className="car-content">
                             <h2>{localizedName}</h2>
                             <p className="car-meta">
-                                {car.year} • {car.mileage} • {car.fuel} • {car.drive}
+                                {car.year} • {car.mileage} • {translateTechnicalValue(car.fuel, language)} • {translateTechnicalValue(car.drive, language)}
                             </p>
                             <div className="car-spec-grid">
-                                <p className="car-meta">{car.doors} {texts.common.doorsUnit} • {formatTransmission(car)}</p>
+                                <p className="car-meta">{car.doors} {texts.common.doorsUnit} • {formatTransmission(car, language)}</p>
                                 <p className="car-meta">{car.horsepower} {texts.common.horsepowerUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"}</p>
                             </div>
                             <p>{localizedDescription}</p>
@@ -3579,10 +3590,10 @@ function CarDetailPage({ cars, setCars, language, texts, isCarsLoading = false }
                 <div>
                     <h2>{localizedName}</h2>
                     <p className="car-meta">
-                                {car.year} • {car.mileage} • {car.fuel} • {car.drive}
+                                {car.year} • {car.mileage} • {translateTechnicalValue(car.fuel, language)} • {translateTechnicalValue(car.drive, language)}
                             </p>
                             <div className="car-spec-grid">
-                                <p className="car-meta">{car.doors} {texts.common.doorsUnit} • {formatTransmission(car)}</p>
+                                <p className="car-meta">{car.doors} {texts.common.doorsUnit} • {formatTransmission(car, language)}</p>
                                 <p className="car-meta">{car.horsepower} {texts.common.horsepowerUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"}</p>
                             </div>
                     <p className="car-meta">👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
@@ -4626,7 +4637,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                             <div>
                                 <h3>{localizedName}</h3>
                                 <p>{car.year} • {formatPrice(car.priceCzk, language)} • {car.mileage}</p>
-                                <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {car.drive} • {formatTransmission(car)}</p>
+                                <p>{car.brand} • {car.horsepower} {texts.common.horsepowerUnit} • {car.doors} {texts.common.doorsUnit} • {car.seats} {texts.cars.seatsUnit || "sedadiel"} • {translateTechnicalValue(car.drive, language)} • {formatTransmission(car, language)}</p>
                                 <p>👤 {texts.carDetail.previousOwners}: {car.previousOwners}</p>
                                 <p className={car.reserved ? "status reserved" : (car.available ? "status available" : "status unavailable")}>
                                     {car.reserved ? getReservationTexts(language).statusReserved : (car.available ? texts.common.statusAvailable : texts.common.statusUnavailable)}
@@ -4666,7 +4677,7 @@ function App() {
     const [language, setLanguage] = useState(getLanguagePreference);
     const [isCloudSyncReady, setIsCloudSyncReady] = useState(false);
     const [isCarsLoading, setIsCarsLoading] = useState(isCarsDataPage);
-    const shouldDeferCloudSync = page !== "car-detail";
+    const shouldDeferCloudSync = page === "cms";
     const texts = useMemo(() => I18N[language] || I18N.cs, [language]);
 
     useEffect(() => {
@@ -4682,20 +4693,43 @@ function App() {
         setCars(localCars);
         setIsCarsLoading(localCars.length === 0);
 
-        const runCloudSync = () => {
-            fetchCarsFromCloud().then((cloudCars) => {
+        let syncInFlight = false;
+        const runCloudSync = async () => {
+            if (syncInFlight || !active) {
+                return;
+            }
+            syncInFlight = true;
+            try {
+                const cloudCars = await fetchCarsFromCloud();
                 if (!active) {
                     return;
                 }
+                const latestLocalCars = getCars();
                 const normalizedCloudCars = Array.isArray(cloudCars) ? cloudCars.map((car, index) => normalizeCar(car, index)) : [];
-                const mergedCars = mergeCarsByLatest(localCars, normalizedCloudCars);
+                const mergedCars = mergeCarsByLatest(latestLocalCars, normalizedCloudCars);
                 const normalizedMergedCars = mergedCars.map((car, index) => normalizeCar(car, index));
                 setCars(normalizedMergedCars);
                 saveCars(normalizedMergedCars);
-                setIsCloudSyncReady(true);
-                setIsCarsLoading(false);
-            });
+            } finally {
+                if (active) {
+                    setIsCloudSyncReady(true);
+                    setIsCarsLoading(false);
+                }
+                syncInFlight = false;
+            }
         };
+
+        const handlePageShow = () => {
+            runCloudSync();
+        };
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === "visible") {
+                runCloudSync();
+            }
+        };
+
+        window.addEventListener("pageshow", handlePageShow);
+        document.addEventListener("visibilitychange", handleVisibilityChange);
 
         let idleCallbackId = null;
         let timeoutId = null;
@@ -4707,6 +4741,8 @@ function App() {
 
         return () => {
             active = false;
+            window.removeEventListener("pageshow", handlePageShow);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
             if (idleCallbackId !== null && typeof window.cancelIdleCallback === "function") {
                 window.cancelIdleCallback(idleCallbackId);
             }
