@@ -4871,7 +4871,7 @@ function NotFoundPage({ language }) {
             title: "Seite nicht gefunden",
             subtitle: "Die angeforderte Adresse existiert nicht oder wurde verschoben.",
             home: "Zur Startseite",
-            cars: "Fahrzeuge ansehen"
+            contact: "Kontakt"
         }
         : language === "en"
             ? {
@@ -4879,7 +4879,7 @@ function NotFoundPage({ language }) {
                 title: "Page not found",
                 subtitle: "The address you entered doesn't exist or has been moved.",
                 home: "Go to homepage",
-                cars: "Browse cars"
+                contact: "Contact us"
             }
             : language === "sk"
                 ? {
@@ -4887,14 +4887,14 @@ function NotFoundPage({ language }) {
                     title: "Stránka sa nenašla",
                     subtitle: "Zadaná adresa neexistuje alebo bola presunutá.",
                     home: "Prejsť na domov",
-                    cars: "Zobraziť vozidlá"
+                    contact: "Kontaktovať nás"
                 }
                 : {
                     code: "404",
                     title: "Stránka nebyla nalezena",
                     subtitle: "Zadaná adresa neexistuje nebo byla přesunuta.",
                     home: "Přejít na domů",
-                    cars: "Zobrazit vozidla"
+                    contact: "Kontaktovat nás"
                 };
 
     return (
@@ -4904,7 +4904,7 @@ function NotFoundPage({ language }) {
             <p>{labels.subtitle}</p>
             <div className="not-found-actions">
                 <a href="/" className="button-link">{labels.home}</a>
-                <a href="/auta" className="button-link button-secondary">{labels.cars}</a>
+                <a href="/kontakt" className="button-link button-secondary">{labels.contact}</a>
             </div>
         </section>
     );
