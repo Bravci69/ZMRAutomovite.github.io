@@ -1890,11 +1890,31 @@ function DarkSelect({ value, onChange, options, placeholder, ariaLabel }) {
 }
 
 function getCars() {
-    return [];
+    try {
+        const raw = localStorage.getItem(CARS_STORAGE_KEY);
+        if (!raw) {
+            return defaultCars.map((car, index) => normalizeCar(car, index));
+        }
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+            return defaultCars.map((car, index) => normalizeCar(car, index));
+        }
+        return parsed.map((car, index) => normalizeCar(car, index));
+    } catch {
+        return defaultCars.map((car, index) => normalizeCar(car, index));
+    }
 }
 
-function saveCars() {
-    return;
+function saveCars(cars) {
+    if (!Array.isArray(cars)) {
+        return;
+    }
+    try {
+        const normalizedCars = cars.map((car, index) => normalizeCar(car, index));
+        localStorage.setItem(CARS_STORAGE_KEY, JSON.stringify(normalizedCars));
+    } catch {
+        return;
+    }
 }
 function isDataUrlImage(value) {
     return typeof value === "string" && value.trim().toLowerCase().startsWith("data:");
@@ -4129,12 +4149,12 @@ function CmsPage({ cars, setCars, language, texts }) {
         setCars(updated);
         saveCars(updated);
         const cloudSaved = await saveCarsToCloud(updated);
+        resetCmsForm();
         if (cloudSaved) {
             setError("");
-            resetCmsForm();
             return;
         }
-        setError("Uloženie do databázy zlyhalo. Prihláste sa znova a uložte ešte raz.");
+        setError("Vozidlo bolo uložené lokálne, ale synchronizácia do databázy zlyhala. Skontrolujte prihlásenie a skúste synchronizovať znova.");
     };
 
     const setCarStatus = (id, status) => {
