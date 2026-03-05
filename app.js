@@ -3765,6 +3765,7 @@ function CmsPage({ cars, setCars, language, texts }) {
     const cmsDraftLanguageBadge = cmsDraftLanguageOption
         ? `${cmsDraftLanguageOption.flag} ${cmsDraftLanguageOption.code.toUpperCase()}`
         : String(cmsDraftLanguage || "").toUpperCase();
+    const cmsAutoSourceLanguage = SUPPORTED_LANG_CODES.includes(language) ? language : "sk";
     const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
     const isPublicBrandListAvailable = publicBrandOptions.length > 0;
 
@@ -3777,6 +3778,9 @@ function CmsPage({ cars, setCars, language, texts }) {
     };
 
     const switchCmsDraftLanguage = (nextLanguage) => {
+        if (cmsTranslationMode === "auto") {
+            return;
+        }
         if (!SUPPORTED_LANG_CODES.includes(nextLanguage)) {
             return;
         }
@@ -3924,6 +3928,21 @@ function CmsPage({ cars, setCars, language, texts }) {
     }, []);
 
     useEffect(() => {
+        if (cmsTranslationMode !== "auto") {
+            return;
+        }
+        if (cmsDraftLanguage !== cmsAutoSourceLanguage) {
+            setCmsDraftLanguage(cmsAutoSourceLanguage);
+            setForm((prev) => ({
+                ...prev,
+                name: getLocalizedDraftValueForLanguage(localizedCmsDraftFields, "name", cmsAutoSourceLanguage, prev.name),
+                description: getLocalizedDraftValueForLanguage(localizedCmsDraftFields, "description", cmsAutoSourceLanguage, prev.description),
+                legal: getLocalizedDraftValueForLanguage(localizedCmsDraftFields, "legal", cmsAutoSourceLanguage, prev.legal)
+            }));
+        }
+    }, [cmsTranslationMode, cmsDraftLanguage, cmsAutoSourceLanguage, localizedCmsDraftFields]);
+
+    useEffect(() => {
         if (!isLogged) {
             return;
         }
@@ -3938,7 +3957,8 @@ function CmsPage({ cars, setCars, language, texts }) {
             description: String(form.description || ""),
             legal: String(form.legal || "")
         };
-        const seededLocalized = createLocalizedCmsFieldMaps(sourceFields, cmsDraftLanguage).localized;
+        const sourceLanguageForMode = cmsTranslationMode === "auto" ? cmsAutoSourceLanguage : cmsDraftLanguage;
+        const seededLocalized = createLocalizedCmsFieldMaps(sourceFields, sourceLanguageForMode).localized;
 
         if (!TRANSLATE_PROXY_URL || !hasCmsTranslatableInput) {
             setLocalizedCmsDraftFields(seededLocalized);
@@ -3949,7 +3969,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         let active = true;
         const timeoutId = window.setTimeout(() => {
             setIsCmsAutoTranslating(true);
-            buildLocalizedCmsFields(sourceFields, cmsDraftLanguage)
+            buildLocalizedCmsFields(sourceFields, sourceLanguageForMode)
                 .then((localized) => {
                     if (!active) {
                         return;
@@ -3967,7 +3987,7 @@ function CmsPage({ cars, setCars, language, texts }) {
             active = false;
             window.clearTimeout(timeoutId);
         };
-    }, [isLogged, form.name, form.description, form.legal, cmsDraftLanguage, hasCmsTranslatableInput, cmsTranslationMode]);
+    }, [isLogged, form.name, form.description, form.legal, cmsDraftLanguage, hasCmsTranslatableInput, cmsTranslationMode, cmsAutoSourceLanguage]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
