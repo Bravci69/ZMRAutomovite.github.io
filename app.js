@@ -2726,6 +2726,20 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
             : language === "sk"
                 ? "Praha, Česká republika"
                 : "Praha, Česká republika";
+    const footerContactLabel = language === "de"
+        ? "Kontakt"
+        : language === "en"
+            ? "Contact"
+            : language === "sk"
+                ? "Kontakt"
+                : "Kontakt";
+    const footerLinksLabel = language === "de"
+        ? "Schnellzugriffe"
+        : language === "en"
+            ? "Quick links"
+            : language === "sk"
+                ? "Rýchle odkazy"
+                : "Rychlé odkazy";
     const currentYear = new Date().getFullYear();
 
     useEffect(() => {
@@ -2784,15 +2798,35 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
 
             <footer className="site-footer">
                 <div className="container site-footer-inner">
-                    <div className="site-footer-main">
-                        <strong>ZMR Automotive</strong>
-                        <span>{footerBaseInfoLabel}</span>
+                    <div className="site-footer-grid">
+                        <div className="site-footer-brand">
+                            <img src="sources/ZMRAutomovite-logo.png" alt="ZMR Automotive logo" className="site-footer-logo" />
+                            <div>
+                                <strong>ZMR Automotive</strong>
+                                <p>{footerBaseInfoLabel}</p>
+                            </div>
+                        </div>
+
+                        <div className="site-footer-block">
+                            <p className="site-footer-title">{footerContactLabel}</p>
+                            <div className="site-footer-contact-list">
+                                <a href="tel:+420000000000">+420 000 000 000</a>
+                                <a href="mailto:info@zmrautomovite.cz">info@zmrautomovite.cz</a>
+                                <span>{footerLocationLabel}</span>
+                            </div>
+                        </div>
+
+                        <div className="site-footer-block">
+                            <p className="site-footer-title">{footerLinksLabel}</p>
+                            <div className="site-footer-links">
+                                <a href="/auta">{texts.nav.cars}</a>
+                                <a href="/sluzby">{texts.nav.services}</a>
+                                <a href="/o-nas">{texts.nav.about}</a>
+                                <a href="/kontakt">{texts.nav.contact}</a>
+                            </div>
+                        </div>
                     </div>
-                    <div className="site-footer-contact">
-                        <a href="tel:+420000000000">+420 000 000 000</a>
-                        <a href="mailto:info@zmrautomovite.cz">info@zmrautomovite.cz</a>
-                        <span>{footerLocationLabel}</span>
-                    </div>
+
                     <p className="site-footer-copy">© {currentYear} ZMR Automotive · {footerRightsLabel}</p>
                 </div>
             </footer>
