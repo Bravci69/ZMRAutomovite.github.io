@@ -4161,13 +4161,23 @@ function CmsPage({ cars, setCars, language, texts }) {
             description: form.description,
             legal: form.legal
         };
+        const sourceLanguageForSave = cmsTranslationMode === "auto" ? cmsAutoSourceLanguage : cmsDraftLanguage;
         const isDraftUpToDate = !isCmsAutoTranslating
-            && String(localizedCmsDraftFields?.nameI18n?.[cmsDraftLanguage] || "") === String(sourceCmsFields.name || "")
-            && String(localizedCmsDraftFields?.descriptionI18n?.[cmsDraftLanguage] || "") === String(sourceCmsFields.description || "")
-            && String(localizedCmsDraftFields?.legalI18n?.[cmsDraftLanguage] || "") === String(sourceCmsFields.legal || "");
+            && String(localizedCmsDraftFields?.nameI18n?.[sourceLanguageForSave] || "") === String(sourceCmsFields.name || "")
+            && String(localizedCmsDraftFields?.descriptionI18n?.[sourceLanguageForSave] || "") === String(sourceCmsFields.description || "")
+            && String(localizedCmsDraftFields?.legalI18n?.[sourceLanguageForSave] || "") === String(sourceCmsFields.legal || "");
         const localizedCmsFields = isDraftUpToDate
             ? localizedCmsDraftFields
-            : await buildLocalizedCmsFields(sourceCmsFields, cmsDraftLanguage);
+            : await buildLocalizedCmsFields(sourceCmsFields, sourceLanguageForSave);
+
+        if (cmsTranslationMode === "auto") {
+            const missingLanguages = collectMissingCmsTranslations(localizedCmsFields, sourceCmsFields, sourceLanguageForSave);
+            if (missingLanguages.length > 0) {
+                const readable = missingLanguages.map((code) => code.toUpperCase()).join(", ");
+                setError(`${cmsUiTexts.autoTranslateIncomplete} ${readable}`);
+                return;
+            }
+        }
 
         const existingCar = editingCarId ? cars.find((car) => car.id === editingCarId) : null;
         const now = Date.now();
@@ -4295,7 +4305,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                             <button
                                 type="button"
                                 className={cmsTranslationMode === "auto" ? "cms-localization-mode-btn active" : "cms-localization-mode-btn"}
-                                onClick={() => setCmsTranslationMode("auto")}
+                                onClick={() => {
+                                    setCmsDraftLanguage(cmsAutoSourceLanguage);
+                                    setCmsTranslationMode("auto");
+                                }}
                                 disabled={!TRANSLATE_PROXY_URL}
                             >
                                 {cmsUiTexts.translationModeAuto}
@@ -4323,6 +4336,7 @@ function CmsPage({ cars, setCars, language, texts }) {
                                     className={cmsDraftLanguage === option.code ? "cms-lang-flag-btn active" : "cms-lang-flag-btn"}
                                     onClick={() => switchCmsDraftLanguage(option.code)}
                                     title={`${option.flag} ${option.label}`}
+                                    disabled={cmsTranslationMode === "auto"}
                                 >
                                     <span aria-hidden="true">{option.flag}</span>
                                     <span>{option.code.toUpperCase()}</span>
