@@ -2306,6 +2306,61 @@ function buildFirestoreDocumentUrl() {
     return `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${path}?key=${key}`;
 }
 
+function buildFirestoreRunQueryUrl() {
+    if (!FIRESTORE_PROJECT_ID || !FIRESTORE_API_KEY) {
+        return "";
+    }
+    const projectId = encodeURIComponent(String(FIRESTORE_PROJECT_ID).trim());
+    const key = encodeURIComponent(String(FIRESTORE_API_KEY).trim());
+    return `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery?key=${key}`;
+}
+
+function getFirestoreTopLevelCollectionId() {
+    const path = String(FIRESTORE_DOCUMENT_PATH || "zmrSync/cars").replace(/^\/+/, "").replace(/\/+$/, "");
+    return path.split("/").filter(Boolean)[0] || "zmrSync";
+}
+
+async function fetchCarsFromFirestoreQueryFallback() {
+    const url = buildFirestoreRunQueryUrl();
+    if (!url) {
+        return null;
+    }
+    try {
+        const targetPath = String(FIRESTORE_DOCUMENT_PATH || "zmrSync/cars").replace(/^\/+/, "").replace(/\/+$/, "");
+        const targetSuffix = `/${targetPath}`;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: getFirestoreHeaders(),
+            body: JSON.stringify({
+                structuredQuery: {
+                    from: [{ collectionId: getFirestoreTopLevelCollectionId() }],
+                    limit: 25
+                }
+            })
+        });
+        if (!response.ok) {
+            return null;
+        }
+        const rows = await response.json();
+        const documents = Array.isArray(rows)
+            ? rows.map((row) => row?.document).filter((doc) => doc && typeof doc === "object")
+            : [];
+        const exactDocument = documents.find((doc) => typeof doc?.name === "string" && doc.name.endsWith(targetSuffix));
+        const fallbackDocument = exactDocument || documents.find((doc) => doc?.fields?.cars);
+        if (!fallbackDocument) {
+            return null;
+        }
+        const fields = fallbackDocument.fields && typeof fallbackDocument.fields === "object" ? fallbackDocument.fields : {};
+        const carsValue = fields.cars ? decodeFirestoreValue(fields.cars) : null;
+        if (Array.isArray(carsValue) && carsValue.length > 0) {
+            return carsValue;
+        }
+        return null;
+    } catch {
+        return null;
+    }
+}
+
 function getFirestoreHeaders() {
     const headers = { "Content-Type": "application/json" };
     if (runtimeFirestoreIdToken) {
@@ -2322,7 +2377,7 @@ async function fetchCarsFromFirestore() {
     try {
         const response = await fetch(url, { method: "GET", headers: getFirestoreHeaders() });
         if (!response.ok) {
-            return null;
+            return await fetchCarsFromFirestoreQueryFallback();
         }
         const payload = await response.json();
         const fields = payload?.fields && typeof payload.fields === "object" ? payload.fields : {};
@@ -2330,9 +2385,9 @@ async function fetchCarsFromFirestore() {
         if (Array.isArray(carsValue) && carsValue.length > 0) {
             return carsValue;
         }
-        return null;
+        return await fetchCarsFromFirestoreQueryFallback();
     } catch {
-        return null;
+        return await fetchCarsFromFirestoreQueryFallback();
     }
 }
 
