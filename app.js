@@ -29,10 +29,10 @@ const DRIVE_OPTIONS = ["Všetky 4", "Predný", "Zadný"];
 const TRANSMISSION_OPTIONS = ["Automat", "Manuál"];
 const ORIGIN_TECHNICAL_VALUES = ["German version", "EU version", "Imported", "Domestic"];
 const LANGUAGE_OPTIONS = [
-    { code: "cs", flag: "🇨🇿", label: "Čeština" },
-    { code: "sk", flag: "🇸🇰", label: "Slovenčina" },
-    { code: "de", flag: "🇩🇪", label: "Deutsch" },
-    { code: "en", flag: "🇬🇧", label: "English" }
+    { code: "cs", flagSrc: "sources/flags/cz.svg", flagEmoji: "🇨🇿", label: "Čeština" },
+    { code: "sk", flagSrc: "sources/flags/sk.svg", flagEmoji: "🇸🇰", label: "Slovenčina" },
+    { code: "de", flagSrc: "sources/flags/de.svg", flagEmoji: "🇩🇪", label: "Deutsch" },
+    { code: "en", flagSrc: "sources/flags/gb.svg", flagEmoji: "🇬🇧", label: "English" }
 ];
 const RESET_LABELS = {
     cs: "Vymazat filtry",
@@ -2610,7 +2610,18 @@ function Navigation({ activePage, texts, className = "", onNavigate }) {
 function LanguageSwitcher({ language, onChange, texts }) {
     const languageSelectOptions = useMemo(() => LANGUAGE_OPTIONS.map((item) => ({
         value: item.code,
-        label: `${item.flag} ${item.label}`
+        label: (
+            <span className="language-option-label">
+                <img
+                    src={item.flagSrc}
+                    alt={item.flagEmoji}
+                    className="flag-icon"
+                    loading="lazy"
+                    decoding="async"
+                />
+                <span>{item.label}</span>
+            </span>
+        )
     })), []);
 
     return (
@@ -3880,7 +3891,7 @@ function CmsPage({ cars, setCars, language, texts }) {
         [cmsDraftLanguage]
     );
     const cmsDraftLanguageBadge = cmsDraftLanguageOption
-        ? `${cmsDraftLanguageOption.flag} ${cmsDraftLanguageOption.code.toUpperCase()}`
+        ? `${cmsDraftLanguageOption.code.toUpperCase()}`
         : String(cmsDraftLanguage || "").toUpperCase();
     const cmsAutoSourceLanguage = SUPPORTED_LANG_CODES.includes(language) ? language : "sk";
     const originSelectOptions = useMemo(() => ORIGIN_TECHNICAL_VALUES.map((option) => ({ value: option, label: translateTechnicalValue(option, language) })), [language]);
@@ -4452,10 +4463,10 @@ function CmsPage({ cars, setCars, language, texts }) {
                                     type="button"
                                     className={cmsDraftLanguage === option.code ? "cms-lang-flag-btn active" : "cms-lang-flag-btn"}
                                     onClick={() => switchCmsDraftLanguage(option.code)}
-                                    title={`${option.flag} ${option.label}`}
+                                    title={option.label}
                                     disabled={cmsTranslationMode === "auto"}
                                 >
-                                    <span aria-hidden="true">{option.flag}</span>
+                                    <img src={option.flagSrc} alt={option.flagEmoji} className="flag-icon" loading="lazy" decoding="async" />
                                     <span>{option.code.toUpperCase()}</span>
                                 </button>
                             ))}
