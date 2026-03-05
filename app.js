@@ -4043,6 +4043,7 @@ function CmsPage({ cars, setCars, language, texts }) {
     };
 
     const clearCmsSearch = () => {
+        setCmsSearchMode("name");
         setCmsSearchName("");
         setCmsSearchAvailability("");
     };
