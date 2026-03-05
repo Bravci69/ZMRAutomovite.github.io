@@ -1272,10 +1272,7 @@ function isMeaningfulCmsTranslation(sourceText, translatedText) {
     if (!source) {
         return true;
     }
-    if (!translated) {
-        return false;
-    }
-    return source.toLowerCase() !== translated.toLowerCase();
+    return Boolean(translated);
 }
 
 function collectMissingCmsTranslations(localizedFields, sourceFields, sourceLanguage) {
