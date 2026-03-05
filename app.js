@@ -4864,10 +4864,60 @@ function CmsPage({ cars, setCars, language, texts }) {
     );
 }
 
+function NotFoundPage({ language }) {
+    const labels = language === "de"
+        ? {
+            code: "404",
+            title: "Seite nicht gefunden",
+            subtitle: "Die angeforderte Adresse existiert nicht oder wurde verschoben.",
+            home: "Zur Startseite",
+            cars: "Fahrzeuge ansehen"
+        }
+        : language === "en"
+            ? {
+                code: "404",
+                title: "Page not found",
+                subtitle: "The address you entered doesn't exist or has been moved.",
+                home: "Go to homepage",
+                cars: "Browse cars"
+            }
+            : language === "sk"
+                ? {
+                    code: "404",
+                    title: "Stránka sa nenašla",
+                    subtitle: "Zadaná adresa neexistuje alebo bola presunutá.",
+                    home: "Prejsť na domov",
+                    cars: "Zobraziť vozidlá"
+                }
+                : {
+                    code: "404",
+                    title: "Stránka nebyla nalezena",
+                    subtitle: "Zadaná adresa neexistuje nebo byla přesunuta.",
+                    home: "Přejít na domů",
+                    cars: "Zobrazit vozidla"
+                };
+
+    return (
+        <section className="card not-found-card">
+            <div className="not-found-badge">{labels.code}</div>
+            <h2>{labels.title}</h2>
+            <p>{labels.subtitle}</p>
+            <div className="not-found-actions">
+                <a href="/" className="button-link">{labels.home}</a>
+                <a href="/auta" className="button-link button-secondary">{labels.cars}</a>
+            </div>
+        </section>
+    );
+}
+
 function App() {
     const rootElement = document.getElementById("root");
     const page = rootElement?.dataset?.page || "home";
-    const isCarsDataPage = page === "cars" || page === "car-detail" || page === "cms";
+    const pathname = String(window.location.pathname || "/").replace(/\/+$/, "") || "/";
+    const knownHomePaths = new Set(["/", "/index", "/index.html", "/main", "/main.html"]);
+    const isUnknownRoute = page === "home" && !knownHomePaths.has(pathname);
+    const effectivePage = isUnknownRoute ? "not-found" : page;
+    const isCarsDataPage = effectivePage === "cars" || effectivePage === "car-detail" || effectivePage === "cms";
     const [cars, setCars] = useState(() => (isCarsDataPage ? getCars() : []));
     const [language, setLanguage] = useState(getLanguagePreference);
     const [isCloudSyncReady, setIsCloudSyncReady] = useState(false);
@@ -4984,7 +5034,7 @@ function App() {
     }, [language]);
 
     const pageConfig = useMemo(() => {
-        switch (page) {
+        switch (effectivePage) {
             case "about":
                 return {
                     title: texts.pages.about.title,
@@ -5022,6 +5072,20 @@ function App() {
                     content: <CmsPage cars={cars} setCars={setCars} language={language} texts={texts} />
                 };
             case "home":
+            case "not-found":
+                if (effectivePage === "not-found") {
+                    return {
+                        title: "404",
+                        subtitle: language === "de"
+                            ? "Die angeforderte Seite wurde nicht gefunden."
+                            : language === "en"
+                                ? "The requested page could not be found."
+                                : language === "sk"
+                                    ? "Požadovaná stránka nebola nájdená."
+                                    : "Požadovaná stránka nebyla nalezena.",
+                        content: <NotFoundPage language={language} />
+                    };
+                }
             default:
                 return {
                     title: texts.pages.home.title,
@@ -5029,10 +5093,10 @@ function App() {
                     content: <HomePage texts={texts} language={language} />
                 };
         }
-    }, [page, cars, language, texts, isCarsLoading]);
+    }, [effectivePage, cars, language, texts, isCarsLoading]);
 
     return (
-        <PageShell page={page} title={pageConfig.title} subtitle={pageConfig.subtitle} language={language} onLanguageChange={setLanguage} texts={texts}>
+        <PageShell page={effectivePage} title={pageConfig.title} subtitle={pageConfig.subtitle} language={language} onLanguageChange={setLanguage} texts={texts}>
             {pageConfig.content}
         </PageShell>
     );
