@@ -1549,6 +1549,11 @@ a:hover {
 	color: #fff;
 }
 
+.cms-lang-flag-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
 .cms-list {
 	display: grid;
 	gap: 12px;
