@@ -1,6 +1,23 @@
 # ZMRAutomovite.github.io
 Site for ZMR Automovite
 
+## Live deploy (GitHub Pages) + FormSubmit
+
+- FormSubmit endpoint is configured to `info@zmrautomotive.cz` via `window.ZMR_RESERVATION_PROXY_URL` in all HTML entry pages.
+- GitHub Pages auto-deploy is configured in `.github/workflows/deploy-pages.yml` and runs on every push to `main`.
+
+### One-time GitHub setup
+
+1. Open repository `Settings` -> `Pages`.
+2. Set `Source` to `GitHub Actions`.
+3. Push to `main` and wait for workflow `Deploy Static Site to GitHub Pages` to finish.
+
+### One-time FormSubmit activation
+
+1. Submit the contact form once from live site.
+2. Open confirmation email sent by FormSubmit to `info@zmrautomotive.cz`.
+3. Confirm activation link (without this, FormSubmit will not deliver messages).
+
 ## Secure Google Translate setup (recommended)
 
 The frontend is static, so do not put Google API keys into `app.js`.
