@@ -3158,7 +3158,7 @@ function ContactPage({ texts, language }) {
 
     return (
         <>
-            <section className="card">
+            <section className="card"> 
                 <h2>{texts.contact.title}</h2>
                 <p>{texts.contact.p1}</p>
                 <p>
