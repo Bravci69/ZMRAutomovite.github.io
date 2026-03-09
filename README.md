@@ -69,7 +69,7 @@ Use a server-side proxy (Cloudflare Worker) and keep the key in Worker secrets.
 
 	Set Worker variables (Wrangler config or Cloudflare dashboard):
 
-	- `RESERVATION_FROM_EMAIL` (example: `ZMR <onboarding@resend.dev>`)
+	- `RESERVATION_FROM_EMAIL` (example: `ZMR <info@zmrautomotive.cz>`)
 	- `RESERVATION_TO_EMAIL` (optional fallback inbox)
 
 	### 2) Reservation endpoint

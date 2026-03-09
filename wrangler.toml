@@ -3,9 +3,9 @@ main = "sources/translate-worker.js"
 compatibility_date = "2026-03-03"
 
 [vars]
-RESERVATION_FROM_EMAIL = "ZMR <onboarding@resend.dev>"
+RESERVATION_FROM_EMAIL = "ZMR <info@zmrautomotive.cz>"
 # Optional fallback inbox if frontend does not send toEmail:
-# RESERVATION_TO_EMAIL = "info@zmrautomovite.cz"
+# RESERVATION_TO_EMAIL = "info@zmrautomotive.cz"
 
 [[kv_namespaces]]
 binding = "CARS_KV"

@@ -6,7 +6,7 @@ const LANGUAGE_STORAGE_KEY = "zmrLanguage";
 const CZK_TO_EUR_RATE = 25;
 const HORSEPOWER_MIN_FILTER = 256;
 const CARS_PER_PAGE = 12;
-const RESERVATION_EMAIL = "jakubchmura9@gmail.com";
+const RESERVATION_EMAIL = "info@zmrautomotive.cz";
 const TRANSLATE_PROXY_URL = window.ZMR_TRANSLATE_PROXY_URL || "";
 const FORM_SUBMIT_RESERVATION_URL = `https://formsubmit.co/ajax/${encodeURIComponent(RESERVATION_EMAIL)}`;
 const RESERVATION_PROXY_URL = window.ZMR_RESERVATION_PROXY_URL || FORM_SUBMIT_RESERVATION_URL;
@@ -2811,7 +2811,7 @@ function PageShell({ page, title, subtitle, language, onLanguageChange, texts, c
                             <p className="site-footer-title">{footerContactLabel}</p>
                             <div className="site-footer-contact-list">
                                 <a href="tel:+420000000000">+420 000 000 000</a>
-                                <a href="mailto:info@zmrautomovite.cz">info@zmrautomovite.cz</a>
+                                <a href="mailto:info@zmrautomotive.cz">info@zmrautomotive.cz</a>
                                 <span>{footerLocationLabel}</span>
                             </div>
                         </div>
@@ -3066,7 +3066,7 @@ function ServicesPage({ texts, language }) {
                             ))}
                         </ul>
                         <a
-                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.luxurySubject)}&body=${withLanguageContext(serviceContent.luxuryBody)}`}
+                            href={`mailto:info@zmrautomotive.cz?subject=${encodeURIComponent(serviceContent.luxurySubject)}&body=${withLanguageContext(serviceContent.luxuryBody)}`}
                             className="button-link button-secondary"
                         >
                             {serviceContent.luxuryButton}
@@ -3080,7 +3080,7 @@ function ServicesPage({ texts, language }) {
                             ))}
                         </ul>
                         <a
-                            href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.technicalSubject)}&body=${withLanguageContext(serviceContent.technicalBody)}`}
+                            href={`mailto:info@zmrautomotive.cz?subject=${encodeURIComponent(serviceContent.technicalSubject)}&body=${withLanguageContext(serviceContent.technicalBody)}`}
                             className="button-link button-secondary"
                         >
                             {serviceContent.technicalButton}
@@ -3095,7 +3095,7 @@ function ServicesPage({ texts, language }) {
                 <div className="services-cta-actions">
                     <a href="/kontakt" className="button-link">{serviceContent.ctaButton}</a>
                     <a
-                        href={`mailto:info@zmrautomovite.cz?subject=${encodeURIComponent(serviceContent.customSubject)}&body=${withLanguageContext(serviceContent.customBody)}`}
+                        href={`mailto:info@zmrautomotive.cz?subject=${encodeURIComponent(serviceContent.customSubject)}&body=${withLanguageContext(serviceContent.customBody)}`}
                         className="button-link button-secondary"
                     >
                         {serviceContent.customButton}
@@ -3164,7 +3164,7 @@ function ContactPage({ texts, language }) {
                 <p>
                     Telefón: <a href="tel:+420000000000">+420 000 000 000</a>
                     <br />
-                    E-mail: <a href="mailto:info@zmrautomovite.cz">info@zmrautomovite.cz</a>
+                    E-mail: <a href="mailto:info@zmrautomotive.cz">info@zmrautomotive.cz</a>
                 </p>
             </section>
 
