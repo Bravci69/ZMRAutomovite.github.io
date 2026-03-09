@@ -1,6 +1,7 @@
 (function emailOverrideBootstrap() {
     var TARGET_EMAIL = "info@zmrautomotive.cz";
     var LEGACY_EMAILS = ["jakubchmura9@gmail.com", "info@zmrautomovite.cz", "onboarding@resend.dev"];
+    var TARGET_FORMSUBMIT_URL = "https://formsubmit.co/ajax/" + encodeURIComponent(TARGET_EMAIL);
 
     function replaceLegacyEmails(value) {
         var text = String(value || "");
@@ -13,6 +14,26 @@
         return text;
     }
 
+    function normalizeMailto(value) {
+        var href = String(value || "");
+        if (!/^mailto:/i.test(href)) {
+            return href;
+        }
+
+        var queryIndex = href.indexOf("?");
+        var query = queryIndex >= 0 ? href.slice(queryIndex) : "";
+        return "mailto:" + TARGET_EMAIL + query;
+    }
+
+    function normalizeFormSubmitUrl(value) {
+        var text = String(value || "");
+        if (!/formsubmit\.co\/ajax\//i.test(text)) {
+            return text;
+        }
+
+        return text.replace(/https:\/\/formsubmit\.co\/ajax\/[^/?#"'\s]+/gi, TARGET_FORMSUBMIT_URL);
+    }
+
     function normalizeAnchor(anchor) {
         if (!anchor) {
             return;
@@ -20,9 +41,16 @@
 
         var href = anchor.getAttribute("href");
         if (href) {
-            var nextHref = replaceLegacyEmails(href);
+            var nextHref = normalizeMailto(normalizeFormSubmitUrl(replaceLegacyEmails(href)));
             if (nextHref !== href) {
                 anchor.setAttribute("href", nextHref);
+            }
+
+            if (/^mailto:/i.test(nextHref)) {
+                var currentText = String(anchor.textContent || "").trim();
+                if (currentText.indexOf("@") !== -1) {
+                    anchor.textContent = TARGET_EMAIL;
+                }
             }
         }
 
@@ -54,15 +82,15 @@
             var nextInit = init;
 
             if (typeof nextInput === "string") {
-                nextInput = replaceLegacyEmails(nextInput);
+                nextInput = normalizeMailto(normalizeFormSubmitUrl(replaceLegacyEmails(nextInput)));
             } else if (nextInput instanceof URL) {
-                nextInput = new URL(replaceLegacyEmails(nextInput.toString()));
+                nextInput = new URL(normalizeMailto(normalizeFormSubmitUrl(replaceLegacyEmails(nextInput.toString()))));
             }
 
             if (nextInit && typeof nextInit === "object") {
                 nextInit = Object.assign({}, nextInit);
                 if (typeof nextInit.body === "string") {
-                    nextInit.body = replaceLegacyEmails(nextInit.body);
+                    nextInit.body = normalizeMailto(normalizeFormSubmitUrl(replaceLegacyEmails(nextInit.body)));
                 }
             }
 
@@ -102,7 +130,7 @@
         }
     }
 
-    window.ZMR_RESERVATION_PROXY_URL = "https://formsubmit.co/ajax/" + TARGET_EMAIL;
+    window.ZMR_RESERVATION_PROXY_URL = TARGET_FORMSUBMIT_URL;
     window.ZMR_RESERVATION_EMAIL = TARGET_EMAIL;
 
     installFetchOverride();
